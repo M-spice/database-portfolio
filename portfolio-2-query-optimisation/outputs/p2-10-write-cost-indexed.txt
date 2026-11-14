@@ -1,0 +1,22 @@
+==============================================================================
+Title:      Write cost with the workload indexes
+Captured:   2026-11-14 14:27:50 WAT (Africa/Lagos) | 2026-11-14 13:27:50 UTC
+Command:    <repository root>\.venv\Scripts\python.exe <repository root>\portfolio-2-query-optimisation\write_cost.py indexed
+Directory:  <repository root>/portfolio-2-query-optimisation
+Exit code:  0
+Duration:   17.52 s
+Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
+Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
+Server:     postgres: postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg13+2)
+==============================================================================
+encounter inserts: median 0.387 s
+patient phone inserts: median 0.235 s
+stock receipts (RECEIPT rows): median 0.642 s
+dispenses (DISPENSE rows): median 0.841 s
+
+operation                        rows    median s    µs per row  3 runs (s)
+-----------------------------  ------  ----------  ------------  -------------------
+encounter inserts                2000       0.387           194  0.508, 0.295, 0.387
+patient phone inserts            2000       0.235           118  0.208, 0.235, 0.308
+stock receipts (RECEIPT rows)    2000       0.642           321  0.642, 0.614, 0.816
+dispenses (DISPENSE rows)        2000       0.841           420  0.758, 1.138, 0.841

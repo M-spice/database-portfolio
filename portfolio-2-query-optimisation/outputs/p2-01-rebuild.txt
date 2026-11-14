@@ -1,0 +1,78 @@
+==============================================================================
+Title:      Rebuild the Portfolio 1 schema and sample data
+Captured:   2026-11-14 14:17:20 WAT (Africa/Lagos) | 2026-11-14 13:17:20 UTC
+Command:    docker compose exec -T postgres psql -U postgres -d itoju -X -q -v ON_ERROR_STOP=1 -f /workspace/portfolio-1-database-design/db/rebuild.sql
+Directory:  <repository root>/portfolio-2-query-optimisation
+Exit code:  0
+Duration:   4.87 s
+Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
+Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
+Server:     postgres: postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg13+2)
+==============================================================================
+ setval 
+--------
+     12
+
+ set_status 
+------------
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ setval 
+--------
+      7
+
+ opened 
+--------
+ t
+
+ opened 
+--------
+ t
+
+         table_name         | row_estimate | constraints 
+----------------------------+--------------+-------------
+ appointment                |           12 |          11
+ appointment_status         |            5 |           2
+ appointment_status_history |           20 |           4
+ clinical_note              |            8 |           7
+ clinician                  |           12 |           4
+ clinician_department       |           15 |           3
+ consent                    |           16 |           5
+ consent_purpose            |            3 |           2
+ department                 |            6 |           4
+ diagnosis_code             |           16 |           2
+ drug                       |           12 |           6
+ encounter                  |            7 |           9
+ encounter_diagnosis        |            8 |           3
+ encounter_type             |            4 |           2
+ facility                   |           12 |           3
+ invoice                    |            7 |          10
+ invoice_line               |           21 |           9
+ lab_order                  |            5 |           6
+ lab_result                 |            6 |           8
+ lab_test                   |            8 |           7
+ movement_type              |            6 |           3
+ next_of_kin                |            5 |           4
+ on_call_shift              |            5 |           4
+ patient                    |           12 |           7
+ patient_allergy            |            5 |           3
+ patient_phone              |           14 |           3
+ payment                    |            6 |           5
+ payment_method             |            4 |           2
+ prescription               |            6 |           3
+ prescription_item          |            9 |           4
+ pseudonym_key              |            1 |           2
+ record_access_log          |            2 |           4
+ staff                      |           24 |           6
+ staff_role                 |            9 |           2
+ stock_movement             |           83 |          10
+ stock_on_hand              |           73 |           4
+ vital_sign                 |            7 |          10
+

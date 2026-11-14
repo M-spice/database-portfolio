@@ -1,0 +1,31 @@
+-- Q09: Frequent attenders: five or more visits in 30 days (baseline)
+rows: 350 | sha256 of sorted rows (first 16 hex): 21772ff2bd32b599
+
+hospital_no      visits
+-------------  --------
+HN-0100003           10
+HN-0101823           10
+HN-0100117            9
+HN-0100266            9
+HN-0100372            9
+HN-0100399            9
+HN-0101886            9
+HN-0103197            9
+HN-0100016            8
+HN-0100024            8
+HN-0100041            8
+HN-0100150            8
+HN-0100164            8
+HN-0100175            8
+HN-0102074            8
+HN-0102232            8
+HN-0102599            8
+HN-0103031            8
+HN-0104135            8
+HN-0100001            7
+HN-0100009            7
+HN-0100017            7
+HN-0100046            7
+HN-0100096            7
+HN-0100129            7
+... (first 25 rows shown)

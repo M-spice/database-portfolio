@@ -1,0 +1,18 @@
+-- Q05: Monthly diagnosis counts per branch over the last year (tuned)
+SELECT facility_code, month, diagnosis_code, cases
+  FROM monthly_diagnosis
+ WHERE month >= '2025-11-01' AND month < '2026-11-01'
+   AND cases >= 20
+ ORDER BY 1, 2, 4 DESC, 3;
+
+Sort  (cost=245.85..251.54 rows=2275 width=25) (actual time=5.736..6.515 rows=2277 loops=1)
+  Sort Key: facility_code, month, cases DESC, diagnosis_code
+  Sort Method: quicksort  Memory: 218kB
+  Buffers: shared hit=35
+  ->  Seq Scan on monthly_diagnosis  (cost=0.00..119.00 rows=2275 width=25) (actual time=0.021..0.905 rows=2277 loops=1)
+        Filter: ((month >= '2025-11-01'::date) AND (month < '2026-11-01'::date) AND (cases >= 20))
+        Rows Removed by Filter: 2523
+        Buffers: shared hit=35
+Settings: jit = 'off', search_path = 'itoju, public'
+Planning Time: 0.168 ms
+Execution Time: 6.765 ms

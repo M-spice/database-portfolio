@@ -1,0 +1,34 @@
+{
+  "encounter inserts": {
+    "median_s": 0.256,
+    "samples_s": [
+      0.295,
+      0.245,
+      0.256
+    ]
+  },
+  "patient phone inserts": {
+    "median_s": 0.246,
+    "samples_s": [
+      0.246,
+      0.275,
+      0.225
+    ]
+  },
+  "stock receipts (RECEIPT rows)": {
+    "median_s": 0.817,
+    "samples_s": [
+      0.92,
+      0.634,
+      0.817
+    ]
+  },
+  "dispenses (DISPENSE rows)": {
+    "median_s": 0.827,
+    "samples_s": [
+      0.712,
+      0.984,
+      0.827
+    ]
+  }
+}

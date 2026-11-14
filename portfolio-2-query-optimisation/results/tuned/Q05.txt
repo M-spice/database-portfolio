@@ -1,0 +1,31 @@
+-- Q05: Monthly diagnosis counts per branch over the last year (tuned)
+rows: 2277 | sha256 of sorted rows (first 16 hex): 970e980c6b2a4655
+
+facility_code    month       diagnosis_code      cases
+---------------  ----------  ----------------  -------
+ABJ-GRK          2025-11-01  B54                   643
+ABJ-GRK          2025-11-01  I10                   558
+ABJ-GRK          2025-11-01  J06.9                 446
+ABJ-GRK          2025-11-01  E11.9                 347
+ABJ-GRK          2025-11-01  M54.5                 296
+ABJ-GRK          2025-11-01  N39.0                 267
+ABJ-GRK          2025-11-01  A09                   260
+ABJ-GRK          2025-11-01  A01.0                 201
+ABJ-GRK          2025-11-01  K29.7                 201
+ABJ-GRK          2025-11-01  E78.5                 183
+ABJ-GRK          2025-11-01  J45.9                 161
+ABJ-GRK          2025-11-01  D50.9                 156
+ABJ-GRK          2025-11-01  L30.9                 132
+ABJ-GRK          2025-11-01  Z34.9                 132
+ABJ-GRK          2025-11-01  H10.9                 106
+ABJ-GRK          2025-11-01  B50.0                  62
+ABJ-GRK          2025-12-01  B54                   728
+ABJ-GRK          2025-12-01  I10                   647
+ABJ-GRK          2025-12-01  J06.9                 506
+ABJ-GRK          2025-12-01  E11.9                 340
+ABJ-GRK          2025-12-01  M54.5                 320
+ABJ-GRK          2025-12-01  N39.0                 292
+ABJ-GRK          2025-12-01  K29.7                 240
+ABJ-GRK          2025-12-01  A01.0                 235
+ABJ-GRK          2025-12-01  A09                   228
+... (first 25 rows shown)

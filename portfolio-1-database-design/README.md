@@ -64,7 +64,7 @@ Each test runs inside a subtransaction that is always rolled back, so tests cann
 | Constraints | Every rule, with valid and invalid rows: keys, checks, exclusions, append-only tables, the ledger, deferred checks | 69 of 69 passed | [p1-test-constraints.txt](outputs/p1-test-constraints.txt) |
 | Routines | Normal and failure paths of every routine, including idempotent booking, statement atomicity and the audit row | 28 of 28 passed | [p1-test-routines.txt](outputs/p1-test-routines.txt) |
 | Privileges | Allowed and refused actions for every role, run with `SET ROLE`; no `PUBLIC` execute; pinned `search_path`; no identifiers in de-identified views | 45 of 45 passed | [p1-test-privileges.txt](outputs/p1-test-privileges.txt) |
-| Consistency | Stock equals the ledger, invoices balance, no overlapping bookings, history matches status, and 10 more data rules | 14 of 14 passed | [p1-test-consistency.txt](outputs/p1-test-consistency.txt) |
+| Consistency | Stock equals the ledger and never went negative when the ledger is replayed in time order, invoices balance, no overlapping bookings, history matches status, and 10 more data rules | 15 of 15 passed | [p1-test-consistency.txt](outputs/p1-test-consistency.txt) |
 | Normalisation | Functional dependencies, keys and lossless join tested on the data | 7 dependencies hold, 9 keys hold, 4 joins lossless | [p1-normalisation.txt](outputs/p1-normalisation.txt) |
 | Catalogue | Live tables, columns in order, constraint counts, roles and views compared with [relational-schema.md](design/relational-schema.md) | 37 relations, 0 mismatches | [p1-catalogue-check.txt](outputs/p1-catalogue-check.txt) |
 

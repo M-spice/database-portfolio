@@ -1,0 +1,147 @@
+==============================================================================
+Title:      Load the deterministic volume data
+Captured:   2026-11-14 14:17:27 WAT (Africa/Lagos) | 2026-11-14 13:17:27 UTC
+Command:    docker compose exec -T postgres psql -U postgres -d itoju -X -q -v ON_ERROR_STOP=1 -f /workspace/portfolio-2-query-optimisation/sql/volume.sql
+Directory:  <repository root>/portfolio-2-query-optimisation
+Exit code:  0
+Duration:   273.50 s
+Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
+Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
+Server:     postgres: postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg13+2)
+==============================================================================
+Time: 0.235 ms
+Time: 2.817 ms
+Time: 1.036 ms
+Time: 3.154 ms
+Time: 4.645 ms
+Time: 11.301 ms
+Time: 42.520 ms
+Time: 1265.854 ms (00:01.266)
+Time: 6.177 ms
+Time: 867.516 ms
+Time: 2.631 ms
+Time: 4.004 ms
+Time: 3.617 ms
+Time: 2100.550 ms (00:02.101)
+Time: 249.392 ms
+Time: 26.590 ms
+Time: 23.620 ms
+Time: 1362.626 ms (00:01.363)
+Time: 76.913 ms
+Time: 689.578 ms
+Time: 1320.447 ms (00:01.320)
+Time: 3.037 ms
+Time: 7737.965 ms (00:07.738)
+Time: 1.813 ms
+Time: 3294.225 ms (00:03.294)
+Time: 10087.118 ms (00:10.087)
+Time: 8332.988 ms (00:08.333)
+Time: 8307.082 ms (00:08.307)
+Time: 1132.829 ms (00:01.133)
+Time: 0.520 ms
+Time: 3257.151 ms (00:03.257)
+Time: 1048.433 ms (00:01.048)
+Time: 6479.468 ms (00:06.479)
+Time: 14371.611 ms (00:14.372)
+Time: 4.315 ms
+Time: 5506.621 ms (00:05.507)
+Time: 7395.797 ms (00:07.396)
+Time: 11161.648 ms (00:11.162)
+Time: 380.870 ms
+Time: 3.756 ms
+Time: 1093.653 ms (00:01.094)
+Time: 1298.302 ms (00:01.298)
+Time: 158.176 ms
+Time: 2173.280 ms (00:02.173)
+Time: 3263.902 ms (00:03.264)
+Time: 4851.467 ms (00:04.851)
+Time: 652.113 ms
+Time: 7239.508 ms (00:07.240)
+Time: 363.122 ms
+Time: 650.732 ms
+Time: 0.439 ms
+Time: 1163.130 ms (00:01.163)
+Time: 1303.251 ms (00:01.303)
+Time: 463.518 ms
+Time: 2247.462 ms (00:02.247)
+Time: 143.599 ms
+Time: 289.597 ms
+Time: 2282.424 ms (00:02.282)
+Time: 1654.293 ms (00:01.654)
+Time: 1191.096 ms (00:01.191)
+Time: 681.551 ms
+Time: 1241.167 ms (00:01.241)
+Time: 31.497 ms
+Time: 27.652 ms
+ setval 
+--------
+ 160000
+
+Time: 28.661 ms
+ setval  
+---------
+ 1087470
+
+Time: 24.301 ms
+Time: 94042.214 ms (01:34.042)
+ kind | constraints_revalidated 
+------+-------------------------
+ f    |                      64
+ x    |                       2
+
+Time: 0.470 ms
+Time: 2.195 ms
+         table_name         |  rows   
+----------------------------+---------
+ appointment_status_history | 1804380
+ appointment                |  911050
+ encounter_diagnosis        |  907089
+ prescription_item          |  772593
+ stock_movement             |  722227
+ clinical_note              |  716408
+ vital_sign                 |  714247
+ encounter                  |  714247
+ prescription               |  571201
+ lab_result                 |  241675
+ lab_order                  |  240730
+ record_access_log          |  213922
+ invoice_line               |  211585
+ consent                    |  108036
+ invoice                    |   87477
+ payment                    |   83097
+ patient_phone              |   75061
+ patient                    |   60012
+ next_of_kin                |   30050
+ patient_allergy            |    5981
+ on_call_shift              |    1469
+ staff                      |     416
+ clinician_department       |     381
+ clinician                  |     302
+ stock_on_hand              |     144
+ diagnosis_code             |      16
+ drug                       |      12
+ facility                   |      12
+ staff_role                 |       9
+ lab_test                   |       8
+ department                 |       6
+ movement_type              |       6
+ appointment_status         |       5
+ encounter_type             |       4
+ payment_method             |       4
+ consent_purpose            |       3
+ pseudonym_key              |       1
+
+== Data fingerprint: a hash of every row, identical on every rebuild
+     table_name      |  rows  |  fingerprint  
+---------------------+--------+---------------
+ patient             |  60012 |    3804233971
+ staff               |    416 |  -32635635984
+ appointment         | 911050 | -978786057574
+ encounter           | 714247 | -407404443235
+ encounter_diagnosis | 907089 |  752870059382
+ prescription_item   | 772593 | -263919008470
+ stock_movement      | 722227 | 1276177913398
+ lab_result          | 241675 |  455511241235
+ invoice_line        | 211585 | -108922296934
+ payment             |  83097 | -240105965886
+

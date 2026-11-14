@@ -1,10 +1,10 @@
 ==============================================================================
 Title:      Data consistency checks
-Captured:   2026-11-14 13:21:59 WAT (Africa/Lagos) | 2026-11-14 12:21:59 UTC
+Captured:   2026-11-14 14:04:21 WAT (Africa/Lagos) | 2026-11-14 13:04:21 UTC
 Command:    docker compose exec -T postgres psql -U postgres -d itoju -X -q -v ON_ERROR_STOP=1 -f /workspace/portfolio-1-database-design/tests/t_consistency.sql
 Directory:  <repository root>
 Exit code:  0
-Duration:   0.60 s
+Duration:   0.50 s
 Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
 Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
 Server:     postgres: postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg13+2)
@@ -25,8 +25,9 @@ Server:     postgres: postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg13+2)
  12 | Every clinician holds a clinical role                                               |           12 |          0 | PASS
  13 | Every rostered facility and night keeps at least one clinician on call              |            3 |          0 | PASS
  14 | Every lab result is recorded after its order                                        |            6 |          0 | PASS
+ 15 | Replaying the ledger in time order, no branch ever holds negative stock             |           83 |          0 | PASS
 
  checks | passed | failed 
 --------+--------+--------
-     14 |     14 |      0
+     15 |     15 |      0
 

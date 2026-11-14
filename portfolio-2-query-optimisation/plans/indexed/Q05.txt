@@ -1,0 +1,60 @@
+-- Q05: Monthly diagnosis counts per branch over the last year (indexed)
+SELECT f.facility_code,
+       date_trunc('month', e.started_at AT TIME ZONE 'Africa/Lagos')::date AS month,
+       d.diagnosis_code,
+       count(*) AS cases
+  FROM encounter e
+  JOIN encounter_diagnosis d USING (encounter_id)
+  JOIN facility f USING (facility_id)
+ WHERE e.started_at >= '2025-11-01 00:00+01' AND e.started_at < '2026-11-01 00:00+01'
+ GROUP BY 1, 2, 3
+HAVING count(*) >= 20
+ ORDER BY 1, 2, 4 DESC, 3;
+
+Incremental Sort  (cost=46182.34..111410.46 rows=147890 width=25) (actual time=1103.380..1245.263 rows=2277 loops=1)
+  Sort Key: f.facility_code, ((date_trunc('month'::text, (e.started_at AT TIME ZONE 'Africa/Lagos'::text)))::date), (count(*)) DESC, d.diagnosis_code
+  Presorted Key: f.facility_code, ((date_trunc('month'::text, (e.started_at AT TIME ZONE 'Africa/Lagos'::text)))::date)
+  Full-sort Groups: 69  Sort Method: quicksort  Average Memory: 26kB  Peak Memory: 26kB
+  Buffers: shared hit=5663 read=4787, temp read=1488 written=1494
+  ->  Finalize GroupAggregate  (cost=46181.94..104755.41 rows=147890 width=25) (actual time=1098.995..1239.931 rows=2277 loops=1)
+        Group Key: f.facility_code, ((date_trunc('month'::text, (e.started_at AT TIME ZONE 'Africa/Lagos'::text)))::date), d.diagnosis_code
+        Filter: (count(*) >= 20)
+        Rows Removed by Filter: 27
+        Buffers: shared hit=5663 read=4787, temp read=1488 written=1494
+        ->  Gather Merge  (cost=46181.94..94403.12 rows=369724 width=25) (actual time=1098.883..1235.593 rows=6912 loops=1)
+              Workers Planned: 2
+              Workers Launched: 2
+              Buffers: shared hit=5663 read=4787, temp read=1488 written=1494
+              ->  Partial GroupAggregate  (cost=45181.91..50727.77 rows=184862 width=25) (actual time=1062.159..1191.217 rows=2304 loops=3)
+                    Group Key: f.facility_code, ((date_trunc('month'::text, (e.started_at AT TIME ZONE 'Africa/Lagos'::text)))::date), d.diagnosis_code
+                    Buffers: shared hit=5663 read=4787, temp read=1488 written=1494
+                    ->  Sort  (cost=45181.91..45644.07 rows=184862 width=17) (actual time=1062.093..1130.799 rows=147993 loops=3)
+                          Sort Key: f.facility_code, ((date_trunc('month'::text, (e.started_at AT TIME ZONE 'Africa/Lagos'::text)))::date), d.diagnosis_code
+                          Sort Method: external merge  Disk: 4280kB
+                          Buffers: shared hit=5663 read=4787, temp read=1488 written=1494
+                          Worker 0:  Sort Method: external merge  Disk: 3832kB
+                          Worker 1:  Sort Method: external merge  Disk: 3792kB
+                          ->  Hash Join  (cost=13497.32..25216.10 rows=184862 width=17) (actual time=229.849..675.771 rows=147993 loops=3)
+                                Hash Cond: (e.facility_id = f.facility_id)
+                                Buffers: shared hit=5627 read=4787
+                                ->  Parallel Hash Join  (cost=13496.05..23171.72 rows=184862 width=21) (actual time=229.514..454.121 rows=147993 loops=3)
+                                      Hash Cond: (d.encounter_id = e.encounter_id)
+                                      Buffers: shared hit=5598 read=4787
+                                      ->  Parallel Seq Scan on encounter_diagnosis d  (cost=0.00..8683.54 rows=377954 width=13) (actual time=0.070..71.572 rows=302363 loops=3)
+                                            Buffers: shared hit=117 read=4787
+                                      ->  Parallel Hash  (cost=11676.52..11676.52 rows=145562 width=24) (actual time=154.078..154.079 rows=116501 loops=3)
+                                            Buckets: 524288  Batches: 1  Memory Usage: 23328kB
+                                            Buffers: shared hit=5481
+                                            ->  Parallel Index Scan using encounter_started_ix on encounter e  (cost=0.42..11676.52 rows=145562 width=24) (actual time=0.139..69.838 rows=116501 loops=3)
+                                                  Index Cond: ((started_at >= '2025-10-31 23:00:00+00'::timestamp with time zone) AND (started_at < '2026-10-31 23:00:00+00'::timestamp with time zone))
+                                                  Buffers: shared hit=5481
+                                ->  Hash  (cost=1.12..1.12 rows=12 width=16) (actual time=0.062..0.063 rows=12 loops=3)
+                                      Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                      Buffers: shared hit=3
+                                      ->  Seq Scan on facility f  (cost=0.00..1.12 rows=12 width=16) (actual time=0.045..0.049 rows=12 loops=3)
+                                            Buffers: shared hit=3
+Settings: jit = 'off', search_path = 'itoju, public'
+Planning:
+  Buffers: shared hit=49
+Planning Time: 0.803 ms
+Execution Time: 1247.792 ms

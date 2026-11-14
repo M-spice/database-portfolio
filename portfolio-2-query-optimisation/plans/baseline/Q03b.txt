@@ -1,0 +1,37 @@
+-- Q03b: A clinician's schedule for one day (every status, including cancelled) (baseline)
+SELECT lower(a.slot) AS starts, p.hospital_no, p.given_name, p.family_name, a.appointment_status_code
+  FROM appointment a
+  JOIN patient p USING (patient_id)
+ WHERE a.clinician_id = (SELECT staff_id FROM staff WHERE staff_no = 'ST-01100')
+   AND a.slot && tstzrange('2026-11-16 00:00+01', '2026-11-17 00:00+01')
+ ORDER BY lower(a.slot);
+
+Gather Merge  (cost=20299.01..20299.47 rows=4 width=40) (actual time=128.591..134.076 rows=14 loops=1)
+  Workers Planned: 2
+  Params Evaluated: $0
+  Workers Launched: 2
+  Buffers: shared hit=7137 read=6562
+  InitPlan 1 (returns $0)
+    ->  Index Scan using staff_no_uk on staff  (cost=0.27..8.29 rows=1 width=8) (actual time=0.014..0.016 rows=1 loops=1)
+          Index Cond: (staff_no = 'ST-01100'::text)
+          Buffers: shared hit=3
+  ->  Sort  (cost=19290.69..19290.70 rows=2 width=40) (actual time=123.513..123.515 rows=5 loops=3)
+        Sort Key: (lower(a.slot))
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=7134 read=6562
+        Worker 0:  Sort Method: quicksort  Memory: 25kB
+        Worker 1:  Sort Method: quicksort  Memory: 25kB
+        ->  Nested Loop  (cost=0.29..19290.68 rows=2 width=40) (actual time=121.247..123.364 rows=5 loops=3)
+              Buffers: shared hit=7116 read=6562
+              ->  Parallel Seq Scan on appointment a  (cost=0.00..19274.06 rows=2 width=39) (actual time=121.198..123.290 rows=5 loops=3)
+                    Filter: ((slot && '["2026-11-15 23:00:00+00","2026-11-16 23:00:00+00")'::tstzrange) AND (clinician_id = $0))
+                    Rows Removed by Filter: 303679
+                    Buffers: shared hit=7072 read=6562
+              ->  Index Scan using patient_pk on patient p  (cost=0.29..8.31 rows=1 width=31) (actual time=0.012..0.012 rows=1 loops=14)
+                    Index Cond: (patient_id = a.patient_id)
+                    Buffers: shared hit=44
+Settings: jit = 'off', search_path = 'itoju, public'
+Planning:
+  Buffers: shared hit=6
+Planning Time: 0.347 ms
+Execution Time: 134.134 ms

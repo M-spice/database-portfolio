@@ -1,0 +1,50 @@
+-- Q06: Pharmacy reorder report with the last 30 days of dispensing (baseline)
+SELECT f.facility_code, dr.drug_code, dr.name, s.quantity AS on_hand, dr.reorder_level,
+       (SELECT coalesce(sum(m.quantity), 0)
+          FROM stock_movement m
+         WHERE m.facility_id = s.facility_id AND m.drug_id = s.drug_id
+           AND m.movement_type_code = 'DISPENSE'
+           AND m.moved_at >= '2026-10-15 00:00+01' AND m.moved_at < '2026-11-14 00:00+01') AS dispensed_30d
+  FROM stock_on_hand s
+  JOIN drug dr USING (drug_id)
+  JOIN facility f USING (facility_id)
+ WHERE s.quantity < dr.reorder_level
+ ORDER BY f.facility_code, dr.drug_code;
+
+Incremental Sort  (cost=100702.07..1208410.26 rows=48 width=46) (actual time=1719.262..1719.266 rows=17 loops=1)
+  Sort Key: f.facility_code, dr.drug_code
+  Presorted Key: f.facility_code
+  Full-sort Groups: 1  Sort Method: quicksort  Average Memory: 26kB  Peak Memory: 26kB
+  Buffers: shared hit=1093 read=150620
+  ->  Nested Loop  (cost=1.41..1208408.94 rows=48 width=46) (actual time=200.181..1719.202 rows=17 loops=1)
+        Join Filter: (s.facility_id = f.facility_id)
+        Rows Removed by Join Filter: 187
+        Buffers: shared hit=1093 read=150620
+        ->  Index Scan using facility_code_uk on facility f  (cost=0.14..12.31 rows=12 width=16) (actual time=0.010..0.046 rows=12 loops=1)
+              Buffers: shared hit=2
+        ->  Materialize  (cost=1.27..5.38 rows=48 width=46) (actual time=0.005..0.010 rows=17 loops=12)
+              Buffers: shared hit=3
+              ->  Hash Join  (cost=1.27..5.14 rows=48 width=46) (actual time=0.052..0.082 rows=17 loops=1)
+                    Hash Cond: (s.drug_id = dr.drug_id)
+                    Join Filter: (s.quantity < dr.reorder_level)
+                    Rows Removed by Join Filter: 127
+                    Buffers: shared hit=3
+                    ->  Seq Scan on stock_on_hand s  (cost=0.00..3.44 rows=144 width=20) (actual time=0.009..0.021 rows=144 loops=1)
+                          Buffers: shared hit=2
+                    ->  Hash  (cost=1.12..1.12 rows=12 width=34) (actual time=0.015..0.016 rows=12 loops=1)
+                          Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                          Buffers: shared hit=1
+                          ->  Seq Scan on drug dr  (cost=0.00..1.12 rows=12 width=34) (actual time=0.006..0.008 rows=12 loops=1)
+                                Buffers: shared hit=1
+        SubPlan 1
+          ->  Aggregate  (cost=25174.63..25174.64 rows=1 width=8) (actual time=101.109..101.109 rows=1 loops=17)
+                Buffers: shared hit=1088 read=150620
+                ->  Seq Scan on stock_movement m  (cost=0.00..25174.11 rows=209 width=4) (actual time=96.605..101.075 rows=174 loops=17)
+                      Filter: ((moved_at >= '2026-10-14 23:00:00+00'::timestamp with time zone) AND (moved_at < '2026-11-13 23:00:00+00'::timestamp with time zone) AND (facility_id = s.facility_id) AND (drug_id = s.drug_id) AND (movement_type_code = 'DISPENSE'::text))
+                      Rows Removed by Filter: 722053
+                      Buffers: shared hit=1088 read=150620
+Settings: jit = 'off', search_path = 'itoju, public'
+Planning:
+  Buffers: shared hit=8
+Planning Time: 0.732 ms
+Execution Time: 1719.332 ms

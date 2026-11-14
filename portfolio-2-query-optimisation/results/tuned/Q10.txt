@@ -1,0 +1,6 @@
+-- Q10: Average length of a consultation (matches most encounters) (tuned)
+rows: 1 | sha256 of sorted rows (first 16 hex): 1d42e019d64fcd19
+
+encounter_type_code      encounters    avg_minutes
+---------------------  ------------  -------------
+CONSULTATION                 494515             16

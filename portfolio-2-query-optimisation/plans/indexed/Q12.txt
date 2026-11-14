@@ -1,0 +1,33 @@
+-- Q12: Stock on hand at Ikeja, read from the cached totals (indexed)
+SELECT d.drug_code, s.quantity
+  FROM stock_on_hand s
+  JOIN drug d USING (drug_id)
+ WHERE s.facility_id = (SELECT facility_id FROM facility WHERE facility_code = 'LAG-IKJ')
+ ORDER BY d.drug_code;
+
+Sort  (cost=6.48..6.51 rows=12 width=13) (actual time=0.065..0.067 rows=12 loops=1)
+  Sort Key: d.drug_code
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=4
+  InitPlan 1 (returns $0)
+    ->  Seq Scan on facility  (cost=0.00..1.15 rows=1 width=8) (actual time=0.003..0.005 rows=1 loops=1)
+          Filter: (facility_code = 'LAG-IKJ'::text)
+          Rows Removed by Filter: 11
+          Buffers: shared hit=1
+  ->  Hash Join  (cost=1.27..5.11 rows=12 width=13) (actual time=0.039..0.055 rows=12 loops=1)
+        Hash Cond: (s.drug_id = d.drug_id)
+        Buffers: shared hit=4
+        ->  Seq Scan on stock_on_hand s  (cost=0.00..3.80 rows=12 width=12) (actual time=0.012..0.024 rows=12 loops=1)
+              Filter: (facility_id = $0)
+              Rows Removed by Filter: 132
+              Buffers: shared hit=3
+        ->  Hash  (cost=1.12..1.12 rows=12 width=17) (actual time=0.009..0.009 rows=12 loops=1)
+              Buckets: 1024  Batches: 1  Memory Usage: 9kB
+              Buffers: shared hit=1
+              ->  Seq Scan on drug d  (cost=0.00..1.12 rows=12 width=17) (actual time=0.003..0.005 rows=12 loops=1)
+                    Buffers: shared hit=1
+Settings: jit = 'off', search_path = 'itoju, public'
+Planning:
+  Buffers: shared hit=4
+Planning Time: 0.185 ms
+Execution Time: 0.091 ms

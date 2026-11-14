@@ -1,0 +1,19 @@
+-- Q01: Find a patient by phone number (tuned)
+SELECT p.hospital_no, p.given_name, p.family_name, p.date_of_birth, ph.phone_no
+  FROM patient_phone ph
+  JOIN patient p USING (patient_id)
+ WHERE ph.phone_no = '+2340100104242';
+
+Nested Loop  (cost=0.71..16.74 rows=1 width=42) (actual time=0.036..0.038 rows=1 loops=1)
+  Buffers: shared hit=7
+  ->  Index Scan using patient_phone_no_ix on patient_phone ph  (cost=0.42..8.44 rows=1 width=23) (actual time=0.019..0.020 rows=1 loops=1)
+        Index Cond: (phone_no = '+2340100104242'::text)
+        Buffers: shared hit=4
+  ->  Index Scan using patient_pk on patient p  (cost=0.29..8.31 rows=1 width=35) (actual time=0.012..0.012 rows=1 loops=1)
+        Index Cond: (patient_id = ph.patient_id)
+        Buffers: shared hit=3
+Settings: jit = 'off', search_path = 'itoju, public'
+Planning:
+  Buffers: shared hit=14
+Planning Time: 0.265 ms
+Execution Time: 0.066 ms

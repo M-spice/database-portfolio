@@ -1,0 +1,12 @@
+-- Q08: Patients with no visit in the last 12 months (indexed)
+SELECT p.hospital_no
+  FROM patient p
+ WHERE p.patient_id NOT IN (SELECT e.patient_id FROM encounter e WHERE e.started_at >= '2025-11-14 00:00+01')
+ ORDER BY p.hospital_no;
+
+Index Scan using patient_hospital_no_uk on patient p  (cost=0.71..505219971.12 rows=30006 width=11)
+  Filter: (NOT (SubPlan 1))
+  SubPlan 1
+    ->  Materialize  (cost=0.42..15963.60 rows=349608 width=8)
+          ->  Index Scan using encounter_started_ix on encounter e  (cost=0.42..12849.56 rows=349608 width=8)
+                Index Cond: (started_at >= '2025-11-13 23:00:00+00'::timestamp with time zone)

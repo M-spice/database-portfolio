@@ -1,0 +1,6 @@
+-- Q11: Reconcile every stock line against the movement ledger (baseline)
+rows: 1 | sha256 of sorted rows (first 16 hex): dfc1d0b29e616dd1
+
+  stock_lines    mismatches
+-------------  ------------
+          144             0

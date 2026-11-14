@@ -1,0 +1,53 @@
+-- Q11: Reconcile every stock line against the movement ledger (baseline)
+SELECT count(*) AS stock_lines,
+       count(*) FILTER (WHERE s.quantity IS DISTINCT FROM l.quantity) AS mismatches
+  FROM stock_on_hand s
+  FULL JOIN (SELECT m.facility_id, m.drug_id, sum(mt.direction * m.quantity) AS quantity
+               FROM stock_movement m
+               JOIN movement_type mt USING (movement_type_code)
+              GROUP BY m.facility_id, m.drug_id) l USING (facility_id, drug_id);
+
+Aggregate  (cost=17344.31..17344.32 rows=1 width=16) (actual time=284.525..290.551 rows=1 loops=1)
+  Buffers: shared hit=405 read=8572
+  ->  Hash Full Join  (cost=17303.83..17343.23 rows=144 width=12) (actual time=284.095..290.526 rows=144 loops=1)
+        Hash Cond: ((m.facility_id = s.facility_id) AND (m.drug_id = s.drug_id))
+        Buffers: shared hit=405 read=8572
+        ->  Finalize GroupAggregate  (cost=17298.23..17335.43 rows=144 width=24) (actual time=283.995..290.306 rows=144 loops=1)
+              Group Key: m.facility_id, m.drug_id
+              Buffers: shared hit=403 read=8572
+              ->  Gather Merge  (cost=17298.23..17331.83 rows=288 width=24) (actual time=283.983..290.167 rows=432 loops=1)
+                    Workers Planned: 2
+                    Workers Launched: 2
+                    Buffers: shared hit=403 read=8572
+                    ->  Sort  (cost=16298.21..16298.57 rows=144 width=24) (actual time=277.722..277.740 rows=144 loops=3)
+                          Sort Key: m.facility_id, m.drug_id
+                          Sort Method: quicksort  Memory: 31kB
+                          Buffers: shared hit=403 read=8572
+                          Worker 0:  Sort Method: quicksort  Memory: 31kB
+                          Worker 1:  Sort Method: quicksort  Memory: 31kB
+                          ->  Partial HashAggregate  (cost=16291.60..16293.04 rows=144 width=24) (actual time=277.528..277.573 rows=144 loops=3)
+                                Group Key: m.facility_id, m.drug_id
+                                Batches: 1  Memory Usage: 48kB
+                                Buffers: shared hit=385 read=8572
+                                Worker 0:  Batches: 1  Memory Usage: 48kB
+                                Worker 1:  Batches: 1  Memory Usage: 48kB
+                                ->  Hash Join  (cost=1.14..13282.32 rows=300928 width=22) (actual time=0.126..185.326 rows=240742 loops=3)
+                                      Hash Cond: (m.movement_type_code = mt.movement_type_code)
+                                      Buffers: shared hit=385 read=8572
+                                      ->  Parallel Seq Scan on stock_movement m  (cost=0.00..11933.28 rows=300928 width=28) (actual time=0.040..50.958 rows=240742 loops=3)
+                                            Buffers: shared hit=352 read=8572
+                                      ->  Hash  (cost=1.06..1.06 rows=6 width=12) (actual time=0.036..0.037 rows=6 loops=3)
+                                            Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                            Buffers: shared hit=3
+                                            ->  Seq Scan on movement_type mt  (cost=0.00..1.06 rows=6 width=12) (actual time=0.020..0.023 rows=6 loops=3)
+                                                  Buffers: shared hit=3
+        ->  Hash  (cost=3.44..3.44 rows=144 width=20) (actual time=0.089..0.092 rows=144 loops=1)
+              Buckets: 1024  Batches: 1  Memory Usage: 16kB
+              Buffers: shared hit=2
+              ->  Seq Scan on stock_on_hand s  (cost=0.00..3.44 rows=144 width=20) (actual time=0.012..0.041 rows=144 loops=1)
+                    Buffers: shared hit=2
+Settings: jit = 'off', search_path = 'itoju, public'
+Planning:
+  Buffers: shared hit=6
+Planning Time: 0.483 ms
+Execution Time: 290.665 ms

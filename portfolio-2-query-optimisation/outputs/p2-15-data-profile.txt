@@ -1,0 +1,46 @@
+==============================================================================
+Title:      Skew of the volume data and the query parameters
+Captured:   2026-11-14 14:36:27 WAT (Africa/Lagos) | 2026-11-14 13:36:27 UTC
+Command:    docker compose exec -T postgres psql -U postgres -d itoju -X -q -v ON_ERROR_STOP=1 -f /workspace/portfolio-2-query-optimisation/sql/profile.sql
+Directory:  <repository root>
+Exit code:  0
+Duration:   0.68 s
+Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
+Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
+Server:     postgres: postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg13+2)
+==============================================================================
+== Visits per patient: the skew the optimiser has to cope with
+ patients_with_visits | single_visit_patients | p10 | median | p90 | p99 | busiest_patient 
+----------------------+-----------------------+-----+--------+-----+-----+-----------------
+                57938 |                  5802 |   1 |      5 |  27 |  66 |             138
+
+== Encounters per branch
+ facility_code | encounters 
+---------------+------------
+ LAG-IKJ       |     135749
+ LAG-LEK       |      96913
+ ABJ-GRK       |      83159
+ LAG-YAB       |      72450
+ ABJ-WUS       |      60068
+ ABJ-GWA       |      50569
+ IBD-BOD       |      49967
+ KAN-NAS       |      45192
+ ENU-IND       |      44504
+ LAG-SUR       |      35737
+ IBD-RRD       |      24766
+ ENU-NHV       |      15173
+
+== Encounter types (selectivity of the Q10 filter)
+ encounter_type_code | encounters | percent 
+---------------------+------------+---------
+ CONSULTATION        |     494515 |    69.2
+ FOLLOW_UP           |     205718 |    28.8
+ TELECONSULT         |      14013 |     2.0
+ WALK_IN             |          1 |     0.0
+
+== The parameters used by Q02 and Q03
+                      used_by                      |    key     | rows 
+---------------------------------------------------+------------+------
+ Q02 patient                                       | HN-0100046 |  138
+ Q03 clinician, active appointments on 16 Nov 2026 | ST-01100   |   14
+

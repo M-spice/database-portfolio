@@ -19,8 +19,20 @@ WITH ledger AS (
    WHERE m.transfer_ref IS NOT NULL
    GROUP BY m.transfer_ref
 ), active AS (
-  SELECT appointment_id, patient_id, clinician_id, slot
+  SELECT appointment_id, patient_id, clinician_id, lower(slot) AS starts,
+         max(upper(slot)) OVER (PARTITION BY clinician_id ORDER BY lower(slot), appointment_id
+                                ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS clinician_busy_until,
+         max(upper(slot)) OVER (PARTITION BY patient_id ORDER BY lower(slot), appointment_id
+                                ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS patient_busy_until
     FROM appointment WHERE appointment_status_code <> 'CANCELLED'
+), running_stock AS (
+  SELECT sum(mt.direction * m.quantity) OVER (PARTITION BY m.facility_id, m.drug_id
+                                               ORDER BY m.moved_at, mt.direction DESC, m.stock_movement_id) AS balance
+    FROM stock_movement m JOIN movement_type mt USING (movement_type_code)
+), invoice_lines AS (
+  SELECT invoice_id, sum(amount_kobo) AS lines_kobo FROM invoice_line GROUP BY invoice_id
+), invoice_paid AS (
+  SELECT invoice_id, sum(amount_kobo) AS paid_kobo FROM payment GROUP BY invoice_id
 ), latest_status AS (
   SELECT DISTINCT ON (appointment_id) appointment_id, appointment_status_code
     FROM appointment_status_history
@@ -44,20 +56,17 @@ SELECT * FROM (VALUES
         WHERE m.quantity <> pi.quantity)),
   (5, 'Every invoice total equals the sum of its lines',
       (SELECT count(*) FROM invoice),
-      (SELECT count(*) FROM invoice i
-        WHERE i.total_kobo <> (SELECT coalesce(sum(l.amount_kobo), 0) FROM invoice_line l WHERE l.invoice_id = i.invoice_id))),
+      (SELECT count(*) FROM invoice i LEFT JOIN invoice_lines l USING (invoice_id)
+        WHERE i.total_kobo <> coalesce(l.lines_kobo, 0))),
   (6, 'No invoice is paid beyond its total',
       (SELECT count(*) FROM invoice),
-      (SELECT count(*) FROM invoice i
-        WHERE (SELECT coalesce(sum(p.amount_kobo), 0) FROM payment p WHERE p.invoice_id = i.invoice_id) > i.total_kobo)),
+      (SELECT count(*) FROM invoice i JOIN invoice_paid p USING (invoice_id) WHERE p.paid_kobo > i.total_kobo)),
   (7, 'No clinician has overlapping active appointments',
       (SELECT count(*) FROM active),
-      (SELECT count(*) FROM active a JOIN active b
-          ON a.clinician_id = b.clinician_id AND a.appointment_id < b.appointment_id AND a.slot && b.slot)),
+      (SELECT count(*) FROM active WHERE clinician_busy_until > starts)),
   (8, 'No patient has overlapping active appointments',
       (SELECT count(*) FROM active),
-      (SELECT count(*) FROM active a JOIN active b
-          ON a.patient_id = b.patient_id AND a.appointment_id < b.appointment_id AND a.slot && b.slot)),
+      (SELECT count(*) FROM active WHERE patient_busy_until > starts)),
   (9, 'Each appointment''s latest history status is its current status',
       (SELECT count(*) FROM appointment),
       (SELECT count(*) FROM appointment a LEFT JOIN latest_status h USING (appointment_id)
@@ -82,7 +91,10 @@ SELECT * FROM (VALUES
                               GROUP BY facility_id, shift_date HAVING NOT bool_or(on_call)) g)),
   (14, 'Every lab result is recorded after its order',
       (SELECT count(*) FROM lab_result),
-      (SELECT count(*) FROM lab_result r JOIN lab_order o USING (lab_order_id) WHERE r.recorded_at < o.ordered_at))
+      (SELECT count(*) FROM lab_result r JOIN lab_order o USING (lab_order_id) WHERE r.recorded_at < o.ordered_at)),
+  (15, 'Replaying the ledger in time order, no branch ever holds negative stock',
+      (SELECT count(*) FROM running_stock),
+      (SELECT count(*) FROM running_stock WHERE balance < 0))
 ) AS c (n, rule, rows_checked, violations);
 
 SELECT n AS "#", rule, rows_checked, violations, CASE WHEN violations = 0 THEN 'PASS' ELSE 'FAIL' END AS result

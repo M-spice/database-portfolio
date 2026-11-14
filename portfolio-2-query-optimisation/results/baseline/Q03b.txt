@@ -1,0 +1,19 @@
+-- Q03b: A clinician's schedule for one day (every status, including cancelled) (baseline)
+rows: 14 | sha256 of sorted rows (first 16 hex): c91e45d8dab1d429
+
+starts                     hospital_no    given_name    family_name    appointment_status_code
+-------------------------  -------------  ------------  -------------  -------------------------
+2026-11-16 07:00:00+00:00  HN-0155575     Ebere         Musa           BOOKED
+2026-11-16 07:30:00+00:00  HN-0102865     Sani          Nwosu          BOOKED
+2026-11-16 08:00:00+00:00  HN-0123264     Uchenna       Adeyemi        BOOKED
+2026-11-16 09:30:00+00:00  HN-0123457     Zainab        Bello          BOOKED
+2026-11-16 10:00:00+00:00  HN-0117282     Uchenna       Eze            BOOKED
+2026-11-16 10:30:00+00:00  HN-0101372     Obinna        Garba          BOOKED
+2026-11-16 11:00:00+00:00  HN-0111243     Usman         Eze            BOOKED
+2026-11-16 11:30:00+00:00  HN-0130869     Peter         Ogunleye       BOOKED
+2026-11-16 12:00:00+00:00  HN-0102515     Yetunde       Obi            BOOKED
+2026-11-16 12:30:00+00:00  HN-0117872     Yetunde       Ige            BOOKED
+2026-11-16 13:00:00+00:00  HN-0118309     Zainab        Ige            BOOKED
+2026-11-16 13:30:00+00:00  HN-0103579     Ngozi         Agu            BOOKED
+2026-11-16 14:00:00+00:00  HN-0102575     Adaeze        Okon           BOOKED
+2026-11-16 14:30:00+00:00  HN-0118009     Zainab        Garba          BOOKED

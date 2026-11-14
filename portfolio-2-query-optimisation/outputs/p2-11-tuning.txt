@@ -1,0 +1,27 @@
+==============================================================================
+Title:      Statistics, materialised view and refresh cost
+Captured:   2026-11-14 14:28:09 WAT (Africa/Lagos) | 2026-11-14 13:28:09 UTC
+Command:    docker compose exec -T postgres psql -U postgres -d itoju -X -q -v ON_ERROR_STOP=1 -f /workspace/portfolio-2-query-optimisation/sql/tuning.sql
+Directory:  <repository root>/portfolio-2-query-optimisation
+Exit code:  0
+Duration:   20.50 s
+Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
+Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
+Server:     postgres: postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg13+2)
+==============================================================================
+== Statistics: distinct patients among encounters, estimated from the default sample, then from a larger one
+      statistics      | estimated_distinct | actual_distinct | percent_of_actual | planner_rows_per_patient 
+----------------------+--------------------+-----------------+-------------------+--------------------------
+ default target (100) |              30752 |           57938 |              53.1 |                     23.2
+ raised target (1000) |              50609 |           57938 |              87.4 |                     14.1
+
+== Materialised view for the monthly diagnosis report (Q05)
+Time: 3093.819 ms (00:03.094)
+Time: 19.437 ms
+== Refresh cost: a full refresh, then a concurrent refresh that does not block readers
+Time: 6226.862 ms (00:06.227)
+Time: 9189.743 ms (00:09.190)
+ mv_rows | mv_size 
+---------+---------
+    4800 | 728 kB
+

@@ -1,0 +1,25 @@
+-- Q02: Patient timeline: latest 20 encounters with diagnoses (baseline)
+rows: 20 | sha256 of sorted rows (first 16 hex): 1d5bcd53463f66c9
+
+started_at                 facility_code    encounter_type_code    diagnoses
+-------------------------  ---------------  ---------------------  ------------
+2026-11-13 13:10:00+00:00  ABJ-GWA          CONSULTATION           J45.9
+2026-11-11 10:00:00+00:00  ABJ-GWA          FOLLOW_UP              I10
+2026-11-10 09:32:00+00:00  ABJ-GWA          FOLLOW_UP              E78.5, K29.7
+2026-11-05 14:38:00+00:00  ABJ-GWA          CONSULTATION           I10
+2026-11-04 07:39:00+00:00  ABJ-GWA          CONSULTATION           I10, M54.5
+2026-10-23 12:33:00+00:00  ABJ-GWA          CONSULTATION           E78.5
+2026-10-20 09:02:00+00:00  ABJ-GWA          CONSULTATION           E78.5
+2026-10-14 13:11:00+00:00  ABJ-GWA          FOLLOW_UP              I10
+2026-10-14 07:00:00+00:00  ABJ-GWA          FOLLOW_UP              J45.9
+2026-10-06 11:20:00+00:00  ABJ-GWA          FOLLOW_UP              B54
+2026-09-28 07:28:00+00:00  ABJ-GWA          CONSULTATION           L30.9, A09
+2026-09-24 13:02:00+00:00  ABJ-GWA          CONSULTATION           I10
+2026-09-24 10:02:00+00:00  ABJ-GWA          CONSULTATION           I10
+2026-09-18 08:05:00+00:00  ABJ-GWA          CONSULTATION           E78.5, K29.7
+2026-08-25 12:44:00+00:00  ABJ-GWA          CONSULTATION           H10.9, L30.9
+2026-08-24 13:33:00+00:00  ABJ-GWA          FOLLOW_UP              I10
+2026-08-06 11:03:00+00:00  ABJ-GWA          CONSULTATION           E11.9
+2026-08-05 10:24:00+00:00  ABJ-GWA          FOLLOW_UP              I10
+2026-08-05 09:00:00+00:00  ABJ-GWA          FOLLOW_UP              I10
+2026-08-03 07:42:00+00:00  ABJ-GWA          FOLLOW_UP              I10, M54.5

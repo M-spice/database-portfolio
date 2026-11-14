@@ -1,0 +1,52 @@
+==============================================================================
+Title:      Workload with the workload indexes
+Captured:   2026-11-14 14:25:32 WAT (Africa/Lagos) | 2026-11-14 13:25:32 UTC
+Command:    <repository root>\.venv\Scripts\python.exe <repository root>\portfolio-2-query-optimisation\measure.py indexed sql/workload.sql
+Directory:  <repository root>/portfolio-2-query-optimisation
+Exit code:  0
+Duration:   137.67 s
+Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
+Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
+Server:     postgres: postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg13+2)
+==============================================================================
+Q01 median      0.030 ms  buffers         7  rows      1  root Nested Loop
+Q02 median      0.240 ms  buffers       108  rows     20  root Limit
+Q03 median      0.130 ms  buffers        62  rows     14  root Sort
+Q03b median    117.084 ms  buffers     13699  rows     14  root Gather Merge
+Q04 median     16.127 ms  buffers      1518  rows    289  root Sort
+Q05 median   1257.514 ms  buffers     10458  rows   2277  root Incremental Sort
+Q06 median      1.182 ms  buffers        79  rows     17  root Sort
+Q07 median     80.079 ms  buffers      2197  rows      8  root Aggregate
+Q08 timed out after 120 s
+Q09 median     47.985 ms  buffers      1394  rows    350  root Sort
+Q10 median    175.705 ms  buffers      8873  rows      1  root Aggregate
+Q11 median    247.537 ms  buffers      9116  rows      1  root Aggregate
+Q12 median      0.096 ms  buffers         4  rows     12  root Sort
+Q13 median     96.754 ms  buffers      9114  rows     12  root Aggregate
+
+query    title                                         median ms    range ms            buffers    est rows    actual rows    worst est ratio  plan stable      result rows  result hash
+-------  --------------------------------------------  -----------  ----------------  ---------  ----------  -------------  -----------------  -------------  -------------  ----------------
+Q01      Find a patient by phone number                0.03         0.029–0.032               7           1              1                1    yes                        1  4971a89ab6c70c5e
+Q02      Patient timeline: latest 20 encounters with   0.24         0.218–0.282             108          20             20                1.7  yes                       20  1d5bcd53463f66c9
+Q03      A clinician's schedule for one day (active a  0.13         0.119–0.153              62           4             14                3.5  yes                       14  c91e45d8dab1d429
+Q03b     A clinician's schedule for one day (every st  117.084      91.151–118.166        13699           4             14                3.5  yes                       14  c91e45d8dab1d429
+Q04      Free 30-minute General Practice slots at Ike  16.127       15.826–17.301          1518        4976            289               62.5  yes                      289  0ee7a4500d8dd078
+Q05      Monthly diagnosis counts per branch over the  1257.514     952.845–1612.507      10458      147890           2277               80.3  yes                     2277  970e980c6b2a4655
+Q06      Pharmacy reorder report with the last 30 day  1.182        1.061–1.433              79          48             17                2.8  yes                       17  b8aa2284b91d967d
+Q07      Laboratory turnaround by test over the last   80.079       74.891–91.562          2197           8              8                1.1  yes                        8  f584780ce38876f9
+Q08      Patients with no visit in the last 12 months  timeout
+Q09      Frequent attenders: five or more visits in 3  47.985       45.571–61.253          1394        9942            350               28.4  yes                      350  21772ff2bd32b599
+Q10      Average length of a consultation (matches mo  175.705      160.433–241.061        8873           1              1                1.5  yes                        1  1d42e019d64fcd19
+Q11      Reconcile every stock line against the movem  247.537      204.097–308.335        9116           1              1                1.5  yes                        1  dfc1d0b29e616dd1
+Q12      Stock on hand at Ikeja, read from the cached  0.096        0.072–0.144               4          12             12                1    yes                       12  355a24a6e3e1acc7
+Q13      Stock on hand at Ikeja, recomputed from the   96.754       91.422–109.099         9114          12             12                1.8  yes                       12  355a24a6e3e1acc7
+
+index usage during the indexed workload (indexes not backing a key):
+table           index                           scans  size
+--------------  ----------------------------  -------  -------
+encounter       encounter_patient_started_ix       21  22 MB
+encounter       encounter_started_ix               43  9736 kB
+encounter       encounter_type_ix                   0  4936 kB
+lab_order       lab_order_ordered_ix               14  9544 kB
+patient_phone   patient_phone_no_ix                 7  2336 kB
+stock_movement  stock_movement_dispense_ix        119  34 MB

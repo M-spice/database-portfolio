@@ -1,0 +1,22 @@
+-- Q10: Average length of a consultation (matches most encounters) (indexed)
+SELECT encounter_type_code, count(*) AS encounters,
+       round(avg(extract(epoch FROM ended_at - started_at) / 60)::numeric, 2) AS avg_minutes
+  FROM encounter
+ WHERE encounter_type_code = 'CONSULTATION'
+ GROUP BY encounter_type_code;
+
+Finalize GroupAggregate  (cost=1000.00..16168.90 rows=1 width=52) (actual time=143.030..147.881 rows=1 loops=1)
+  Buffers: shared hit=4657 read=4216
+  ->  Gather  (cost=1000.00..16168.87 rows=2 width=52) (actual time=142.845..147.864 rows=3 loops=1)
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=4657 read=4216
+        ->  Partial GroupAggregate  (cost=0.00..15168.67 rows=1 width=52) (actual time=138.605..138.606 rows=1 loops=3)
+              Buffers: shared hit=4657 read=4216
+              ->  Parallel Seq Scan on encounter  (cost=0.00..12593.04 rows=206050 width=28) (actual time=0.032..52.601 rows=164838 loops=3)
+                    Filter: (encounter_type_code = 'CONSULTATION'::text)
+                    Rows Removed by Filter: 73244
+                    Buffers: shared hit=4657 read=4216
+Settings: jit = 'off', search_path = 'itoju, public'
+Planning Time: 0.116 ms
+Execution Time: 147.924 ms

@@ -1,0 +1,27 @@
+-- Q08: Patients with no visit in the last 12 months (tuned)
+SELECT p.hospital_no
+  FROM patient p
+ WHERE NOT EXISTS (SELECT 1 FROM encounter e
+                    WHERE e.patient_id = p.patient_id AND e.started_at >= '2025-11-14 00:00+01')
+ ORDER BY p.hospital_no;
+
+Sort  (cost=20179.93..20203.43 rows=9403 width=11) (actual time=181.666..182.103 rows=8583 loops=1)
+  Sort Key: p.hospital_no
+  Sort Method: quicksort  Memory: 586kB
+  Buffers: shared hit=5924
+  ->  Hash Right Anti Join  (cost=2316.69..19559.38 rows=9403 width=11) (actual time=171.784..174.326 rows=8583 loops=1)
+        Hash Cond: (e.patient_id = p.patient_id)
+        Buffers: shared hit=5924
+        ->  Index Scan using encounter_started_ix on encounter e  (cost=0.42..13012.75 rows=352328 width=8) (actual time=0.024..61.144 rows=350778 loops=1)
+              Index Cond: (started_at >= '2025-11-13 23:00:00+00'::timestamp with time zone)
+              Buffers: shared hit=4958
+        ->  Hash  (cost=1566.12..1566.12 rows=60012 width=19) (actual time=21.357..21.359 rows=60012 loops=1)
+              Buckets: 65536  Batches: 1  Memory Usage: 3794kB
+              Buffers: shared hit=966
+              ->  Seq Scan on patient p  (cost=0.00..1566.12 rows=60012 width=19) (actual time=0.009..8.137 rows=60012 loops=1)
+                    Buffers: shared hit=966
+Settings: jit = 'off', search_path = 'itoju, public'
+Planning:
+  Buffers: shared hit=14
+Planning Time: 0.403 ms
+Execution Time: 182.846 ms

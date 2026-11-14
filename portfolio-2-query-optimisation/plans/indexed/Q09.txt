@@ -1,0 +1,35 @@
+-- Q09: Frequent attenders: five or more visits in 30 days (indexed)
+SELECT p.hospital_no, count(*) AS visits
+  FROM encounter e
+  JOIN patient p USING (patient_id)
+ WHERE e.started_at >= '2026-10-15 00:00+01' AND e.started_at < '2026-11-14 00:00+01'
+ GROUP BY p.hospital_no
+HAVING count(*) >= 5
+ ORDER BY visits DESC, p.hospital_no;
+
+Sort  (cost=4751.62..4776.47 rows=9942 width=19) (actual time=49.891..49.910 rows=350 loops=1)
+  Sort Key: (count(*)) DESC, p.hospital_no
+  Sort Method: quicksort  Memory: 41kB
+  Buffers: shared hit=1394
+  ->  HashAggregate  (cost=3718.67..4091.50 rows=9942 width=19) (actual time=47.115..49.642 rows=350 loops=1)
+        Group Key: p.hospital_no
+        Filter: (count(*) >= 5)
+        Batches: 1  Memory Usage: 2833kB
+        Rows Removed by Filter: 18285
+        Buffers: shared hit=1394
+        ->  Hash Join  (cost=2316.69..3569.53 rows=29827 width=11) (actual time=19.325..36.046 rows=29564 loops=1)
+              Hash Cond: (e.patient_id = p.patient_id)
+              Buffers: shared hit=1394
+              ->  Index Scan using encounter_started_ix on encounter e  (cost=0.42..1174.96 rows=29827 width=8) (actual time=0.013..5.390 rows=29564 loops=1)
+                    Index Cond: ((started_at >= '2026-10-14 23:00:00+00'::timestamp with time zone) AND (started_at < '2026-11-13 23:00:00+00'::timestamp with time zone))
+                    Buffers: shared hit=428
+              ->  Hash  (cost=1566.12..1566.12 rows=60012 width=19) (actual time=19.273..19.274 rows=60012 loops=1)
+                    Buckets: 65536  Batches: 1  Memory Usage: 3794kB
+                    Buffers: shared hit=966
+                    ->  Seq Scan on patient p  (cost=0.00..1566.12 rows=60012 width=19) (actual time=0.009..7.783 rows=60012 loops=1)
+                          Buffers: shared hit=966
+Settings: jit = 'off', search_path = 'itoju, public'
+Planning:
+  Buffers: shared hit=19
+Planning Time: 0.318 ms
+Execution Time: 50.397 ms

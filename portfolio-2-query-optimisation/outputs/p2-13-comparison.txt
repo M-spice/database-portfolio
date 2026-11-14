@@ -1,0 +1,44 @@
+==============================================================================
+Title:      Before-and-after comparison
+Captured:   2026-11-14 14:28:44 WAT (Africa/Lagos) | 2026-11-14 13:28:44 UTC
+Command:    <repository root>\.venv\Scripts\python.exe <repository root>\portfolio-2-query-optimisation\compare.py
+Directory:  <repository root>/portfolio-2-query-optimisation
+Exit code:  0
+Duration:   0.42 s
+Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
+Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
+Server:     postgres: postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg13+2)
+==============================================================================
+# Before and after
+
+Median of five `EXPLAIN (ANALYZE, BUFFERS)` runs per query and phase. Buffers are shared blocks hit plus read for one execution. The worst estimate ratio is the largest gap, across all plan nodes, between the rows the planner expected and the rows it got (1 means exact). Same result compares a hash of every result row across the phases.
+
+| Query   | Purpose                                                                | Technique                                                                                               | Baseline ms   | Indexed ms   |   Tuned ms | Baseline buffers   | Indexed buffers   |   Tuned buffers | Plan root               | Worst estimate ratio (b / i / t)   | Same result   |
+|---------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|---------------|--------------|------------|--------------------|-------------------|-----------------|-------------------------|------------------------------------|---------------|
+| Q01     | Find a patient by phone number                                         | B+ tree index on `patient_phone (phone_no)`                                                             | 7.151         | 0.03         |      0.055 | 482                | 7                 |               7 | Nested Loop             | 1.0 / 1.0 / 1.0                    | yes           |
+| Q02     | Patient timeline: latest 20 encounters with diagnoses                  | multi-column index `encounter (patient_id, started_at DESC)` removes the Sort; statistics target raised | 37.382        | 0.24         |      0.628 | 8921               | 108               |             227 | Limit                   | 4.6 / 1.7 / 9.9                    | yes           |
+| Q03     | A clinician's schedule for one day (active appointments)               | none needed: the status predicate lets the exclusion constraint's partial GiST index serve it           | 0.167         | 0.13         |      0.18  | 62                 | 62                |              62 | Sort                    | 3.5 / 3.5 / 3.5                    | yes           |
+| Q03b    | A clinician's schedule for one day (every status, including cancelled) | none: without the status predicate the partial GiST index cannot be used                                | 157.628       | 117.084      |    157.185 | 13699              | 13699             |           13699 | Gather Merge            | 3.5 / 3.5 / 3.5                    | yes           |
+| Q04     | Free 30-minute General Practice slots at Ikeja on one day              | none needed: the anti-join probes the exclusion constraint's GiST index                                 | 17.251        | 16.127       |     22.875 | 1518               | 1518              |            1518 | Sort                    | 62.5 / 62.5 / 62.5                 | yes           |
+| Q05     | Monthly diagnosis counts per branch over the last year                 | materialised view `monthly_diagnosis`                                                                   | 1031.987      | 1257.514     |      7.403 | 13847              | 10458             |              35 | Incremental Sort → Sort | 80.5 / 80.3 / 1.0                  | yes           |
+| Q06     | Pharmacy reorder report with the last 30 days of dispensing            | partial covering index on dispenses, `INCLUDE (quantity)`                                               | 1817.483      | 1.182        |      1.799 | 151713             | 79                |              79 | Incremental Sort → Sort | 2.8 / 2.8 / 2.8                    | yes           |
+| Q07     | Laboratory turnaround by test over the last 30 days                    | covering index `lab_order (ordered_at) INCLUDE (...)`                                                   | 70.047        | 80.079       |    121.654 | 4466               | 2197              |            2197 | Aggregate               | 1.2 / 1.1 / 1.1                    | yes           |
+| Q08     | Patients with no visit in the last 12 months                           | `NOT IN` rewritten as `NOT EXISTS` (anti-join)                                                          | timeout       | timeout      |    204.052 | timeout            | timeout           |            5924 | timeout → Sort          | timeout / timeout / 1.1            | yes           |
+| Q09     | Frequent attenders: five or more visits in 30 days                     | B+ tree on `encounter (started_at)` for the 30-day range                                                | 124.485       | 47.985       |     79.459 | 11742              | 1394              |            1395 | Sort                    | 27.5 / 28.4 / 27.7                 | yes           |
+| Q10     | Average length of a consultation (matches most encounters)             | none: low selectivity, the planner rightly keeps the sequential scan                                    | 345.031       | 175.705      |    196.024 | 8818               | 8873              |            8927 | Aggregate               | 1.5 / 1.5 / 1.5                    | yes           |
+| Q11     | Reconcile every stock line against the movement ledger                 | none: a whole-ledger aggregation                                                                        | 269.623       | 247.537      |    264.187 | 8977               | 9116              |            9160 | Aggregate               | 1.5 / 1.5 / 1.5                    | yes           |
+| Q12     | Stock on hand at Ikeja, read from the cached totals                    | none: reads the cached stock totals                                                                     | 0.099         | 0.096        |      0.078 | 4                  | 4                 |               4 | Sort                    | 1.0 / 1.0 / 1.0                    | yes           |
+| Q13     | Stock on hand at Ikeja, recomputed from the ledger                     | none: recomputes the same totals from the ledger                                                        | 188.442       | 96.754       |     88.086 | 8975               | 9114              |            9158 | Aggregate               | 1.8 / 1.8 / 1.8                    | yes           |
+| Q08b    | Patients with no visit in the last 12 months                           | `NOT IN` kept, `work_mem` raised so the subquery is hashed                                              | –             | –            |    186.31  | –                  | –                 |            6167 | Index Scan              | – / – / 3.5                        | yes           |
+
+## Write cost of the new indexes
+
+Median of three runs of 2,000 rows each, inside transactions that were rolled back.
+
+| Operation                     |   Baseline s |   Indexed s | Change   |
+|-------------------------------|--------------|-------------|----------|
+| encounter inserts             |        0.256 |       0.387 | +51%     |
+| patient phone inserts         |        0.246 |       0.235 | -4%      |
+| stock receipts (RECEIPT rows) |        0.817 |       0.642 | -21%     |
+| dispenses (DISPENSE rows)     |        0.827 |       0.841 | +2%      |
+

@@ -1,0 +1,2 @@
+-- Q08: Patients with no visit in the last 12 months (indexed)
+timed out after 120 s; no result

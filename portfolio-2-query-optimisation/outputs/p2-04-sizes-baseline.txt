@@ -1,0 +1,51 @@
+==============================================================================
+Title:      Table and index sizes with key indexes only
+Captured:   2026-11-14 14:22:30 WAT (Africa/Lagos) | 2026-11-14 13:22:30 UTC
+Command:    docker compose exec -T postgres psql -U postgres -d itoju -X -q -v ON_ERROR_STOP=1 -f /workspace/portfolio-2-query-optimisation/sql/sizes.sql
+Directory:  <repository root>/portfolio-2-query-optimisation
+Exit code:  0
+Duration:   0.78 s
+Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
+Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
+Server:     postgres: postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg13+2)
+==============================================================================
+         table_name         | table_size | index_size | indexes |  rows   
+----------------------------+------------+------------+---------+---------
+ appointment                | 106 MB     | 208 MB     |       5 |  911050
+ appointment_status_history | 121 MB     | 39 MB      |       1 | 1804380
+ stock_movement             | 70 MB      | 59 MB      |       3 |  722227
+ clinical_note              | 90 MB      | 37 MB      |       2 |  716408
+ encounter                  | 69 MB      | 52 MB      |       3 |  714247
+ encounter_diagnosis        | 38 MB      | 43 MB      |       2 |  907089
+ prescription_item          | 56 MB      | 23 MB      |       1 |  772593
+ vital_sign                 | 64 MB      | 15 MB      |       1 |  714247
+ prescription               | 33 MB      | 12 MB      |       1 |  571201
+ lab_result                 | 17 MB      | 22 MB      |       4 |  241675
+ lab_order                  | 18 MB      | 12 MB      |       2 |  240730
+ invoice_line               | 18 MB      | 6536 kB    |       1 |  211585
+ record_access_log          | 17 MB      | 4712 kB    |       1 |  213922
+ invoice                    | 8688 kB    | 6576 kB    |       3 |   87477
+ consent                    | 8208 kB    | 6784 kB    |       2 |  108036
+
+   table_name   |             index_name              | method |  size   |  bytes   
+----------------+-------------------------------------+--------+---------+----------
+ appointment    | appointment_clinician_slot_ex       | gist   | 89 MB   | 93806592
+ appointment    | appointment_id_patient_uk           | btree  | 27 MB   | 28712960
+ appointment    | appointment_patient_slot_ex         | gist   | 66 MB   | 69328896
+ appointment    | appointment_pk                      | btree  | 20 MB   | 20488192
+ appointment    | appointment_request_key_uk          | btree  | 5752 kB |  5890048
+ encounter      | encounter_appointment_uk            | btree  | 15 MB   | 15908864
+ encounter      | encounter_id_patient_uk             | btree  | 21 MB   | 22519808
+ encounter      | encounter_pk                        | btree  | 15 MB   | 16064512
+ lab_order      | lab_order_encounter_test_uk         | btree  | 7424 kB |  7602176
+ lab_order      | lab_order_pk                        | btree  | 5296 kB |  5423104
+ patient_phone  | patient_phone_pk                    | btree  | 3680 kB |  3768320
+ patient_phone  | patient_phone_primary_uk            | btree  | 1872 kB |  1916928
+ stock_movement | stock_movement_pk                   | btree  | 15 MB   | 16244736
+ stock_movement | stock_movement_prescription_item_uk | btree  | 39 MB   | 40681472
+ stock_movement | stock_movement_transfer_ref_uk      | btree  | 4624 kB |  4734976
+
+ all_tables | all_indexes | index_bytes 
+------------+-------------+-------------
+ 757 MB     | 562 MB      |   588849152
+

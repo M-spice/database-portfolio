@@ -1,0 +1,6 @@
+-- Q01: Find a patient by phone number (tuned)
+rows: 1 | sha256 of sorted rows (first 16 hex): 4971a89ab6c70c5e
+
+hospital_no    given_name    family_name    date_of_birth          phone_no
+-------------  ------------  -------------  ---------------  --------------
+HN-0104242     Sani          Nwosu          2022-03-04       +2340100104242

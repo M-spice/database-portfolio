@@ -1,10 +1,10 @@
 ==============================================================================
 Title:      Live catalogue compared with the relational schema document
-Captured:   2026-11-14 13:22:05 WAT (Africa/Lagos) | 2026-11-14 12:22:05 UTC
+Captured:   2026-11-14 14:04:26 WAT (Africa/Lagos) | 2026-11-14 13:04:26 UTC
 Command:    <repository root>\.venv\Scripts\python.exe <repository root>\portfolio-1-database-design\tests\catalogue_check.py
 Directory:  <repository root>
 Exit code:  0
-Duration:   0.70 s
+Duration:   0.68 s
 Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
 Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
 Server:     postgres: postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg13+2)

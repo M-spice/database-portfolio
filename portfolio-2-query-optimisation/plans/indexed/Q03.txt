@@ -1,0 +1,30 @@
+-- Q03: A clinician's schedule for one day (active appointments) (indexed)
+SELECT lower(a.slot) AS starts, p.hospital_no, p.given_name, p.family_name, a.appointment_status_code
+  FROM appointment a
+  JOIN patient p USING (patient_id)
+ WHERE a.clinician_id = (SELECT staff_id FROM staff WHERE staff_no = 'ST-01100')
+   AND a.slot && tstzrange('2026-11-16 00:00+01', '2026-11-17 00:00+01')
+   AND a.appointment_status_code <> 'CANCELLED'
+ ORDER BY lower(a.slot);
+
+Sort  (cost=62.06..62.07 rows=4 width=40) (actual time=0.120..0.122 rows=14 loops=1)
+  Sort Key: (lower(a.slot))
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=62
+  InitPlan 1 (returns $0)
+    ->  Index Scan using staff_no_uk on staff  (cost=0.27..8.29 rows=1 width=8) (actual time=0.010..0.011 rows=1 loops=1)
+          Index Cond: (staff_no = 'ST-01100'::text)
+          Buffers: shared hit=3
+  ->  Nested Loop  (cost=0.70..53.73 rows=4 width=40) (actual time=0.067..0.113 rows=14 loops=1)
+        Buffers: shared hit=62
+        ->  Index Scan using appointment_clinician_slot_ex on appointment a  (cost=0.41..20.49 rows=4 width=39) (actual time=0.058..0.068 rows=14 loops=1)
+              Index Cond: ((clinician_id = $0) AND (slot && '["2026-11-15 23:00:00+00","2026-11-16 23:00:00+00")'::tstzrange))
+              Buffers: shared hit=20
+        ->  Index Scan using patient_pk on patient p  (cost=0.29..8.31 rows=1 width=31) (actual time=0.002..0.002 rows=1 loops=14)
+              Index Cond: (patient_id = a.patient_id)
+              Buffers: shared hit=42
+Settings: jit = 'off', search_path = 'itoju, public'
+Planning:
+  Buffers: shared hit=6
+Planning Time: 0.247 ms
+Execution Time: 0.145 ms

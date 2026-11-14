@@ -1,0 +1,22 @@
+-- Q06: Pharmacy reorder report with the last 30 days of dispensing (indexed)
+rows: 17 | sha256 of sorted rows (first 16 hex): b8aa2284b91d967d
+
+facility_code    drug_code    name                       on_hand    reorder_level    dispensed_30d
+---------------  -----------  -----------------------  ---------  ---------------  ---------------
+ABJ-GWA          DRG-0002     Paracetamol                    825             1000             8824
+ABJ-GWA          DRG-0012     Folic acid                     175              400             3450
+ABJ-WUS          DRG-0012     Folic acid                     150              400             3630
+ENU-NHV          DRG-0004     Amlodipine                     125              400             1950
+ENU-NHV          DRG-0007     Oral rehydration salts         175              200              174
+IBD-RRD          DRG-0001     Artemether-lumefantrine        325              600             4200
+IBD-RRD          DRG-0002     Paracetamol                    350             1000             4452
+IBD-RRD          DRG-0003     Amoxicillin                    125              500              540
+IBD-RRD          DRG-0007     Oral rehydration salts         100              200              300
+LAG-SUR          DRG-0001     Artemether-lumefantrine         75              600             5424
+LAG-SUR          DRG-0004     Amlodipine                     250              400             3840
+LAG-SUR          DRG-0005     Metformin                      575              600             7020
+LAG-SUR          DRG-0009     Ciprofloxacin                  100              300             1242
+LAG-YAB          DRG-0001     Artemether-lumefantrine        400              600            11472
+LAG-YAB          DRG-0003     Amoxicillin                    125              500             1845
+LAG-YAB          DRG-0006     Lisinopril                     225              300             3720
+LAG-YAB          DRG-0012     Folic acid                     175              400             4680

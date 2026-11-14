@@ -1,0 +1,17 @@
+-- Q12: Stock on hand at Ikeja, read from the cached totals (tuned)
+rows: 12 | sha256 of sorted rows (first 16 hex): 355a24a6e3e1acc7
+
+drug_code      quantity
+-----------  ----------
+DRG-0001           1401
+DRG-0002           2407
+DRG-0003           1825
+DRG-0004           1300
+DRG-0005           2525
+DRG-0006           1250
+DRG-0007            525
+DRG-0008           1500
+DRG-0009            675
+DRG-0010             90
+DRG-0011           1275
+DRG-0012           1050

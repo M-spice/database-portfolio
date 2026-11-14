@@ -1,0 +1,33 @@
+==============================================================================
+Title:      Portfolio 1 consistency checks at volume
+Captured:   2026-11-14 14:22:02 WAT (Africa/Lagos) | 2026-11-14 13:22:02 UTC
+Command:    docker compose exec -T postgres psql -U postgres -d itoju -X -q -v ON_ERROR_STOP=1 -f /workspace/portfolio-1-database-design/tests/t_consistency.sql
+Directory:  <repository root>/portfolio-2-query-optimisation
+Exit code:  0
+Duration:   26.68 s
+Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
+Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
+Server:     postgres: postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg13+2)
+==============================================================================
+ #  |                                        rule                                         | rows_checked | violations | result 
+----+-------------------------------------------------------------------------------------+--------------+------------+--------
+  1 | Stock on hand equals the movement ledger                                            |          144 |          0 | PASS
+  2 | No stock level is negative                                                          |          144 |          0 | PASS
+  3 | Every transfer is one leg out and one in, same drug and quantity, two branches      |            1 |          0 | PASS
+  4 | Every dispense matches its prescribed quantity                                      |       718552 |          0 | PASS
+  5 | Every invoice total equals the sum of its lines                                     |        87477 |          0 | PASS
+  6 | No invoice is paid beyond its total                                                 |        87477 |          0 | PASS
+  7 | No clinician has overlapping active appointments                                    |       803071 |          0 | PASS
+  8 | No patient has overlapping active appointments                                      |       803071 |          0 | PASS
+  9 | Each appointment's latest history status is its current status                      |       911050 |          0 | PASS
+ 10 | Every encounter booked through an appointment belongs to that appointment's patient |       714246 |          0 | PASS
+ 11 | Every amendment and correction stays within its encounter or order                  |         3121 |          0 | PASS
+ 12 | Every clinician holds a clinical role                                               |          302 |          0 | PASS
+ 13 | Every rostered facility and night keeps at least one clinician on call              |          732 |          0 | PASS
+ 14 | Every lab result is recorded after its order                                        |       241675 |          0 | PASS
+ 15 | Replaying the ledger in time order, no branch ever holds negative stock             |       722227 |          0 | PASS
+
+ checks | passed | failed 
+--------+--------+--------
+     15 |     15 |      0
+

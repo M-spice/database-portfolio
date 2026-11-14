@@ -72,6 +72,12 @@ I chose an outpatient network because it gives every topic in the course a real 
 │   ├── run_p1.py                          rebuilds, tests and captures the evidence
 │   └── outputs/                           evidence
 ├── portfolio-2-query-optimisation/
+│   ├── sql/                               volume data, workload, indexes, tuning
+│   ├── measure.py, write_cost.py          plans, timings, buffers, result hashes; write cost of indexes
+│   ├── run_p2.py                          loads the volume data and measures every phase
+│   ├── plans/, results/                   execution plans and results per phase, comparison table
+│   ├── analysis.md                        performance analysis
+│   └── outputs/                           evidence
 ├── portfolio-3-transactions-concurrency/
 ├── portfolio-4-nosql/
 ├── portfolio-5-distributed-cloud/
@@ -85,7 +91,7 @@ I chose an outpatient network because it gives every topic in the course a real 
 | Part | Scope | Status |
 |---|---|---|
 | [Portfolio 1: Database Design and Modelling](portfolio-1-database-design/README.md) | Requirements, Chen ER model, relational schema, normalisation to BCNF, a PostgreSQL build with its rules tested | Complete |
-| [Portfolio 2: Query Processing and Optimisation](portfolio-2-query-optimisation/README.md) | Volume data, a workload of key queries, execution plans before and after indexing and tuning | Not started |
+| [Portfolio 2: Query Processing and Optimisation](portfolio-2-query-optimisation/README.md) | Volume data, a workload of key queries, execution plans before and after indexing and tuning | Complete |
 | [Portfolio 3: Transactions and Concurrency](portfolio-3-transactions-concurrency/README.md) | Commit, rollback, isolation anomalies, locking, deadlock and crash recovery with live concurrent sessions | Not started |
 | [Portfolio 4: NoSQL and Advanced Data Models](portfolio-4-nosql/README.md) | MongoDB document model with validation, time-series and graph examples, and transactions | Not started |
 | [Portfolio 5: Distributed and Cloud Database Exercise](portfolio-5-distributed-cloud/README.md) | Distribution design, PostgreSQL streaming replication with failover, a MongoDB sharded cluster | Not started |
@@ -130,6 +136,7 @@ Each portfolio has one pipeline that rebuilds its state from scratch, runs every
 
 ```powershell
 .venv\Scripts\python portfolio-1-database-design\run_p1.py
+.venv\Scripts\python portfolio-2-query-optimisation\run_p2.py
 ```
 
 ## Evidence index
@@ -143,6 +150,11 @@ Each portfolio has one pipeline that rebuilds its state from scratch, runs every
 | Portfolio 1: relational schema, keys and constraints | [Relational schema](portfolio-1-database-design/design/relational-schema.md), [build scripts](portfolio-1-database-design/db/) |
 | Portfolio 1: normalisation explanation | [Normalisation](portfolio-1-database-design/design/normalisation.md), [lossless-join proof](portfolio-1-database-design/outputs/p1-normalisation.txt) |
 | Portfolio 1: tests | [Constraints](portfolio-1-database-design/outputs/p1-test-constraints.txt), [routines](portfolio-1-database-design/outputs/p1-test-routines.txt), [privileges](portfolio-1-database-design/outputs/p1-test-privileges.txt), [consistency](portfolio-1-database-design/outputs/p1-test-consistency.txt), [catalogue](portfolio-1-database-design/outputs/p1-catalogue-check.txt) |
+| Portfolio 2: SQL queries | [Workload](portfolio-2-query-optimisation/sql/workload.sql), [rewritten workload](portfolio-2-query-optimisation/sql/workload_rewritten.sql) |
+| Portfolio 2: query results | [Results per phase](portfolio-2-query-optimisation/results/) |
+| Portfolio 2: execution plans | [Plans per phase](portfolio-2-query-optimisation/plans/) |
+| Portfolio 2: indexing and optimisation evidence | [Comparison](portfolio-2-query-optimisation/results/comparison.md), [indexes](portfolio-2-query-optimisation/sql/indexing.sql), [tuning](portfolio-2-query-optimisation/outputs/p2-11-tuning.txt), [sizes before](portfolio-2-query-optimisation/outputs/p2-04-sizes-baseline.txt) and [after](portfolio-2-query-optimisation/outputs/p2-08-sizes-indexed.txt), [write cost before](portfolio-2-query-optimisation/outputs/p2-06-write-cost-baseline.txt) and [after](portfolio-2-query-optimisation/outputs/p2-10-write-cost-indexed.txt) |
+| Portfolio 2: performance analysis | [Analysis](portfolio-2-query-optimisation/analysis.md) |
 
 ## Academic integrity and AI use
 

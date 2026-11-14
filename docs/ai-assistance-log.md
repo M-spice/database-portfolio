@@ -45,3 +45,25 @@ Each entry below separates what I decided from recommendations the assistant mad
 - Constraint tests: 69 of 69 passed, each refused by the expected named rule. Routine tests: 28 of 28. Privilege tests: 45 of 45. Consistency checks: 14 of 14 with no violations. Normalisation: 7 functional dependencies hold in the data, 9 keys hold, and all 4 rejoins were lossless with `EXCEPT ALL` in both directions. Catalogue check: 37 relations, 0 mismatches, 9 roles and 3 views as documented.
 - The catalogue check was tested for failure: with one column removed from a copy of the schema document, it reported the difference and exited with code 1.
 - Problems found and fixed: the first ER diagrams underlined almost every attribute as if it were a key, because the script's test for key markers matched an empty string; this was spotted by looking at the rendered diagram and fixed. Cardinality labels sat in the middle of edges, where one appeared next to the wrong entity; they now sit at the entity end. Graphviz was installed but not on the PATH, so the diagram script falls back to the standard install folder. A sentence in the normalisation document wrongly said `drug` was the only relation with two candidate keys; it was corrected on review. One test that inserted an order and its result in a single statement was rewritten as two statements before it was first run, because a trigger cannot reliably see a row inserted earlier in the same statement.
+
+## Phases 5–6: Portfolio 2, query processing and optimisation (2026-11-14)
+
+**My decisions:** I approved the Portfolio 2 plan: deterministic, skewed volume data, a workload tied to the organisation's key operations, and baseline, indexed and tuned phases measured one technique at a time. I decided to stop the other projects' containers on this laptop for the measurement runs, and to generate billing data for the most recent 90 days only.
+
+**Design decisions (approved at review):** Measuring with the median of five `EXPLAIN (ANALYZE, BUFFERS)` runs and treating buffers as the stable measure. Comparing a hash of every result row across phases. Measuring write cost and index size as well as read gains. Adding a pair of queries (Q12, Q13) that compare the cached stock totals with the ledger.
+
+**AI assistance used:** The assistant generated the volume generator, the workload and its rewritten form, the indexing and tuning scripts, the measurement, write-cost, comparison and determinism scripts and the pipeline, and drafted the analysis and the README. During implementation it made these choices beyond the approved plan: dropping and re-adding the foreign keys and exclusion constraints around the bulk load so every row is re-validated in one pass; splitting the clinician's schedule into Q03 and Q03b after the baseline showed a partial index being refused; choosing the statistics fix (a higher target on `encounter.patient_id`) from the measured estimates; adding a determinism check and a data-profile step to the pipeline; and turning off JIT compilation for the measurements.
+
+**How it was verified:**
+
+- The final pipeline ran all fourteen steps successfully in 17.4 minutes; the data profile was captured as a fifteenth step afterwards.
+- The Portfolio 1 consistency checks passed at volume (15 of 15).
+- Every query returned the same result hash in every phase, and every measured plan was stable across its five runs.
+- A second load into a scratch database matched the first in all ten fingerprinted tables.
+- Problems found and fixed:
+  - The first volume load stalled for over five minutes building invoice lines with a correlated subquery that scanned the whole prescription table for each invoice; it was cancelled (one transaction, rolled back) and rewritten with hash joins.
+  - Two consistency checks used a pairwise self-join that was fine on the sample but quadratic at volume; they were rewritten as window functions, and a check replaying the ledger in time order was added.
+  - The exploratory data turned out not to match the pipeline's because the cancelled load had advanced identity sequences and two inserts had no fixed order; both causes were removed and the determinism check added, and the Q02 and Q03 parameters were re-picked on the canonical data.
+  - The write-cost test's rolled-back updates to one stock row left dead row versions that distorted a later query's plan; the touched tables are now vacuumed between blocks.
+  - The first full pipeline run was stopped part-way so the Portfolio 1 evidence could be refreshed first, and the session it left in the database was terminated.
+- Findings reported as measured rather than smoothed over: one index made a query slower (Q07); one was never used (Q10); and three of the four write-cost changes were within run-to-run noise.
