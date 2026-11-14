@@ -1,0 +1,145 @@
+==============================================================================
+Title:      Commit, rollback, savepoint, statement atomicity, idempotency and durability
+Captured:   2026-11-14 15:09:14 WAT (Africa/Lagos) | 2026-11-14 14:09:14 UTC
+Command:    <repository root>\.venv\Scripts\python.exe <repository root>\portfolio-3-transactions-concurrency\demos\atomicity.py
+Directory:  <repository root>
+Exit code:  0
+Duration:   5.96 s
+Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
+Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
+Server:     postgres: postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg13+2)
+==============================================================================
+
+=== 1. A booking that commits (atomicity and durability)
+    170.8 ms  [  A] BEGIN
+    172.2 ms  [  A] SELECT book_appointment(2, 1, 1, 1, '2027-01-04 09:30:00+00:00'::timestamptz, 30, 17, NULL)
+    180.0 ms  [  A]   -> 911091
+    181.6 ms  [sys] before COMMIT another session sees 0 row(s) for appointment 911091
+    181.6 ms  [  A] COMMIT
+    265.4 ms  [chk] PASS: an uncommitted booking is invisible to other sessions
+    265.4 ms  [chk] PASS: after COMMIT the booking and its status history are visible together
+
+=== 2. Dispensing more than the shelf holds rolls the whole transaction back
+    324.3 ms  [sys] before: 571201 prescriptions, 722233 stock movements, 90 inhalers at Ikeja
+    324.3 ms  [  A] BEGIN
+    325.7 ms  [  A] INSERT INTO prescription (encounter_id, prescriber_id) SELECT encounter_id, 1 FROM encounter WHERE patient_id = 1 ORDER BY encounter_id LIMIT 1 RETURNING prescription_id
+    336.7 ms  [  A]   -> 583235
+    336.9 ms  [  A] INSERT INTO prescription_item (prescription_id, drug_id, quantity, dosage) VALUES (583235, 10, 1000, '2 puffs as needed')
+    340.2 ms  [  A] SELECT dispense_prescription_item(583235, 10, 1, 12)
+    347.1 ms  [  A]   ERROR 23514 (stock_on_hand_quantity_ck): new row for relation "stock_on_hand" violates check constraint "stock_on_hand_quantity_ck"
+    347.1 ms  [  A] ROLLBACK
+    415.5 ms  [sys] after:  571201 prescriptions, 722233 stock movements, 90 inhalers at Ikeja
+    415.6 ms  [chk] PASS: the dispense is refused by the stock rule
+    415.6 ms  [chk] PASS: ROLLBACK removes the prescription written earlier in the same transaction
+
+=== 3. A business decision to abandon an invoice: explicit ROLLBACK
+    415.6 ms  [  A] BEGIN
+    417.2 ms  [  A] INSERT INTO invoice (invoice_no, patient_id, facility_id, issued_by, total_kobo) VALUES ('INV-' || lpad(nextval('invoice_no_seq')::text, 8, '0'), 2, 1, 19, 500000) RETURNING invoice_no, invoice_id
+    422.3 ms  [  A] INSERT INTO invoice_line (invoice_id, line_no, description, quantity, unit_price_kobo) VALUES (87511, 1, 'Consultation', 1, 500000)
+    425.2 ms  [  A] INV-01087504: the patient turns out to be covered by an HMO, so billing abandons the cash invoice
+    425.2 ms  [  A] ROLLBACK
+    430.9 ms  [chk] PASS: the abandoned invoice and its line are gone
+    430.9 ms  [chk] PASS: its invoice number is not handed out again: sequences are not rolled back (INV-01087504 used, sequence now at 1087504)
+
+=== 4. SAVEPOINT: an optional step fails, the booking still commits
+    569.9 ms  [  A] BEGIN
+    571.4 ms  [  A] SELECT book_appointment(1, 1, 1, 1, '2027-01-04 10:00:00+00:00'::timestamptz, 30, 17, NULL)
+    573.7 ms  [  A]   -> 911092
+    573.8 ms  [  A] SAVEPOINT sms_consent
+    575.0 ms  [  A] INSERT INTO consent (patient_id, consent_purpose_code, granted_at, recorded_by) VALUES (1, 'SMS_REMINDERS', now(), 17)
+    577.5 ms  [  A]   ERROR 23505 (consent_patient_purpose_open_uk): duplicate key value violates unique constraint "consent_patient_purpose_open_uk"
+    577.7 ms  [  A] ROLLBACK TO SAVEPOINT sms_consent
+    579.4 ms  [  A] COMMIT
+    593.7 ms  [chk] PASS: the optional consent step failed on its own rule
+    593.7 ms  [chk] PASS: the booking made before the savepoint committed
+    593.7 ms  [chk] PASS: nothing from the failed step was kept
+
+=== 5. Statement atomicity: a multi-row insert that fails on its third row leaves nothing
+    596.5 ms  [  A] INSERT INTO patient_phone (patient_id, phone_no) VALUES (2, '+2340009100001'), (2, '+2340009100002'), (2, '+2348031234567')
+    598.7 ms  [  A]   ERROR 23514 (patient_phone_no_ck): new row for relation "patient_phone" violates check constraint "patient_phone_no_ck"
+    600.2 ms  [chk] PASS: the statement is refused by the phone-number rule
+    600.2 ms  [chk] PASS: the two valid rows before it were not kept (phone rows for the patient: 1 before, 1 after)
+
+=== 6. A retried booking request returns the original appointment
+    707.0 ms  [  A] SELECT book_appointment(12, 1, 1, 1, '2027-01-04 10:30:00+00:00'::timestamptz, 30, NULL, '5749e867aa2f4a5cb42f0dd1378f6fba'::uuid)
+    712.1 ms  [  A]   -> 911093
+    712.1 ms  [  A] the booking app times out waiting for the reply and sends the same request again
+    712.3 ms  [  A] SELECT book_appointment(12, 1, 1, 1, '2027-01-04 10:30:00+00:00'::timestamptz, 30, NULL, '5749e867aa2f4a5cb42f0dd1378f6fba'::uuid)
+    714.6 ms  [  A]   -> 911093
+    716.4 ms  [chk] PASS: the retry returns the original appointment (appointment 911093)
+    716.5 ms  [chk] PASS: exactly one appointment exists for the request key
+
+=== 7. Durability: committed work survives a crash, uncommitted work does not
+    874.4 ms  [  A] BEGIN
+    875.9 ms  [  A] SELECT book_appointment(2, 2, 1, 1, '2027-01-04 10:00:00+00:00'::timestamptz, 30, 17, 'ff9581d756b94476968824e2ca22efa2'::uuid)
+    879.6 ms  [  A]   -> 911095
+    879.6 ms  [  A] COMMIT
+    882.4 ms  [  B] BEGIN
+    883.9 ms  [  B] SELECT book_appointment(12, 2, 1, 1, '2027-01-04 11:00:00+00:00'::timestamptz, 30, 17, '4d6a85b0c0a348a783cc8a71f9eee8f2'::uuid)
+    892.0 ms  [  B]   -> 911096
+    892.1 ms  [  B] transaction left open: not committed
+    892.1 ms  [sys] docker compose kill postgres  (SIGKILL: no shutdown, no final checkpoint)
+   1801.4 ms  [sys] docker compose up -d --wait postgres
+   5159.1 ms  [log] 2026-11-14 14:09:17.940 UTC [29] LOG:  database system was interrupted; last known up at 2026-11-14 14:06:29 UTC
+   5159.2 ms  [log] 2026-11-14 14:09:18.639 UTC [29] LOG:  database system was not properly shut down; automatic recovery in progress
+   5159.2 ms  [log] 2026-11-14 14:09:18.644 UTC [29] LOG:  redo starts at 3/CD2644E0
+   5159.2 ms  [log] 2026-11-14 14:09:18.714 UTC [29] LOG:  redo done at 3/CD719F50 system usage: CPU: user: 0.06 s, system: 0.00 s, elapsed: 0.06 s
+   5159.2 ms  [log] 2026-11-14 14:09:18.807 UTC [1] LOG:  database system is ready to accept connections
+   5211.7 ms  [chk] PASS: the server replayed its write-ahead log on restart
+   5211.7 ms  [chk] PASS: the committed booking survived the crash
+   5211.7 ms  [chk] PASS: the uncommitted booking vanished
+
+check                                                                      result    detail
+-------------------------------------------------------------------------  --------  ---------------------------------------------
+an uncommitted booking is invisible to other sessions                      PASS
+after COMMIT the booking and its status history are visible together       PASS
+the dispense is refused by the stock rule                                  PASS
+ROLLBACK removes the prescription written earlier in the same transaction  PASS
+the abandoned invoice and its line are gone                                PASS
+its invoice number is not handed out again: sequences are not rolled back  PASS      INV-01087504 used, sequence now at 1087504
+the optional consent step failed on its own rule                           PASS
+the booking made before the savepoint committed                            PASS
+nothing from the failed step was kept                                      PASS
+the statement is refused by the phone-number rule                          PASS
+the two valid rows before it were not kept                                 PASS      phone rows for the patient: 1 before, 1 after
+the retry returns the original appointment                                 PASS      appointment 911093
+exactly one appointment exists for the request key                         PASS
+the server replayed its write-ahead log on restart                         PASS
+the committed booking survived the crash                                   PASS
+the uncommitted booking vanished                                           PASS
+
+checks: 16 | passed: 16 | failed: 0
+
+==============================================================================
+Title:      Consistency checks after the demonstrations
+Captured:   2026-11-14 15:09:21 WAT (Africa/Lagos) | 2026-11-14 14:09:21 UTC
+Command:    docker compose exec -T postgres psql -U postgres -d itoju -X -q -v ON_ERROR_STOP=1 -f /workspace/portfolio-1-database-design/tests/t_consistency.sql
+Directory:  <repository root>
+Exit code:  0
+Duration:   39.57 s
+Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
+Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
+Server:     postgres: postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg13+2)
+==============================================================================
+ #  |                                        rule                                         | rows_checked | violations | result 
+----+-------------------------------------------------------------------------------------+--------------+------------+--------
+  1 | Stock on hand equals the movement ledger                                            |          144 |          0 | PASS
+  2 | No stock level is negative                                                          |          144 |          0 | PASS
+  3 | Every transfer is one leg out and one in, same drug and quantity, two branches      |            3 |          0 | PASS
+  4 | Every dispense matches its prescribed quantity                                      |       718552 |          0 | PASS
+  5 | Every invoice total equals the sum of its lines                                     |        87477 |          0 | PASS
+  6 | No invoice is paid beyond its total                                                 |        87477 |          0 | PASS
+  7 | No clinician has overlapping active appointments                                    |       803084 |          0 | PASS
+  8 | No patient has overlapping active appointments                                      |       803084 |          0 | PASS
+  9 | Each appointment's latest history status is its current status                      |       911063 |          0 | PASS
+ 10 | Every encounter booked through an appointment belongs to that appointment's patient |       714246 |          0 | PASS
+ 11 | Every amendment and correction stays within its encounter or order                  |         3121 |          0 | PASS
+ 12 | Every clinician holds a clinical role                                               |          302 |          0 | PASS
+ 13 | Every rostered facility and night keeps at least one clinician on call              |          734 |          0 | PASS
+ 14 | Every lab result is recorded after its order                                        |       241675 |          0 | PASS
+ 15 | Replaying the ledger in time order, no branch ever holds negative stock             |       722233 |          0 | PASS
+
+ checks | passed | failed 
+--------+--------+--------
+     15 |     15 |      0
+

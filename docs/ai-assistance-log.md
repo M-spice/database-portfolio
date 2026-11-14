@@ -67,3 +67,23 @@ Each entry below separates what I decided from recommendations the assistant mad
   - The write-cost test's rolled-back updates to one stock row left dead row versions that distorted a later query's plan; the touched tables are now vacuumed between blocks.
   - The first full pipeline run was stopped part-way so the Portfolio 1 evidence could be refreshed first, and the session it left in the database was terminated.
 - Findings reported as measured rather than smoothed over: one index made a query slower (Q07); one was never used (Q10); and three of the four write-cost changes were within run-to-run noise.
+
+## Phases 7–8: Portfolio 3, transactions and concurrency (2026-11-14)
+
+**My decisions:** I approved the Portfolio 3 plan: demonstrations driven by real concurrent sessions with deterministic interleaving, a sandbox schema for scenarios that need a safeguard removed, a real crash test, and the Portfolio 1 consistency checks after every demonstration.
+
+**Design decisions (approved at review):** Confirming every wait from a separate monitoring session with `pg_blocking_pids()` before letting the other session continue. Showing each concurrency problem next to the mechanism that prevents it. Basing the hot-row conclusion on the lock-wait share and absolute throughput rather than a scaling ratio.
+
+**AI assistance used:** The assistant generated the shared session helpers, the three demonstration scripts, the sandbox schema and the pipeline, and drafted the replay guide, the scenario analysis in `concurrency.md` and the README. During implementation it chose the specific clinic scenarios (an optional SMS-consent step for the savepoint, the on-call rota for write skew, a daily queue-number counter for the hot row), and it kept the monitoring sessions as superuser so they can see other sessions' wait events.
+
+**How it was verified:**
+
+- The pipeline ran all four steps in 2.7 minutes.
+- Atomicity and durability: 16 of 16 checks, including a real SIGKILL of the database container with the write-ahead-log recovery captured from the server log.
+- Isolation: 9 of 9 checks. Locking: 20 of 20 checks.
+- The Portfolio 1 consistency suite passed 15 of 15 after each demonstration.
+- Problems found and fixed:
+  - The first locking run stopped with "B never blocked". The monitoring session had switched to a role that `pg_stat_activity` hides other users' wait events from, and sessions left open from earlier scenarios shared the same label. The monitor now keeps superuser rights, the detector looks only for a session that is actually blocked, and each scenario closes its sessions.
+  - The logged SQL showed parameter placeholders instead of values; it now shows the bound values.
+  - The free-slot queries were rewritten before their first run so they could use the GiST indexes.
+- Timings varied between runs: the 8-session counter-row throughput was 130 tickets/s in a trial and 218 in the evidence run. The lock-wait share reproduced closely (75.7% and 75.3%), so the conclusion rests on the lock-wait share.
