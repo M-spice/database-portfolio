@@ -1,0 +1,64 @@
+name: itoju-p5-pg
+
+x-postgres: &postgres
+  image: postgres:16@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d
+  environment: &env
+    POSTGRES_USER: postgres
+    POSTGRES_DB: itoju
+    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    REPLICATION_PASSWORD: ${P5_REPLICATION_PASSWORD:?set P5_REPLICATION_PASSWORD in .env}
+  mem_limit: 512m
+  healthcheck:
+    test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d itoju"]
+    interval: 10s
+    timeout: 5s
+    retries: 10
+    start_period: 120s
+    start_interval: 1s
+
+services:
+  pg_primary:
+    <<: *postgres
+    command: >-
+      postgres -c wal_level=replica -c max_wal_senders=10 -c max_replication_slots=10 -c hot_standby=on
+      -c wal_keep_size=256MB
+    ports:
+      - "127.0.0.1:55441:5432"
+    volumes:
+      - primary:/var/lib/postgresql/data
+      - ./init-primary.sh:/docker-entrypoint-initdb.d/init-primary.sh:ro
+
+  pg_standby_sync:
+    <<: *postgres
+    environment:
+      <<: *env
+      STANDBY_NAME: standby_sync
+    entrypoint: ["bash", "/scripts/start-standby.sh"]
+    depends_on:
+      pg_primary:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:55442:5432"
+    volumes:
+      - standby_sync:/var/lib/postgresql/data
+      - ./start-standby.sh:/scripts/start-standby.sh:ro
+
+  pg_standby_async:
+    <<: *postgres
+    environment:
+      <<: *env
+      STANDBY_NAME: standby_async
+    entrypoint: ["bash", "/scripts/start-standby.sh"]
+    depends_on:
+      pg_primary:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:55443:5432"
+    volumes:
+      - standby_async:/var/lib/postgresql/data
+      - ./start-standby.sh:/scripts/start-standby.sh:ro
+
+volumes:
+  primary:
+  standby_sync:
+  standby_async:

@@ -1,0 +1,61 @@
+name: itoju-p5-mongo
+
+x-member: &member
+  image: mongo:7.0@sha256:8bb4442761a63a8dda452744082cdac9644b429807eb977b42324a63cef59ca4
+  network_mode: "service:net"
+  depends_on:
+    - net
+  mem_limit: 512m
+
+services:
+  # Owns the network namespace and the published ports, so stopping a member never removes its neighbours' addresses.
+  net:
+    image: mongo:7.0@sha256:8bb4442761a63a8dda452744082cdac9644b429807eb977b42324a63cef59ca4
+    entrypoint:
+      - bash
+      - -c
+      - |
+        if [ ! -s /keys/keyfile ]; then head -c 756 /dev/urandom | base64 -w 0 > /keys/keyfile; fi
+        chown 999:999 /keys/keyfile && chmod 400 /keys/keyfile
+        exec sleep infinity
+    ports:
+      - "127.0.0.1:37030-37033:37030-37033"
+    volumes:
+      - keys:/keys
+
+  config:
+    <<: *member
+    command: ["mongod", "--configsvr", "--replSet", "cfg", "--port", "37031", "--bind_ip_all",
+              "--keyFile", "/keys/keyfile", "--wiredTigerCacheSizeGB", "0.25"]
+    volumes:
+      - keys:/keys:ro
+      - config:/data/configdb
+
+  shard_a:
+    <<: *member
+    command: ["mongod", "--shardsvr", "--replSet", "shard_a", "--port", "37032", "--bind_ip_all",
+              "--keyFile", "/keys/keyfile", "--wiredTigerCacheSizeGB", "0.25"]
+    volumes:
+      - keys:/keys:ro
+      - shard_a:/data/db
+
+  shard_b:
+    <<: *member
+    command: ["mongod", "--shardsvr", "--replSet", "shard_b", "--port", "37033", "--bind_ip_all",
+              "--keyFile", "/keys/keyfile", "--wiredTigerCacheSizeGB", "0.25"]
+    volumes:
+      - keys:/keys:ro
+      - shard_b:/data/db
+
+  router:
+    <<: *member
+    command: ["mongos", "--configdb", "cfg/localhost:37031", "--port", "37030", "--bind_ip_all",
+              "--keyFile", "/keys/keyfile"]
+    volumes:
+      - keys:/keys:ro
+
+volumes:
+  keys:
+  config:
+  shard_a:
+  shard_b:

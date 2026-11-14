@@ -89,6 +89,12 @@ I chose an outpatient network because it gives every topic in the course a real 
 │   ├── run_p4.py                          loads MongoDB and runs every demonstration
 │   └── explain/, results/, outputs/       explain() output, comparisons, evidence
 ├── portfolio-5-distributed-cloud/
+│   ├── architecture.md                    the distributed and cloud design
+│   ├── pg-replication/, mongo-sharding/   the two clusters: Compose files and start-up scripts
+│   ├── setup.md                           how each cluster is built, and the commands
+│   ├── demos/                             replication, failover and sharding demonstrations
+│   ├── run_p5.py                          rebuilds both clusters and runs every demonstration
+│   └── outputs/                           evidence
 └── docs/
     ├── ai-assistance-log.md
     └── references.md
@@ -102,7 +108,7 @@ I chose an outpatient network because it gives every topic in the course a real 
 | [Portfolio 2: Query Processing and Optimisation](portfolio-2-query-optimisation/README.md) | Volume data, a workload of key queries, execution plans before and after indexing and tuning | Complete |
 | [Portfolio 3: Transactions and Concurrency](portfolio-3-transactions-concurrency/README.md) | Commit, rollback, isolation anomalies, locking, deadlock and crash recovery with live concurrent sessions | Complete |
 | [Portfolio 4: NoSQL and Advanced Data Models](portfolio-4-nosql/README.md) | MongoDB document model with validation, time-series and graph examples, and transactions | Complete |
-| [Portfolio 5: Distributed and Cloud Database Exercise](portfolio-5-distributed-cloud/README.md) | Distribution design, PostgreSQL streaming replication with failover, a MongoDB sharded cluster | Not started |
+| [Portfolio 5: Distributed and Cloud Database Exercise](portfolio-5-distributed-cloud/README.md) | Distribution design, PostgreSQL streaming replication with failover, a MongoDB sharded cluster | Complete |
 | Final documentation | LMS summary, technical reflection, AI-use declaration, references | Not started |
 
 ## Technology
@@ -124,7 +130,7 @@ MongoDB runs as a one-member replica set because multi-document transactions nee
 Requirements: Docker Desktop, Python 3.11 or later, and Windows PowerShell (the commands below) or any POSIX shell with the equivalent paths.
 
 ```powershell
-Copy-Item .env.example .env          # then replace both placeholder passwords with long random values
+Copy-Item .env.example .env          # then replace every placeholder password with a long random value
 python -m venv .venv
 .venv\Scripts\python -m pip install -r requirements.txt
 docker compose up -d --wait
@@ -147,7 +153,10 @@ Each portfolio has one pipeline that rebuilds its state from scratch, runs every
 .venv\Scripts\python portfolio-2-query-optimisation\run_p2.py
 .venv\Scripts\python portfolio-3-transactions-concurrency\run_p3.py
 .venv\Scripts\python portfolio-4-nosql\run_p4.py
+.venv\Scripts\python portfolio-5-distributed-cloud\run_p5.py
 ```
+
+Portfolio 5 builds two more clusters beside the main stack, each from its own Compose file, as described in [its set-up notes](portfolio-5-distributed-cloud/setup.md).
 
 ## Evidence index
 
@@ -173,6 +182,12 @@ Each portfolio has one pipeline that rebuilds its state from scratch, runs every
 | Portfolio 4: document, column, key-value or graph example | [Documents and indexes](portfolio-4-nosql/outputs/p4-04-workload-after.txt), [time series](portfolio-4-nosql/outputs/p4-05-timeseries.txt), [graph](portfolio-4-nosql/outputs/p4-06-graph.txt) |
 | Portfolio 4: implementation evidence | [Validation](portfolio-4-nosql/outputs/p4-02-validation.txt), [transactions](portfolio-4-nosql/outputs/p4-07-transactions.txt), [explain output](portfolio-4-nosql/explain/) |
 | Portfolio 4: explanation of suitability | [Suitability](portfolio-4-nosql/suitability.md) |
+| Portfolio 5: distributed and cloud design | [Architecture](portfolio-5-distributed-cloud/architecture.md) |
+| Portfolio 5: working setup | [Replication cluster](portfolio-5-distributed-cloud/pg-replication/compose.yaml), [sharded cluster](portfolio-5-distributed-cloud/mongo-sharding/compose.yaml), [set-up](portfolio-5-distributed-cloud/setup.md) |
+| Portfolio 5: replication and consistency | [Replication, stale read and synchronous commit](portfolio-5-distributed-cloud/outputs/p5-01-pg-replication.txt) |
+| Portfolio 5: availability | [Failover](portfolio-5-distributed-cloud/outputs/p5-01-pg-replication.txt), [one shard down](portfolio-5-distributed-cloud/outputs/p5-02-mongo-sharding.txt) |
+| Portfolio 5: sharding | [Distribution, routing and hot spot](portfolio-5-distributed-cloud/outputs/p5-02-mongo-sharding.txt) |
+| Portfolio 5: deployment | [Cloud deployment and the NDPA 2023](portfolio-5-distributed-cloud/architecture.md#cloud-deployment-and-the-law) |
 
 ## Academic integrity and AI use
 

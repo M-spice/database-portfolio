@@ -1,0 +1,71 @@
+==============================================================================
+Title:      MongoDB sharded cluster: distribution, routing, hot spot and a failed shard
+Captured:   2026-11-14 17:10:37 WAT (Africa/Lagos) | 2026-11-14 16:10:37 UTC
+Command:    <repository root>\.venv\Scripts\python.exe <repository root>\portfolio-5-distributed-cloud\demos\sharding.py
+Directory:  <repository root>/portfolio-5-distributed-cloud/demos
+Exit code:  0
+Duration:   77.33 s
+Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
+Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
+Server:     none: not applicable
+==============================================================================
+
+=== 1. Building the cluster: config server, two shards, mongos
+   6842.9 ms  [set] cfg: primary after 3.6 s
+  14855.0 ms  [set] shard_a: primary after 3.7 s
+  22548.9 ms  [set] shard_b: primary after 2.8 s
+  25635.3 ms  [set] first user created through the localhost exception
+  25836.2 ms  [set] mongos 7.0.45
+  28179.6 ms  [set] shards: shard_a (shard_a/localhost:37032), shard_b (shard_b/localhost:37033)
+  28179.7 ms  [chk] PASS: both shards joined the cluster
+
+=== 2. Encounters sharded on a hashed patient_id
+shard      encounters  share      chunks
+-------  ------------  -------  --------
+shard_a         50576  49.6%           2
+shard_b         51459  50.4%           2
+  36003.3 ms  [shd] 102035 encounters (every seventh from PostgreSQL) loaded through mongos
+  36003.4 ms  [chk] PASS: a hashed patient_id spreads encounters evenly (shard_a 50576, shard_b 51459)
+
+=== 3. Targeted against scatter-gather queries, explained at mongos
+  36020.1 ms  [shd] one patient's visits: SINGLE_SHARD on shard_a
+  36020.2 ms  [shd] one branch's visits: SHARD_MERGE on shard_a, shard_b
+  36020.2 ms  [chk] PASS: a query on the shard key is routed to one shard
+  36020.2 ms  [chk] PASS: a query without the shard key is sent to every shard and merged
+
+=== 4. A monotonically increasing shard key: every new write lands on one shard
+  36713.0 ms  [shd] ranged key created_at: chunk before 2025-11-01 on shard_a, chunk from 2025-11-01 onwards on shard_b
+shard key          shard      documents before    after 5,000 new visits    new writes received
+-----------------  -------  ------------------  ------------------------  ---------------------
+ranged created_at  shard_a               50187                     50187                      0
+ranged created_at  shard_b               49929                     54929                   5000
+hashed patient_id  shard_a               50576                     53069                   2493
+hashed patient_id  shard_b               51459                     53966                   2507
+  38956.7 ms  [chk] PASS: with a ranged time key all 5,000 new writes went to one shard (shard_a 0, shard_b 5000)
+  38956.8 ms  [chk] PASS: with a hashed key the same writes were shared (shard_a 2493, shard_b 2507)
+
+=== 5. One shard down
+  40238.2 ms  [sys] docker compose stop shard_b
+  40242.6 ms  [shd] patient 9 (on shard_a): 1 visits returned
+  55705.4 ms  [shd] count of all encounters: OperationFailure: Could not find host matching read preference { mode: "primary" } for set shard_b, full error: {'ok': 0.0, 'errmsg': 'Could not find host matching read
+  71053.8 ms  [shd] the same query with allowPartialResults: 53069 encounters, from shard_a only
+  71053.8 ms  [chk] PASS: queries for data on the healthy shard still work
+  71053.8 ms  [chk] PASS: a query that needs every shard fails (OperationFailure)
+  71053.8 ms  [chk] PASS: allowPartialResults returns the healthy shard's share
+  74535.6 ms  [sys] docker compose start shard_b: primary again after 3.1 s
+  74673.5 ms  [chk] PASS: with both shards back the whole collection is readable (107035 encounters)
+
+check                                                            result    detail
+---------------------------------------------------------------  --------  ----------------------------
+both shards joined the cluster                                   PASS
+a hashed patient_id spreads encounters evenly                    PASS      shard_a 50576, shard_b 51459
+a query on the shard key is routed to one shard                  PASS
+a query without the shard key is sent to every shard and merged  PASS
+with a ranged time key all 5,000 new writes went to one shard    PASS      shard_a 0, shard_b 5000
+with a hashed key the same writes were shared                    PASS      shard_a 2493, shard_b 2507
+queries for data on the healthy shard still work                 PASS
+a query that needs every shard fails                             PASS      OperationFailure
+allowPartialResults returns the healthy shard's share            PASS
+with both shards back the whole collection is readable           PASS      107035 encounters
+
+checks: 10 | passed: 10 | failed: 0

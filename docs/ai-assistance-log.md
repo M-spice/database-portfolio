@@ -108,3 +108,24 @@ Each entry below separates what I decided from recommendations the assistant mad
   - Per-encounter subqueries in the loader would have scanned unindexed child tables; the loader was written with set-based aggregation instead.
   - The graph's starting clinician could have been an internal-medicine doctor rather than a GP; the selection was corrected.
   - The suitability analysis was trimmed from 825 to 798 words to stay within its limit.
+
+## Phase 10: Portfolio 5, distributed and cloud database exercise (2026-11-14)
+
+**My decisions:** I chose to do both a design discussion and two working setups, PostgreSQL streaming replication with a failover and a sharded MongoDB cluster, rather than either one alone, and I approved the Portfolio 5 plan.
+
+**Design decisions (approved at review):** Measuring the failover outage as the longest gap between two acknowledged writes rather than from timestamps around the kill. Simulating failures by stopping or killing containers rather than pausing them, since a paused process still receives buffered data when it resumes. Rebuilding both clusters from empty volumes on every run.
+
+**AI assistance used:** The assistant generated the two Compose files, the primary's initialisation script and the standbys' start-up script, the replication and sharding demonstrations and the pipeline, and drafted `architecture.md`, `setup.md` and the README. During implementation it made these choices beyond the approved plan: a small `appointment_request` table on the replication cluster rather than the full schema; a separate password for the replication role, kept in `.env` with the other secrets; loading every seventh encounter (102,035) into the sharded cluster rather than all of them, to keep the clusters within the laptop's memory; splitting the ranged collection at 1 November 2025 and moving the older chunk so each shard held one range before the new writes arrived; and setting `synchronous_standby_names` with `ALTER SYSTEM` and keeping 256 MB of WAL on the primary, for the reasons below.
+
+**How it was verified:**
+
+- The pipeline ran both steps in 2.6 minutes, each from empty volumes.
+- Replication and failover passed 16 of 16 checks, including the check that every one of the 1,008 writes acknowledged under synchronous commit was on the new primary.
+- The sharded cluster passed 10 of 10 checks.
+- Every figure in `architecture.md` and the README was checked against the two evidence files.
+- Problems found and fixed:
+  - The primary hung on its first start. With `synchronous_standby_names` on the command line, the image's own initialisation waited for a standby that did not exist yet. The setting moved to `ALTER SYSTEM` in the initialisation script.
+  - When both standbys cloned the primary at once, one failed with "requested WAL segment … has already been removed". The primary now keeps 256 MB of WAL, and two further rebuilds from empty volumes succeeded.
+  - The first failover run hung for over ten minutes. `pg_basebackup` had copied the primary's `synchronous_standby_names`, so the promoted standby waited for a synchronous partner of its own. The run was stopped, the start-up script now clears the setting after cloning, and the writer has a statement timeout, TCP timeouts and a bounded wait, with a check that it finished.
+  - A log line labelled the asynchronous standby "sync", because the label was cut from the end of its name. The labels are now an explicit mapping, and the evidence was regenerated.
+  - `architecture.md` was trimmed from 1,571 to 1,377 words to stay within its limit.

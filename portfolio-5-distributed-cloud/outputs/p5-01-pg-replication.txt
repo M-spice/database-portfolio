@@ -1,0 +1,103 @@
+==============================================================================
+Title:      PostgreSQL primary with synchronous and asynchronous standbys: replication, consistency, failover
+Captured:   2026-11-14 17:10:02 WAT (Africa/Lagos) | 2026-11-14 16:10:02 UTC
+Command:    <repository root>\.venv\Scripts\python.exe <repository root>\portfolio-5-distributed-cloud\demos\replication.py
+Directory:  <repository root>/portfolio-5-distributed-cloud/demos
+Exit code:  0
+Duration:   27.53 s
+Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
+Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
+Server:     none: not applicable
+==============================================================================
+
+=== 1. Topology and replication of a committed write
+     56.4 ms  [pri] PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+standby        address       state      sync_state      priority
+-------------  ------------  ---------  ------------  ----------
+standby_async  192.168.32.4  streaming  async                  0
+standby_sync   192.168.32.3  streaming  sync                   1
+    180.2 ms  [pri] request 1 committed in 106.2 ms (waits for standby_sync to flush)
+    288.0 ms  [syn] request 1 visible after 10.2 ms
+    288.0 ms  [asy] request 1 visible after 6.1 ms
+standby        write_lag       flush_lag       replay_lag
+-------------  --------------  --------------  --------------
+standby_async  0:00:00.051441  0:00:00.055567  0:00:00.056141
+standby_sync   0:00:00.051887  0:00:00.055472  0:00:00.056318
+    329.7 ms  [chk] PASS: standby_sync is the synchronous standby and standby_async the asynchronous one
+    329.7 ms  [chk] PASS: the committed write reached both standbys
+
+=== 2. Standbys are read-only
+    367.6 ms  [syn] ERROR 25006: cannot execute INSERT in a read-only transaction
+    367.8 ms  [chk] PASS: a write on a standby is refused (25006 read_only_sql_transaction)
+
+=== 3. A stale read: replay paused on the asynchronous standby
+    460.5 ms  [asy] pg_wal_replay_pause(): the standby still receives WAL but stops applying it
+    471.8 ms  [pri] a receptionist books request 2 on the primary and the app reads it back from the reporting replica
+    482.0 ms  [asy] request 2 on standby_async: 0 row(s): the patient's own booking is missing
+    541.0 ms  [asy] pg_wal_replay_resume()
+    601.7 ms  [chk] PASS: the asynchronous standby served a stale read (read-your-writes violated)
+    601.7 ms  [chk] PASS: the synchronous standby already had the row
+    601.8 ms  [chk] PASS: after replay resumed, the asynchronous standby caught up
+
+=== 4. What synchronous replication costs: commit latency by synchronous_commit (300 commits, 3 runs each)
+   2468.1 ms  [pri] synchronous_commit = off: median commit 1.734 ms
+   6464.2 ms  [pri] synchronous_commit = local: median commit 3.600 ms
+  10310.0 ms  [pri] synchronous_commit = on: median commit 4.033 ms
+  14284.3 ms  [pri] synchronous_commit = remote_apply: median commit 4.375 ms
+synchronous_commit      median ms per commit  range of run medians
+--------------------  ----------------------  ----------------------
+off                                    1.734  1.370–1.841
+local                                  3.6    3.134–4.163
+on                                     4.033  3.803–4.443
+remote_apply                           4.375  3.923–4.493
+  14286.7 ms  [chk] PASS: waiting for the synchronous standby makes commits slower than not waiting for the disk at all (off 1.734 ms, on 4.033 ms, remote_apply 4.375 ms)
+
+=== 5. CP behaviour: the synchronous standby is stopped, so commits wait
+  15149.4 ms  [sys] docker compose stop pg_standby_sync
+  15328.2 ms  [sys] the commit of request 3603 is waiting: pid 132, wait_event SyncRep
+  17328.8 ms  [sys] after 2 s the commit is still waiting; the operator cancels it with pg_cancel_backend
+  17332.3 ms  [pri] WARNING: canceling wait for synchronous replication due to user request DETAIL: The transaction has already committed locally, but might not have been replicated to the standby.
+  17361.4 ms  [chk] PASS: with the synchronous standby down, the commit waited (wait_event SyncRep)
+  17361.5 ms  [chk] PASS: cancelling the wait warns that the transaction committed locally but may not be replicated
+  17361.5 ms  [chk] PASS: the row is on the primary although the client never received a clean acknowledgement
+  19321.8 ms  [sys] docker compose start pg_standby_sync: streaming again (sync)
+  19409.9 ms  [chk] PASS: once the standby is back it receives the row
+
+=== 6. Failover: the primary is killed while a client keeps writing; standby_sync is promoted
+  22274.7 ms  [sys] docker compose kill pg_primary after 463 acknowledged writes
+  23303.6 ms  [syn] SELECT pg_promote(wait => true)
+  23411.5 ms  [syn] promoted: True; pg_is_in_recovery() = False
+  25414.0 ms  [chk] PASS: the writer finished instead of hanging on a dead connection
+  25414.5 ms  [sys] 463 writes acknowledged by the old primary, 545 by the new one; 7 failed attempts while no primary accepted writes
+  25414.5 ms  [sys] longest gap between two acknowledged writes: 2.61 s (kill to promotion 1.94 s, including the 1 s taken to decide)
+  25437.6 ms  [syn] timeline before failover 00000001, after 00000002
+  25437.7 ms  [chk] PASS: the client wrote through the failover: acknowledged writes on both sides of it
+  25437.7 ms  [chk] PASS: no write acknowledged under synchronous commit was lost (1008 acknowledged, 0 missing)
+  25437.8 ms  [chk] PASS: the promoted standby started a new timeline (00000001 -> 00000002)
+  25437.8 ms  [chk] PASS: the outage is measured from acknowledged writes and is finite (2.61 s)
+SERVICE            STATE     STATUS
+pg_primary         exited    Exited (137) 3 seconds ago
+pg_standby_async   running   Up 35 seconds (healthy)
+pg_standby_sync    running   Up 7 seconds (healthy)
+
+
+check                                                                                          result    detail
+---------------------------------------------------------------------------------------------  --------  ------------------------------------------------
+standby_sync is the synchronous standby and standby_async the asynchronous one                 PASS
+the committed write reached both standbys                                                      PASS
+a write on a standby is refused (25006 read_only_sql_transaction)                              PASS
+the asynchronous standby served a stale read (read-your-writes violated)                       PASS
+the synchronous standby already had the row                                                    PASS
+after replay resumed, the asynchronous standby caught up                                       PASS
+waiting for the synchronous standby makes commits slower than not waiting for the disk at all  PASS      off 1.734 ms, on 4.033 ms, remote_apply 4.375 ms
+with the synchronous standby down, the commit waited (wait_event SyncRep)                      PASS
+cancelling the wait warns that the transaction committed locally but may not be replicated     PASS
+the row is on the primary although the client never received a clean acknowledgement           PASS
+once the standby is back it receives the row                                                   PASS
+the writer finished instead of hanging on a dead connection                                    PASS
+the client wrote through the failover: acknowledged writes on both sides of it                 PASS
+no write acknowledged under synchronous commit was lost                                        PASS      1008 acknowledged, 0 missing
+the promoted standby started a new timeline                                                    PASS      00000001 -> 00000002
+the outage is measured from acknowledged writes and is finite                                  PASS      2.61 s
+
+checks: 16 | passed: 16 | failed: 0
