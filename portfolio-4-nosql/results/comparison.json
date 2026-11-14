@@ -1,0 +1,90 @@
+[
+  [
+    "M01",
+    "PROJECTION_SIMPLE > COLLSCAN",
+    "PROJECTION_SIMPLE > FETCH > IXSCAN",
+    60012,
+    1,
+    0,
+    1,
+    109.9,
+    3.3
+  ],
+  [
+    "M02",
+    "PROJECTION_DEFAULT > SORT > COLLSCAN",
+    "LIMIT > PROJECTION_DEFAULT > FETCH > IXSCAN",
+    714247,
+    20,
+    0,
+    20,
+    1428.7,
+    6.6
+  ],
+  [
+    "M05",
+    "PROJECTION_DEFAULT > COLLSCAN",
+    "PROJECTION_DEFAULT > FETCH > IXSCAN",
+    714247,
+    349504,
+    0,
+    349504,
+    5130.9,
+    3361.5
+  ],
+  [
+    "M07",
+    "PROJECTION_DEFAULT > COLLSCAN",
+    "PROJECTION_DEFAULT > FETCH > IXSCAN",
+    241675,
+    10018,
+    0,
+    10018,
+    427.6,
+    57.5
+  ],
+  [
+    "M08",
+    "COLLSCAN",
+    "PROJECTION_SIMPLE > FETCH > IXSCAN",
+    714247,
+    350778,
+    0,
+    350778,
+    2525.2,
+    1943.9
+  ],
+  [
+    "M09",
+    "PROJECTION_SIMPLE > COLLSCAN",
+    "PROJECTION_SIMPLE > FETCH > IXSCAN",
+    714597,
+    29914,
+    350,
+    29914,
+    1246.7,
+    182.7
+  ],
+  [
+    "N01",
+    "IDHACK",
+    "IDHACK",
+    1,
+    1,
+    1,
+    1,
+    2.4,
+    2.7
+  ],
+  [
+    "N02",
+    "PROJECTION_SIMPLE > COLLSCAN",
+    "PROJECTION_SIMPLE > FETCH > IXSCAN",
+    714247,
+    4149,
+    0,
+    4149,
+    1929.1,
+    17.0
+  ]
+]

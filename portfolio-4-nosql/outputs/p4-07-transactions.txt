@@ -1,0 +1,57 @@
+==============================================================================
+Title:      Multi-document transactions and write conflicts
+Captured:   2026-11-14 16:26:58 WAT (Africa/Lagos) | 2026-11-14 15:26:58 UTC
+Command:    <repository root>\.venv\Scripts\python.exe <repository root>\portfolio-4-nosql\mongo\transactions.py
+Directory:  <repository root>/portfolio-4-nosql/mongo
+Exit code:  0
+Duration:   3.30 s
+Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
+Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
+Server:     mongo: db version v7.0.45
+==============================================================================
+
+=== 1. Dispense and invoice in one transaction
+    204.2 ms  [  A] took 12 tablets off LAG-IKJ|DRG-0002
+    208.1 ms  [  A] inserted INV-90000001 for 12 tablets
+    213.4 ms  [  A] commitTransaction
+    220.7 ms  [chk] PASS: stock fell by 12 and the invoice exists, together (stock 2407 -> 2395)
+
+=== 2. A dispense larger than the shelf: the transaction aborts and nothing is kept
+    322.6 ms  [  A] inserted INV-90000002 for 2396 tablets
+    325.1 ms  [  A] stock update matched no document: fewer than 2396 tablets on the shelf
+    327.3 ms  [  A] abortTransaction
+    398.4 ms  [chk] PASS: the invoice written earlier in the transaction is gone
+    403.6 ms  [chk] PASS: stock is unchanged (2395)
+
+=== 3. The same failure without a transaction leaves the data inconsistent
+    416.2 ms  [  A] inserted INV-90000002 for 2396 tablets (no transaction: committed at once)
+    419.1 ms  [  A] stock update refused by the validator (code 121): the shelf cannot go negative
+    423.7 ms  [chk] PASS: without a transaction the invoice survives although nothing was dispensed (INV-90000002 billed 2396 tablets never dispensed)
+    428.5 ms  [sys] removed INV-90000002 by hand to restore consistency
+
+=== 4. Two transactions write the same stock document: MongoDB fails the second at once
+    433.3 ms  [  A] took 1 tablet (transaction open)
+    436.5 ms  [  B] WriteConflict after 3 ms; labels ['TransientTransactionError']
+    445.6 ms  [  A] commitTransaction
+    445.6 ms  [chk] PASS: the second writer fails immediately with WriteConflict instead of waiting
+    447.8 ms  [chk] PASS: only the first transaction's change is kept
+
+=== 5. with_transaction retries a transient conflict until it succeeds
+    451.6 ms  [  A] took 1 tablet and holds the transaction open for 0.5 s
+    957.6 ms  [  A] commitTransaction
+   1115.1 ms  [  B] with_transaction succeeded after 11 attempts
+   1115.4 ms  [chk] PASS: the callback was retried after the conflict (11 attempts)
+   1121.1 ms  [chk] PASS: both tablets were taken, once each (stock 2394 -> 2392)
+
+check                                                                      result    detail
+-------------------------------------------------------------------------  --------  ------------------------------------------------
+stock fell by 12 and the invoice exists, together                          PASS      stock 2407 -> 2395
+the invoice written earlier in the transaction is gone                     PASS
+stock is unchanged                                                         PASS      2395
+without a transaction the invoice survives although nothing was dispensed  PASS      INV-90000002 billed 2396 tablets never dispensed
+the second writer fails immediately with WriteConflict instead of waiting  PASS
+only the first transaction's change is kept                                PASS
+the callback was retried after the conflict                                PASS      11 attempts
+both tablets were taken, once each                                         PASS      stock 2394 -> 2392
+
+checks: 8 | passed: 8 | failed: 0

@@ -1,0 +1,288 @@
+{
+ "explainVersion": "1",
+ "stages": [
+  {
+   "$cursor": {
+    "queryPlanner": {
+     "namespace": "itoju.encounters",
+     "indexFilterSet": false,
+     "parsedQuery": {
+      "$and": [
+       {
+        "started_at": {
+         "$lt": "2026-11-13 23:00:00"
+        }
+       },
+       {
+        "started_at": {
+         "$gte": "2026-10-14 23:00:00"
+        }
+       }
+      ]
+     },
+     "queryHash": "707F8A30",
+     "planCacheKey": "642EF2A4",
+     "optimizationTimeMillis": 0,
+     "maxIndexedOrSolutionsReached": false,
+     "maxIndexedAndSolutionsReached": false,
+     "maxScansToExplodeReached": false,
+     "winningPlan": {
+      "stage": "PROJECTION_SIMPLE",
+      "transformBy": {
+       "patient_id": 1,
+       "_id": 0
+      },
+      "inputStage": {
+       "stage": "FETCH",
+       "inputStage": {
+        "stage": "IXSCAN",
+        "keyPattern": {
+         "started_at": 1
+        },
+        "indexName": "encounters_started_ix",
+        "isMultiKey": false,
+        "multiKeyPaths": {
+         "started_at": []
+        },
+        "isUnique": false,
+        "isSparse": false,
+        "isPartial": false,
+        "indexVersion": 2,
+        "direction": "forward",
+        "indexBounds": {
+         "started_at": [
+          "[new Date(1792018800000), new Date(1794610800000))"
+         ]
+        }
+       }
+      }
+     }
+    },
+    "executionStats": {
+     "executionSuccess": true,
+     "nReturned": 29564,
+     "executionTimeMillis": 140,
+     "totalKeysExamined": 29564,
+     "totalDocsExamined": 29564,
+     "executionStages": {
+      "stage": "PROJECTION_SIMPLE",
+      "nReturned": 29564,
+      "executionTimeMillisEstimate": 10,
+      "works": 29565,
+      "advanced": 29564,
+      "needTime": 0,
+      "needYield": 0,
+      "saveState": 30,
+      "restoreState": 30,
+      "isEOF": 1,
+      "transformBy": {
+       "patient_id": 1,
+       "_id": 0
+      },
+      "inputStage": {
+       "stage": "FETCH",
+       "nReturned": 29564,
+       "executionTimeMillisEstimate": 10,
+       "works": 29565,
+       "advanced": 29564,
+       "needTime": 0,
+       "needYield": 0,
+       "saveState": 30,
+       "restoreState": 30,
+       "isEOF": 1,
+       "docsExamined": 29564,
+       "alreadyHasObj": 0,
+       "inputStage": {
+        "stage": "IXSCAN",
+        "nReturned": 29564,
+        "executionTimeMillisEstimate": 6,
+        "works": 29565,
+        "advanced": 29564,
+        "needTime": 0,
+        "needYield": 0,
+        "saveState": 30,
+        "restoreState": 30,
+        "isEOF": 1,
+        "keyPattern": {
+         "started_at": 1
+        },
+        "indexName": "encounters_started_ix",
+        "isMultiKey": false,
+        "multiKeyPaths": {
+         "started_at": []
+        },
+        "isUnique": false,
+        "isSparse": false,
+        "isPartial": false,
+        "indexVersion": 2,
+        "direction": "forward",
+        "indexBounds": {
+         "started_at": [
+          "[new Date(1792018800000), new Date(1794610800000))"
+         ]
+        },
+        "keysExamined": 29564,
+        "seeks": 1,
+        "dupsTested": 0,
+        "dupsDropped": 0
+       }
+      }
+     }
+    }
+   },
+   "nReturned": 29564,
+   "executionTimeMillisEstimate": 55
+  },
+  {
+   "$group": {
+    "_id": "$patient_id",
+    "visits": {
+     "$sum": {
+      "$const": 1
+     }
+    }
+   },
+   "maxAccumulatorMemoryUsageBytes": {
+    "visits": 1788960
+   },
+   "totalOutputDataSizeBytes": 4565575,
+   "usedDisk": false,
+   "spills": 0,
+   "spilledDataStorageSize": 0,
+   "numBytesSpilledEstimate": 0,
+   "spilledRecords": 0,
+   "nReturned": 18635,
+   "executionTimeMillisEstimate": 75
+  },
+  {
+   "$match": {
+    "visits": {
+     "$gte": 5
+    }
+   },
+   "nReturned": 350,
+   "executionTimeMillisEstimate": 75
+  },
+  {
+   "$lookup": {
+    "from": "patients",
+    "as": "p",
+    "localField": "_id",
+    "foreignField": "_id"
+   },
+   "totalDocsExamined": 350,
+   "totalKeysExamined": 350,
+   "collectionScans": 0,
+   "indexesUsed": [
+    "_id_"
+   ],
+   "nReturned": 350,
+   "executionTimeMillisEstimate": 136
+  },
+  {
+   "$project": {
+    "_id": true,
+    "visits": true,
+    "hospital_no": {
+     "$first": [
+      "$p.hospital_no"
+     ]
+    }
+   },
+   "nReturned": 350,
+   "executionTimeMillisEstimate": 136
+  },
+  {
+   "$sort": {
+    "sortKey": {
+     "visits": -1,
+     "hospital_no": 1
+    }
+   },
+   "totalDataSizeSortedBytesEstimate": 124950,
+   "usedDisk": false,
+   "spills": 0,
+   "spilledDataStorageSize": 0,
+   "nReturned": 350,
+   "executionTimeMillisEstimate": 136
+  }
+ ],
+ "serverInfo": {
+  "host": "0ef5a8f553a2",
+  "port": 37017,
+  "version": "7.0.45",
+  "gitVersion": "a52313e13ab55c9bddf7c3ff91dab286fa381796"
+ },
+ "serverParameters": {
+  "internalQueryFacetBufferSizeBytes": 104857600,
+  "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+  "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+  "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+  "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+  "internalQueryProhibitBlockingMergeOnMongoS": 0,
+  "internalQueryMaxAddToSetBytes": 104857600,
+  "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+  "internalQueryFrameworkControl": "forceClassicEngine"
+ },
+ "command": {
+  "aggregate": "encounters",
+  "pipeline": [
+   {
+    "$match": {
+     "started_at": {
+      "$gte": "2026-10-14 23:00:00",
+      "$lt": "2026-11-13 23:00:00"
+     }
+    }
+   },
+   {
+    "$group": {
+     "_id": "$patient_id",
+     "visits": {
+      "$sum": 1
+     }
+    }
+   },
+   {
+    "$match": {
+     "visits": {
+      "$gte": 5
+     }
+    }
+   },
+   {
+    "$lookup": {
+     "from": "patients",
+     "localField": "_id",
+     "foreignField": "_id",
+     "as": "p"
+    }
+   },
+   {
+    "$project": {
+     "hospital_no": {
+      "$first": "$p.hospital_no"
+     },
+     "visits": 1
+    }
+   },
+   {
+    "$sort": {
+     "visits": -1,
+     "hospital_no": 1
+    }
+   }
+  ],
+  "cursor": {},
+  "$db": "itoju"
+ },
+ "ok": 1.0,
+ "$clusterTime": {
+  "clusterTime": "Timestamp(1794669998, 1)",
+  "signature": {
+   "hash": "b'\\xc9v`x\\xbc\\xea\\xb9\\xf1SZL\\xa6\\xbe\\xdep\\xec\\x9a\\xfe\\xbd\\x07'",
+   "keyId": 7707983703674191878
+  }
+ },
+ "operationTime": "Timestamp(1794669998, 1)"
+}

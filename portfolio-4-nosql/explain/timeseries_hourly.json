@@ -1,0 +1,341 @@
+{
+ "explainVersion": "1",
+ "stages": [
+  {
+   "$cursor": {
+    "queryPlanner": {
+     "namespace": "itoju.system.buckets.bp_readings",
+     "indexFilterSet": false,
+     "parsedQuery": {
+      "$and": [
+       {
+        "meta.patient_id": {
+         "$eq": 58
+        }
+       },
+       {
+        "_id": {
+         "$lt": "6af796700000000000000000"
+        }
+       },
+       {
+        "_id": {
+         "$gte": "6af4f3700000000000000000"
+        }
+       },
+       {
+        "control.max.taken_at": {
+         "$_internalExprGte": "2026-11-12 23:00:00"
+        }
+       },
+       {
+        "control.min.taken_at": {
+         "$_internalExprGte": "2026-11-11 23:00:00"
+        }
+       },
+       {
+        "control.max.taken_at": {
+         "$_internalExprLt": "2026-11-14 23:00:00"
+        }
+       },
+       {
+        "control.min.taken_at": {
+         "$_internalExprLt": "2026-11-13 23:00:00"
+        }
+       }
+      ]
+     },
+     "queryHash": "04CBE2E9",
+     "planCacheKey": "B72963DE",
+     "optimizationTimeMillis": 0,
+     "maxIndexedOrSolutionsReached": false,
+     "maxIndexedAndSolutionsReached": false,
+     "maxScansToExplodeReached": false,
+     "winningPlan": {
+      "stage": "CLUSTERED_IXSCAN",
+      "filter": {
+       "$and": [
+        {
+         "meta.patient_id": {
+          "$eq": 58
+         }
+        },
+        {
+         "_id": {
+          "$lt": "6af796700000000000000000"
+         }
+        },
+        {
+         "_id": {
+          "$gte": "6af4f3700000000000000000"
+         }
+        },
+        {
+         "control.max.taken_at": {
+          "$_internalExprGte": "2026-11-12 23:00:00"
+         }
+        },
+        {
+         "control.min.taken_at": {
+          "$_internalExprGte": "2026-11-11 23:00:00"
+         }
+        },
+        {
+         "control.max.taken_at": {
+          "$_internalExprLt": "2026-11-14 23:00:00"
+         }
+        },
+        {
+         "control.min.taken_at": {
+          "$_internalExprLt": "2026-11-13 23:00:00"
+         }
+        }
+       ]
+      },
+      "direction": "forward",
+      "minRecord": "6af4f3700000000000000000",
+      "maxRecord": "6af796700000000000000000"
+     },
+     "rejectedPlans": []
+    },
+    "executionStats": {
+     "executionSuccess": true,
+     "nReturned": 1,
+     "executionTimeMillis": 1,
+     "totalKeysExamined": 0,
+     "totalDocsExamined": 201,
+     "executionStages": {
+      "stage": "CLUSTERED_IXSCAN",
+      "filter": {
+       "$and": [
+        {
+         "meta.patient_id": {
+          "$eq": 58
+         }
+        },
+        {
+         "_id": {
+          "$lt": "6af796700000000000000000"
+         }
+        },
+        {
+         "_id": {
+          "$gte": "6af4f3700000000000000000"
+         }
+        },
+        {
+         "control.max.taken_at": {
+          "$_internalExprGte": "2026-11-12 23:00:00"
+         }
+        },
+        {
+         "control.min.taken_at": {
+          "$_internalExprGte": "2026-11-11 23:00:00"
+         }
+        },
+        {
+         "control.max.taken_at": {
+          "$_internalExprLt": "2026-11-14 23:00:00"
+         }
+        },
+        {
+         "control.min.taken_at": {
+          "$_internalExprLt": "2026-11-13 23:00:00"
+         }
+        }
+       ]
+      },
+      "nReturned": 1,
+      "executionTimeMillisEstimate": 0,
+      "works": 202,
+      "advanced": 1,
+      "needTime": 200,
+      "needYield": 0,
+      "saveState": 1,
+      "restoreState": 1,
+      "isEOF": 1,
+      "direction": "forward",
+      "minRecord": "6af4f3700000000000000000",
+      "maxRecord": "6af796700000000000000000",
+      "docsExamined": 201
+     }
+    }
+   },
+   "nReturned": 1,
+   "executionTimeMillisEstimate": 0
+  },
+  {
+   "$_internalUnpackBucket": {
+    "include": [
+     "diastolic",
+     "systolic",
+     "taken_at"
+    ],
+    "timeField": "taken_at",
+    "metaField": "meta",
+    "bucketMaxSpanSeconds": 86400,
+    "assumeNoMixedSchemaData": true,
+    "wholeBucketFilter": {
+     "$and": [
+      {
+       "control.min.taken_at": {
+        "$gte": "2026-11-12 23:00:00"
+       }
+      },
+      {
+       "control.max.taken_at": {
+        "$lt": "2026-11-13 23:00:00"
+       }
+      }
+     ]
+    },
+    "eventFilter": {
+     "$and": [
+      {
+       "taken_at": {
+        "$gte": "2026-11-12 23:00:00"
+       }
+      },
+      {
+       "taken_at": {
+        "$lt": "2026-11-13 23:00:00"
+       }
+      }
+     ]
+    }
+   },
+   "nReturned": 18,
+   "executionTimeMillisEstimate": 0
+  },
+  {
+   "$group": {
+    "_id": {
+     "$dateTrunc": {
+      "date": "$taken_at",
+      "unit": {
+       "$const": "hour"
+      },
+      "timezone": {
+       "$const": "Africa/Lagos"
+      }
+     }
+    },
+    "systolic": {
+     "$avg": "$systolic"
+    },
+    "diastolic": {
+     "$avg": "$diastolic"
+    },
+    "readings": {
+     "$sum": {
+      "$const": 1
+     }
+    }
+   },
+   "maxAccumulatorMemoryUsageBytes": {
+    "systolic": 1872,
+    "diastolic": 1872,
+    "readings": 1728
+   },
+   "totalOutputDataSizeBytes": 5562,
+   "usedDisk": false,
+   "spills": 0,
+   "spilledDataStorageSize": 0,
+   "numBytesSpilledEstimate": 0,
+   "spilledRecords": 0,
+   "nReturned": 18,
+   "executionTimeMillisEstimate": 0
+  },
+  {
+   "$sort": {
+    "sortKey": {
+     "_id": 1
+    }
+   },
+   "totalDataSizeSortedBytesEstimate": 5706,
+   "usedDisk": false,
+   "spills": 0,
+   "spilledDataStorageSize": 0,
+   "nReturned": 18,
+   "executionTimeMillisEstimate": 0
+  }
+ ],
+ "serverInfo": {
+  "host": "0ef5a8f553a2",
+  "port": 37017,
+  "version": "7.0.45",
+  "gitVersion": "a52313e13ab55c9bddf7c3ff91dab286fa381796"
+ },
+ "serverParameters": {
+  "internalQueryFacetBufferSizeBytes": 104857600,
+  "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+  "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+  "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+  "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+  "internalQueryProhibitBlockingMergeOnMongoS": 0,
+  "internalQueryMaxAddToSetBytes": 104857600,
+  "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+  "internalQueryFrameworkControl": "forceClassicEngine"
+ },
+ "command": {
+  "aggregate": "system.buckets.bp_readings",
+  "pipeline": [
+   {
+    "$_internalUnpackBucket": {
+     "timeField": "taken_at",
+     "metaField": "meta",
+     "bucketMaxSpanSeconds": 86400,
+     "assumeNoMixedSchemaData": true,
+     "usesExtendedRange": false
+    }
+   },
+   {
+    "$match": {
+     "meta.patient_id": 58,
+     "taken_at": {
+      "$gte": "2026-11-12 23:00:00",
+      "$lt": "2026-11-13 23:00:00"
+     }
+    }
+   },
+   {
+    "$group": {
+     "_id": {
+      "$dateTrunc": {
+       "date": "$taken_at",
+       "unit": "hour",
+       "timezone": "Africa/Lagos"
+      }
+     },
+     "systolic": {
+      "$avg": "$systolic"
+     },
+     "diastolic": {
+      "$avg": "$diastolic"
+     },
+     "readings": {
+      "$sum": 1
+     }
+    }
+   },
+   {
+    "$sort": {
+     "_id": 1
+    }
+   }
+  ],
+  "cursor": {},
+  "collation": {
+   "locale": "simple"
+  }
+ },
+ "ok": 1.0,
+ "$clusterTime": {
+  "clusterTime": "Timestamp(1794670012, 2700)",
+  "signature": {
+   "hash": "b'.\\xe3\\x12\\xea\\x9d\\xcc$\\xe8\\xeb\\x83\\xc7\\xa2\\xb8\\x9d\\xb1\\xf2\\xe0\\xf4\\xb0\\x16'",
+   "keyId": 7707983703674191878
+  }
+ },
+ "operationTime": "Timestamp(1794670012, 2700)"
+}

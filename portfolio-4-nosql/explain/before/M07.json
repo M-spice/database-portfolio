@@ -1,0 +1,300 @@
+{
+ "explainVersion": "1",
+ "stages": [
+  {
+   "$cursor": {
+    "queryPlanner": {
+     "namespace": "itoju.lab_results",
+     "indexFilterSet": false,
+     "parsedQuery": {
+      "$and": [
+       {
+        "supersedes": {
+         "$eq": null
+        }
+       },
+       {
+        "ordered_at": {
+         "$lt": "2026-11-13 23:00:00"
+        }
+       },
+       {
+        "ordered_at": {
+         "$gte": "2026-10-14 23:00:00"
+        }
+       }
+      ]
+     },
+     "queryHash": "3D322808",
+     "planCacheKey": "3D322808",
+     "optimizationTimeMillis": 0,
+     "maxIndexedOrSolutionsReached": false,
+     "maxIndexedAndSolutionsReached": false,
+     "maxScansToExplodeReached": false,
+     "winningPlan": {
+      "stage": "PROJECTION_DEFAULT",
+      "transformBy": {
+       "_id": true,
+       "code": "$test.code",
+       "elapsed": {
+        "$subtract": [
+         "$recorded_at",
+         "$ordered_at"
+        ]
+       },
+       "target": {
+        "$multiply": [
+         "$test.target_hours",
+         {
+          "$const": 3600000
+         }
+        ]
+       }
+      },
+      "inputStage": {
+       "stage": "COLLSCAN",
+       "filter": {
+        "$and": [
+         {
+          "supersedes": {
+           "$eq": null
+          }
+         },
+         {
+          "ordered_at": {
+           "$lt": "2026-11-13 23:00:00"
+          }
+         },
+         {
+          "ordered_at": {
+           "$gte": "2026-10-14 23:00:00"
+          }
+         }
+        ]
+       },
+       "direction": "forward"
+      }
+     }
+    },
+    "executionStats": {
+     "executionSuccess": true,
+     "nReturned": 9981,
+     "executionTimeMillis": 1014,
+     "totalKeysExamined": 0,
+     "totalDocsExamined": 241675,
+     "executionStages": {
+      "stage": "PROJECTION_DEFAULT",
+      "nReturned": 9981,
+      "executionTimeMillisEstimate": 300,
+      "works": 241676,
+      "advanced": 9981,
+      "needTime": 231694,
+      "needYield": 0,
+      "saveState": 243,
+      "restoreState": 243,
+      "isEOF": 1,
+      "transformBy": {
+       "_id": true,
+       "code": "$test.code",
+       "elapsed": {
+        "$subtract": [
+         "$recorded_at",
+         "$ordered_at"
+        ]
+       },
+       "target": {
+        "$multiply": [
+         "$test.target_hours",
+         {
+          "$const": 3600000
+         }
+        ]
+       }
+      },
+      "inputStage": {
+       "stage": "COLLSCAN",
+       "filter": {
+        "$and": [
+         {
+          "supersedes": {
+           "$eq": null
+          }
+         },
+         {
+          "ordered_at": {
+           "$lt": "2026-11-13 23:00:00"
+          }
+         },
+         {
+          "ordered_at": {
+           "$gte": "2026-10-14 23:00:00"
+          }
+         }
+        ]
+       },
+       "nReturned": 9981,
+       "executionTimeMillisEstimate": 258,
+       "works": 241676,
+       "advanced": 9981,
+       "needTime": 231694,
+       "needYield": 0,
+       "saveState": 243,
+       "restoreState": 243,
+       "isEOF": 1,
+       "direction": "forward",
+       "docsExamined": 241675
+      }
+     }
+    }
+   },
+   "nReturned": 9981,
+   "executionTimeMillisEstimate": 989
+  },
+  {
+   "$group": {
+    "_id": "$code",
+    "results": {
+     "$sum": {
+      "$const": 1
+     }
+    },
+    "avg_ms": {
+     "$avg": "$elapsed"
+    },
+    "late": {
+     "$sum": {
+      "$cond": [
+       {
+        "$gt": [
+         "$elapsed",
+         "$target"
+        ]
+       },
+       {
+        "$const": 1
+       },
+       {
+        "$const": 0
+       }
+      ]
+     }
+    }
+   },
+   "maxAccumulatorMemoryUsageBytes": {
+    "results": 768,
+    "avg_ms": 832,
+    "late": 768
+   },
+   "totalOutputDataSizeBytes": 2472,
+   "usedDisk": false,
+   "spills": 0,
+   "spilledDataStorageSize": 0,
+   "numBytesSpilledEstimate": 0,
+   "spilledRecords": 0,
+   "nReturned": 8,
+   "executionTimeMillisEstimate": 1010
+  },
+  {
+   "$sort": {
+    "sortKey": {
+     "_id": 1
+    }
+   },
+   "totalDataSizeSortedBytesEstimate": 2536,
+   "usedDisk": false,
+   "spills": 0,
+   "spilledDataStorageSize": 0,
+   "nReturned": 8,
+   "executionTimeMillisEstimate": 1010
+  }
+ ],
+ "serverInfo": {
+  "host": "0ef5a8f553a2",
+  "port": 37017,
+  "version": "7.0.45",
+  "gitVersion": "a52313e13ab55c9bddf7c3ff91dab286fa381796"
+ },
+ "serverParameters": {
+  "internalQueryFacetBufferSizeBytes": 104857600,
+  "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+  "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+  "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+  "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+  "internalQueryProhibitBlockingMergeOnMongoS": 0,
+  "internalQueryMaxAddToSetBytes": 104857600,
+  "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+  "internalQueryFrameworkControl": "forceClassicEngine"
+ },
+ "command": {
+  "aggregate": "lab_results",
+  "pipeline": [
+   {
+    "$match": {
+     "ordered_at": {
+      "$gte": "2026-10-14 23:00:00",
+      "$lt": "2026-11-13 23:00:00"
+     },
+     "supersedes": null
+    }
+   },
+   {
+    "$project": {
+     "code": "$test.code",
+     "elapsed": {
+      "$subtract": [
+       "$recorded_at",
+       "$ordered_at"
+      ]
+     },
+     "target": {
+      "$multiply": [
+       "$test.target_hours",
+       3600000
+      ]
+     }
+    }
+   },
+   {
+    "$group": {
+     "_id": "$code",
+     "results": {
+      "$sum": 1
+     },
+     "avg_ms": {
+      "$avg": "$elapsed"
+     },
+     "late": {
+      "$sum": {
+       "$cond": [
+        {
+         "$gt": [
+          "$elapsed",
+          "$target"
+         ]
+        },
+        1,
+        0
+       ]
+      }
+     }
+    }
+   },
+   {
+    "$sort": {
+     "_id": 1
+    }
+   }
+  ],
+  "cursor": {},
+  "$db": "itoju"
+ },
+ "ok": 1.0,
+ "$clusterTime": {
+  "clusterTime": "Timestamp(1794669936, 1)",
+  "signature": {
+   "hash": "b'\\x1f\\t\\xef$\\xf6\\xda\\xc8\\xc1\\xe6@f\\xd4mJ\\x03\\xe5v\\x81\\x94k'",
+   "keyId": 7707983703674191878
+  }
+ },
+ "operationTime": "Timestamp(1794669936, 1)"
+}

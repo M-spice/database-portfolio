@@ -1,0 +1,89 @@
+{
+ "explainVersion": "1",
+ "queryPlanner": {
+  "namespace": "itoju.encounters",
+  "indexFilterSet": false,
+  "parsedQuery": {
+   "started_at": {
+    "$gte": "2025-11-13 23:00:00"
+   }
+  },
+  "queryHash": "A7E41E1C",
+  "planCacheKey": "A7E41E1C",
+  "optimizationTimeMillis": 0,
+  "maxIndexedOrSolutionsReached": false,
+  "maxIndexedAndSolutionsReached": false,
+  "maxScansToExplodeReached": false,
+  "winningPlan": {
+   "stage": "COLLSCAN",
+   "filter": {
+    "started_at": {
+     "$gte": "2025-11-13 23:00:00"
+    }
+   },
+   "direction": "forward"
+  }
+ },
+ "executionStats": {
+  "executionSuccess": true,
+  "nReturned": 350778,
+  "executionTimeMillis": 1772,
+  "totalKeysExamined": 0,
+  "totalDocsExamined": 714247,
+  "executionStages": {
+   "stage": "COLLSCAN",
+   "filter": {
+    "started_at": {
+     "$gte": "2025-11-13 23:00:00"
+    }
+   },
+   "nReturned": 350778,
+   "executionTimeMillisEstimate": 472,
+   "works": 714248,
+   "advanced": 350778,
+   "needTime": 363469,
+   "needYield": 0,
+   "saveState": 716,
+   "restoreState": 716,
+   "isEOF": 1,
+   "direction": "forward",
+   "docsExamined": 714247
+  }
+ },
+ "command": {
+  "distinct": "encounters",
+  "key": "patient_id",
+  "query": {
+   "started_at": {
+    "$gte": "2025-11-13 23:00:00"
+   }
+  },
+  "$db": "itoju"
+ },
+ "serverInfo": {
+  "host": "0ef5a8f553a2",
+  "port": 37017,
+  "version": "7.0.45",
+  "gitVersion": "a52313e13ab55c9bddf7c3ff91dab286fa381796"
+ },
+ "serverParameters": {
+  "internalQueryFacetBufferSizeBytes": 104857600,
+  "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+  "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+  "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+  "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+  "internalQueryProhibitBlockingMergeOnMongoS": 0,
+  "internalQueryMaxAddToSetBytes": 104857600,
+  "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+  "internalQueryFrameworkControl": "forceClassicEngine"
+ },
+ "ok": 1.0,
+ "$clusterTime": {
+  "clusterTime": "Timestamp(1794669946, 1)",
+  "signature": {
+   "hash": "b'\\x16+00L|V\\rL\\x1e\\xf1\\x8e\\x9b\\xe2\\xcf\\xbe\\xcf\\x80\\x0f\\xd9'",
+   "keyId": 7707983703674191878
+  }
+ },
+ "operationTime": "Timestamp(1794669946, 1)"
+}

@@ -1,0 +1,199 @@
+{
+ "explainVersion": "1",
+ "stages": [
+  {
+   "$cursor": {
+    "queryPlanner": {
+     "namespace": "itoju.encounters",
+     "indexFilterSet": false,
+     "parsedQuery": {
+      "$and": [
+       {
+        "diagnoses.code": {
+         "$eq": "J45.9"
+        }
+       },
+       {
+        "started_at": {
+         "$gte": "2026-08-15 23:00:00"
+        }
+       }
+      ]
+     },
+     "queryHash": "BEA95C7A",
+     "planCacheKey": "BEA95C7A",
+     "optimizationTimeMillis": 0,
+     "maxIndexedOrSolutionsReached": false,
+     "maxIndexedAndSolutionsReached": false,
+     "maxScansToExplodeReached": false,
+     "winningPlan": {
+      "stage": "PROJECTION_SIMPLE",
+      "transformBy": {
+       "facility": 1,
+       "_id": 0
+      },
+      "inputStage": {
+       "stage": "COLLSCAN",
+       "filter": {
+        "$and": [
+         {
+          "diagnoses.code": {
+           "$eq": "J45.9"
+          }
+         },
+         {
+          "started_at": {
+           "$gte": "2026-08-15 23:00:00"
+          }
+         }
+        ]
+       },
+       "direction": "forward"
+      }
+     }
+    },
+    "executionStats": {
+     "executionSuccess": true,
+     "nReturned": 4149,
+     "executionTimeMillis": 1559,
+     "totalKeysExamined": 0,
+     "totalDocsExamined": 714247,
+     "executionStages": {
+      "stage": "PROJECTION_SIMPLE",
+      "nReturned": 4149,
+      "executionTimeMillisEstimate": 286,
+      "works": 714248,
+      "advanced": 4149,
+      "needTime": 710098,
+      "needYield": 0,
+      "saveState": 715,
+      "restoreState": 715,
+      "isEOF": 1,
+      "transformBy": {
+       "facility": 1,
+       "_id": 0
+      },
+      "inputStage": {
+       "stage": "COLLSCAN",
+       "filter": {
+        "$and": [
+         {
+          "diagnoses.code": {
+           "$eq": "J45.9"
+          }
+         },
+         {
+          "started_at": {
+           "$gte": "2026-08-15 23:00:00"
+          }
+         }
+        ]
+       },
+       "nReturned": 4149,
+       "executionTimeMillisEstimate": 278,
+       "works": 714248,
+       "advanced": 4149,
+       "needTime": 710098,
+       "needYield": 0,
+       "saveState": 715,
+       "restoreState": 715,
+       "isEOF": 1,
+       "direction": "forward",
+       "docsExamined": 714247
+      }
+     }
+    }
+   },
+   "nReturned": 4149,
+   "executionTimeMillisEstimate": 1557
+  },
+  {
+   "$group": {
+    "_id": "$facility",
+    "visits": {
+     "$sum": {
+      "$const": 1
+     }
+    }
+   },
+   "maxAccumulatorMemoryUsageBytes": {
+    "visits": 1152
+   },
+   "totalOutputDataSizeBytes": 2940,
+   "usedDisk": false,
+   "spills": 0,
+   "spilledDataStorageSize": 0,
+   "numBytesSpilledEstimate": 0,
+   "spilledRecords": 0,
+   "nReturned": 12,
+   "executionTimeMillisEstimate": 1559
+  },
+  {
+   "$sort": {
+    "sortKey": {
+     "_id": 1
+    }
+   },
+   "totalDataSizeSortedBytesEstimate": 3036,
+   "usedDisk": false,
+   "spills": 0,
+   "spilledDataStorageSize": 0,
+   "nReturned": 12,
+   "executionTimeMillisEstimate": 1559
+  }
+ ],
+ "serverInfo": {
+  "host": "0ef5a8f553a2",
+  "port": 37017,
+  "version": "7.0.45",
+  "gitVersion": "a52313e13ab55c9bddf7c3ff91dab286fa381796"
+ },
+ "serverParameters": {
+  "internalQueryFacetBufferSizeBytes": 104857600,
+  "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+  "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+  "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+  "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+  "internalQueryProhibitBlockingMergeOnMongoS": 0,
+  "internalQueryMaxAddToSetBytes": 104857600,
+  "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+  "internalQueryFrameworkControl": "forceClassicEngine"
+ },
+ "command": {
+  "aggregate": "encounters",
+  "pipeline": [
+   {
+    "$match": {
+     "diagnoses.code": "J45.9",
+     "started_at": {
+      "$gte": "2026-08-15 23:00:00"
+     }
+    }
+   },
+   {
+    "$group": {
+     "_id": "$facility",
+     "visits": {
+      "$sum": 1
+     }
+    }
+   },
+   {
+    "$sort": {
+     "_id": 1
+    }
+   }
+  ],
+  "cursor": {},
+  "$db": "itoju"
+ },
+ "ok": 1.0,
+ "$clusterTime": {
+  "clusterTime": "Timestamp(1794669956, 1)",
+  "signature": {
+   "hash": "b'\\xc6lU\\xd9H\\xd9\\xf1\\xce.\\x8bQj\\xfa8\\xfd\\x0b{\\xea\\xc0\\x80'",
+   "keyId": 7707983703674191878
+  }
+ },
+ "operationTime": "Timestamp(1794669956, 1)"
+}

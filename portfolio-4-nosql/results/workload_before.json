@@ -1,0 +1,97 @@
+{
+  "M01": {
+    "rows": 1,
+    "hash": "a17938f539b26efc",
+    "median_ms": 109.9,
+    "stages": [
+      "PROJECTION_SIMPLE",
+      "COLLSCAN"
+    ],
+    "docs": 60012,
+    "keys": 0,
+    "matches_postgres": true
+  },
+  "M02": {
+    "rows": 20,
+    "hash": "2e83ea4fc0b1227e",
+    "median_ms": 1428.7,
+    "stages": [
+      "PROJECTION_DEFAULT",
+      "SORT",
+      "COLLSCAN"
+    ],
+    "docs": 714247,
+    "keys": 0,
+    "matches_postgres": true
+  },
+  "M05": {
+    "rows": 2277,
+    "hash": "16d904a529509031",
+    "median_ms": 5130.9,
+    "stages": [
+      "PROJECTION_DEFAULT",
+      "COLLSCAN"
+    ],
+    "docs": 714247,
+    "keys": 0,
+    "matches_postgres": true
+  },
+  "M07": {
+    "rows": 8,
+    "hash": "248c4441093505ba",
+    "median_ms": 427.6,
+    "stages": [
+      "PROJECTION_DEFAULT",
+      "COLLSCAN"
+    ],
+    "docs": 241675,
+    "keys": 0,
+    "matches_postgres": true
+  },
+  "M08": {
+    "rows": 8583,
+    "hash": "63f87f4130497594",
+    "median_ms": 2525.2,
+    "stages": [
+      "COLLSCAN"
+    ],
+    "docs": 714247,
+    "keys": 0,
+    "matches_postgres": true
+  },
+  "M09": {
+    "rows": 350,
+    "hash": "9418d8b3bebc7f09",
+    "median_ms": 1246.7,
+    "stages": [
+      "PROJECTION_SIMPLE",
+      "COLLSCAN"
+    ],
+    "docs": 714597,
+    "keys": 350,
+    "matches_postgres": true
+  },
+  "N01": {
+    "rows": 1,
+    "hash": "13d4ad905c45d91d",
+    "median_ms": 2.4,
+    "stages": [
+      "IDHACK"
+    ],
+    "docs": 1,
+    "keys": 1,
+    "matches_postgres": true
+  },
+  "N02": {
+    "rows": 12,
+    "hash": "1545675d4f92f6be",
+    "median_ms": 1929.1,
+    "stages": [
+      "PROJECTION_SIMPLE",
+      "COLLSCAN"
+    ],
+    "docs": 714247,
+    "keys": 0,
+    "matches_postgres": true
+  }
+}

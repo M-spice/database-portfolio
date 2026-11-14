@@ -1,0 +1,150 @@
+{
+ "explainVersion": "1",
+ "queryPlanner": {
+  "namespace": "itoju.encounters",
+  "indexFilterSet": false,
+  "parsedQuery": {
+   "started_at": {
+    "$gte": "2025-11-13 23:00:00"
+   }
+  },
+  "queryHash": "E882B269",
+  "planCacheKey": "325F15C6",
+  "optimizationTimeMillis": 0,
+  "maxIndexedOrSolutionsReached": false,
+  "maxIndexedAndSolutionsReached": false,
+  "maxScansToExplodeReached": false,
+  "winningPlan": {
+   "stage": "PROJECTION_SIMPLE",
+   "transformBy": {},
+   "inputStage": {
+    "stage": "FETCH",
+    "inputStage": {
+     "stage": "IXSCAN",
+     "keyPattern": {
+      "started_at": 1
+     },
+     "indexName": "encounters_started_ix",
+     "isMultiKey": false,
+     "multiKeyPaths": {
+      "started_at": []
+     },
+     "isUnique": false,
+     "isSparse": false,
+     "isPartial": false,
+     "indexVersion": 2,
+     "direction": "forward",
+     "indexBounds": {
+      "started_at": [
+       "[new Date(1763074800000), new Date(9223372036854775807)]"
+      ]
+     }
+    }
+   }
+  }
+ },
+ "executionStats": {
+  "executionSuccess": true,
+  "nReturned": 350778,
+  "executionTimeMillis": 635,
+  "totalKeysExamined": 350778,
+  "totalDocsExamined": 350778,
+  "executionStages": {
+   "stage": "PROJECTION_SIMPLE",
+   "nReturned": 350778,
+   "executionTimeMillisEstimate": 116,
+   "works": 350779,
+   "advanced": 350778,
+   "needTime": 0,
+   "needYield": 0,
+   "saveState": 350,
+   "restoreState": 350,
+   "isEOF": 1,
+   "transformBy": {},
+   "inputStage": {
+    "stage": "FETCH",
+    "nReturned": 350778,
+    "executionTimeMillisEstimate": 106,
+    "works": 350779,
+    "advanced": 350778,
+    "needTime": 0,
+    "needYield": 0,
+    "saveState": 350,
+    "restoreState": 350,
+    "isEOF": 1,
+    "docsExamined": 350778,
+    "alreadyHasObj": 0,
+    "inputStage": {
+     "stage": "IXSCAN",
+     "nReturned": 350778,
+     "executionTimeMillisEstimate": 35,
+     "works": 350779,
+     "advanced": 350778,
+     "needTime": 0,
+     "needYield": 0,
+     "saveState": 350,
+     "restoreState": 350,
+     "isEOF": 1,
+     "keyPattern": {
+      "started_at": 1
+     },
+     "indexName": "encounters_started_ix",
+     "isMultiKey": false,
+     "multiKeyPaths": {
+      "started_at": []
+     },
+     "isUnique": false,
+     "isSparse": false,
+     "isPartial": false,
+     "indexVersion": 2,
+     "direction": "forward",
+     "indexBounds": {
+      "started_at": [
+       "[new Date(1763074800000), new Date(9223372036854775807)]"
+      ]
+     },
+     "keysExamined": 350778,
+     "seeks": 1,
+     "dupsTested": 0,
+     "dupsDropped": 0
+    }
+   }
+  }
+ },
+ "command": {
+  "distinct": "encounters",
+  "key": "patient_id",
+  "query": {
+   "started_at": {
+    "$gte": "2025-11-13 23:00:00"
+   }
+  },
+  "$db": "itoju"
+ },
+ "serverInfo": {
+  "host": "0ef5a8f553a2",
+  "port": 37017,
+  "version": "7.0.45",
+  "gitVersion": "a52313e13ab55c9bddf7c3ff91dab286fa381796"
+ },
+ "serverParameters": {
+  "internalQueryFacetBufferSizeBytes": 104857600,
+  "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+  "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+  "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+  "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+  "internalQueryProhibitBlockingMergeOnMongoS": 0,
+  "internalQueryMaxAddToSetBytes": 104857600,
+  "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+  "internalQueryFrameworkControl": "forceClassicEngine"
+ },
+ "ok": 1.0,
+ "$clusterTime": {
+  "clusterTime": "Timestamp(1794669998, 1)",
+  "signature": {
+   "hash": "b'\\xc9v`x\\xbc\\xea\\xb9\\xf1SZL\\xa6\\xbe\\xdep\\xec\\x9a\\xfe\\xbd\\x07'",
+   "keyId": 7707983703674191878
+  }
+ },
+ "operationTime": "Timestamp(1794669998, 1)"
+}

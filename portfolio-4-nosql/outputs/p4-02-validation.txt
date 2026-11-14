@@ -1,0 +1,156 @@
+==============================================================================
+Title:      Validators, unique index, de-identified view and least-privilege role
+Captured:   2026-11-14 16:25:03 WAT (Africa/Lagos) | 2026-11-14 15:25:03 UTC
+Command:    <repository root>\.venv\Scripts\python.exe <repository root>\portfolio-4-nosql\mongo\validation.py
+Directory:  <repository root>/portfolio-4-nosql/mongo
+Exit code:  0
+Duration:   2.21 s
+Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
+Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
+Server:     mongo: db version v7.0.45
+==============================================================================
+
+=== 1. Validators: one valid document accepted, then one bad document per rule
+     92.1 ms  [val] a copy of encounter 6 (with an amendment) was accepted
+     92.2 ms  [chk] PASS: a valid encounter document is accepted
+     96.5 ms  [val] amendment pointing at note 99: rejected, code 121: Document failed validation
+     96.6 ms  [val]     $expr: expression did not match
+{
+  "failingDocumentId": 900000002,
+  "details": {
+    "operatorName": "$and",
+    "clausesNotSatisfied": [
+      {
+        "index": 1,
+        "details": {
+          "operatorName": "$expr",
+          "specifiedAs": {
+            "$expr": {
+              "$and": [
+                {
+                  "$lte": [
+                    {
+                      "$size": {
+                        "$filter": {
+                          "input": "$diagnoses",
+                          "cond": "$$this.primary"
+                        }
+                      }
+                    },
+                    1
+                  ]
+                },
+                {
+                  "$allElementsTrue": [
+                    {
+                      "$map": {
+                        "input": {
+                          "$ifNull": [
+                            "$notes",
+                            []
+                          ]
+                        },
+                        "as": "n",
+                        "in": {
+                          "$or": [
+                            {
+                              "$eq": [
+                                {
+                                  "$ifNull": [
+                                    "$$n.amends_note_no",
+                                    null
+                                  ]
+                                },
+                                null
+                              ]
+                            },
+                            {
+                              "$in": [
+                                "$$n.amends_note_no",
+                                {
+                                  "$ifNull": [
+                                    "$notes.note_no",
+                                    []
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "reason": "expression did not match",
+          "expressionResult": false
+        }
+      }
+    ]
+  }
+}
+     96.8 ms  [chk] PASS: an amendment must point at a note in the same encounter
+    100.1 ms  [val] two primary diagnoses: rejected, code 121: Document failed validation
+    100.2 ms  [val]     $expr: expression did not match
+    100.2 ms  [chk] PASS: an encounter has at most one primary diagnosis
+    103.0 ms  [val] unknown encounter type: rejected, code 121: Document failed validation
+    103.1 ms  [val]     enum: value was not found in enum
+    103.1 ms  [chk] PASS: the encounter type must be a known code
+    108.9 ms  [val] haemoglobin in mmol/L: rejected, code 121: Document failed validation
+    109.0 ms  [val]     $expr: expression did not match
+    109.0 ms  [chk] PASS: a numeric result must be in its test's unit
+    114.6 ms  [val] numeric result for LT-MPRDT: rejected, code 121: Document failed validation
+    114.6 ms  [val]     $expr: expression did not match
+    114.7 ms  [chk] PASS: a qualitative test cannot take a numeric result
+    117.6 ms  [val] result dated before its order: rejected, code 121: Document failed validation
+    117.6 ms  [val]     $expr: expression did not match
+    117.6 ms  [chk] PASS: a result cannot be recorded before its order
+    122.8 ms  [val] a real-looking phone number: rejected, code 121: Document failed validation
+    122.9 ms  [val]     items: At least one item did not match the sub-schema
+    122.9 ms  [val]     pattern: regular expression did not match
+    122.9 ms  [chk] PASS: phone numbers must be in the synthetic range
+    125.5 ms  [val] two primary phones: rejected, code 121: Document failed validation
+    125.6 ms  [val]     $expr: expression did not match
+    125.6 ms  [chk] PASS: a patient has at most one primary phone
+    130.5 ms  [val] total 100 kobo above its lines: rejected, code 121: Document failed validation
+    130.5 ms  [val]     $expr: expression did not match
+    130.5 ms  [chk] PASS: an invoice total must equal the sum of its lines
+    135.2 ms  [val] taking 2601 from 2600 in stock: rejected, code 121
+    135.3 ms  [chk] PASS: validation also applies to updates: stock cannot go negative
+
+=== 2. Unique index: a second patient with an existing hospital number
+    138.8 ms  [val] rejected: E11000 duplicate key error collection: itoju.patients index: patients_hospital_no_uk dup key: { hospital_no: "HN-0100089" }
+    138.8 ms  [chk] PASS: hospital numbers are unique (patients_hospital_no_uk)
+
+=== 3. A de-identified view and a role that can read only that view
+    245.6 ms  [val] created role itoju_analyst (find on deid_encounters only) and user analyst
+    282.8 ms  [ana] deid_encounters: {'patient_key': '3c87ce9b129f6b76', 'facility': 'LAG-IKJ', 'type': 'CONSULTATION', 'month': '2026-10', 'diagnosis_codes': ['B54']}
+    282.9 ms  [chk] PASS: the analyst can read the de-identified view
+    282.9 ms  [chk] PASS: the view carries no direct identifier
+    286.2 ms  [ana] find on encounters: Unauthorized (code 13)
+    286.2 ms  [chk] PASS: the analyst cannot read encounters
+    288.5 ms  [ana] find on patients: Unauthorized (code 13)
+    288.5 ms  [chk] PASS: the analyst cannot read patients
+
+check                                                         result    detail
+------------------------------------------------------------  --------  --------
+a valid encounter document is accepted                        PASS
+an amendment must point at a note in the same encounter       PASS
+an encounter has at most one primary diagnosis                PASS
+the encounter type must be a known code                       PASS
+a numeric result must be in its test's unit                   PASS
+a qualitative test cannot take a numeric result               PASS
+a result cannot be recorded before its order                  PASS
+phone numbers must be in the synthetic range                  PASS
+a patient has at most one primary phone                       PASS
+an invoice total must equal the sum of its lines              PASS
+validation also applies to updates: stock cannot go negative  PASS
+hospital numbers are unique (patients_hospital_no_uk)         PASS
+the analyst can read the de-identified view                   PASS
+the view carries no direct identifier                         PASS
+the analyst cannot read encounters                            PASS
+the analyst cannot read patients                              PASS
+
+checks: 16 | passed: 16 | failed: 0

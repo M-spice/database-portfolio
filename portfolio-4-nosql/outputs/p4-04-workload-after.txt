@@ -1,0 +1,90 @@
+==============================================================================
+Title:      Workload with access-pattern indexes, compared with PostgreSQL and with before
+Captured:   2026-11-14 16:26:07 WAT (Africa/Lagos) | 2026-11-14 15:26:07 UTC
+Command:    <repository root>\.venv\Scripts\python.exe <repository root>\portfolio-4-nosql\mongo\workload.py after
+Directory:  <repository root>/portfolio-4-nosql/mongo
+Exit code:  0
+Duration:   37.96 s
+Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
+Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
+Server:     mongo: db version v7.0.45
+==============================================================================
+
+=== Creating indexes
+    590.0 ms  [idx] patients.patients_phone_ix [('phones.number', 1)]: built in 0.5 s
+   3961.7 ms  [idx] encounters.encounters_patient_started_ix [('patient_id', 1), ('started_at', -1)]: built in 3.4 s
+   6647.3 ms  [idx] encounters.encounters_started_ix [('started_at', 1)]: built in 2.7 s
+  10738.6 ms  [idx] encounters.encounters_diagnosis_started_ix [('diagnoses.code', 1), ('started_at', 1)]: built in 4.1 s
+  11687.3 ms  [idx] lab_results.lab_results_ordered_ix [('ordered_at', 1)]: built in 0.9 s
+  11697.6 ms  [idx] patients: _id_ 1.6 MB, patients_hospital_no_uk 3.4 MB, patients_phone_ix 0.9 MB
+  11724.3 ms  [idx] encounters: _id_ 20.0 MB, encounters_patient_started_ix 9.2 MB, encounters_started_ix 8.0 MB, encounters_diagnosis_started_ix 10.4 MB
+  11734.1 ms  [idx] lab_results: _id_ 6.4 MB, lab_results_ordered_ix 2.6 MB
+
+=== Workload (after indexes), each MongoDB result compared with PostgreSQL's
+  11768.2 ms  [ wl] M01: 1 rows, same as PostgreSQL, 3.3 ms, PROJECTION_SIMPLE > FETCH > IXSCAN, keys 1, docs 1
+  11768.3 ms  [chk] PASS: M01 returns the same rows as PostgreSQL (1 rows)
+  11800.8 ms  [ wl] M02: 20 rows, same as PostgreSQL, 6.6 ms, LIMIT > PROJECTION_DEFAULT > FETCH > IXSCAN, keys 20, docs 20
+  11800.9 ms  [chk] PASS: M02 returns the same rows as PostgreSQL (20 rows)
+  26667.7 ms  [ wl] M05: 2277 rows, same as PostgreSQL, 3361.5 ms, PROJECTION_DEFAULT > FETCH > IXSCAN, keys 349504, docs 349504
+  26667.7 ms  [chk] PASS: M05 returns the same rows as PostgreSQL (2277 rows)
+  27005.3 ms  [ wl] M07: 8 rows, same as PostgreSQL, 57.5 ms, PROJECTION_DEFAULT > FETCH > IXSCAN, keys 10018, docs 10018
+  27005.4 ms  [chk] PASS: M07 returns the same rows as PostgreSQL (8 rows)
+  34336.5 ms  [ wl] M08: 8583 rows, same as PostgreSQL, 1943.9 ms, PROJECTION_SIMPLE > FETCH > IXSCAN, keys 350778, docs 350778
+  34336.6 ms  [chk] PASS: M08 returns the same rows as PostgreSQL (8583 rows)
+  35098.0 ms  [ wl] M09: 350 rows, same as PostgreSQL, 182.7 ms, PROJECTION_SIMPLE > FETCH > IXSCAN, keys 29914, docs 29914
+  35098.1 ms  [chk] PASS: M09 returns the same rows as PostgreSQL (350 rows)
+  35236.6 ms  [ wl] N01: 1 rows, same as PostgreSQL, 2.7 ms, IDHACK, keys 1, docs 1
+  35236.7 ms  [chk] PASS: N01 returns the same rows as PostgreSQL (1 rows)
+  35424.6 ms  [ wl] N02: 12 rows, same as PostgreSQL, 17.0 ms, PROJECTION_SIMPLE > FETCH > IXSCAN, keys 4149, docs 4149
+  35424.7 ms  [chk] PASS: N02 returns the same rows as PostgreSQL (12 rows)
+
+query    question                                         MongoDB rows    PostgreSQL rows    same rows    median ms    winning plan stages                          keys examined    docs examined
+-------  -----------------------------------------------  --------------  -----------------  -----------  -----------  -------------------------------------------  ---------------  ---------------
+M01      Find a patient by phone number                   1               1                  yes          3.3          PROJECTION_SIMPLE > FETCH > IXSCAN           1                1
+M02      Patient timeline: latest 20 encounters           20              20                 yes          6.6          LIMIT > PROJECTION_DEFAULT > FETCH > IXSCAN  20               20
+M05      Monthly diagnosis counts per branch over a year  2277            2277               yes          3361.5       PROJECTION_DEFAULT > FETCH > IXSCAN          349504           349504
+M07      Laboratory turnaround by test, 30 days           8               8                  yes          57.5         PROJECTION_DEFAULT > FETCH > IXSCAN          10018            10018
+M08      Patients with no visit in 12 months              8583            8583               yes          1943.9       PROJECTION_SIMPLE > FETCH > IXSCAN           350778           350778
+M09      Frequent attenders, 30 days                      350             350                yes          182.7        PROJECTION_SIMPLE > FETCH > IXSCAN           29914            29914
+N01      A whole visit in one read (counts of its parts)  1               1                  yes          2.7          IDHACK                                       1                1
+N02      Asthma visits by branch, 90 days (multikey)      12              12                 yes          17.0         PROJECTION_SIMPLE > FETCH > IXSCAN           4149             4149
+
+  35445.1 ms  [chk] PASS: M01 returns the same rows before and after indexing
+  35445.1 ms  [chk] PASS: M02 returns the same rows before and after indexing
+  35445.1 ms  [chk] PASS: M05 returns the same rows before and after indexing
+  35445.2 ms  [chk] PASS: M07 returns the same rows before and after indexing
+  35445.2 ms  [chk] PASS: M08 returns the same rows before and after indexing
+  35445.2 ms  [chk] PASS: M09 returns the same rows before and after indexing
+  35445.2 ms  [chk] PASS: N01 returns the same rows before and after indexing
+  35445.2 ms  [chk] PASS: N02 returns the same rows before and after indexing
+query    plan before                           plan after                                   docs before    docs after    keys before    keys after    ms before    ms after
+-------  ------------------------------------  -------------------------------------------  -------------  ------------  -------------  ------------  -----------  ----------
+M01      PROJECTION_SIMPLE > COLLSCAN          PROJECTION_SIMPLE > FETCH > IXSCAN           60012          1             0              1             109.9        3.3
+M02      PROJECTION_DEFAULT > SORT > COLLSCAN  LIMIT > PROJECTION_DEFAULT > FETCH > IXSCAN  714247         20            0              20            1428.7       6.6
+M05      PROJECTION_DEFAULT > COLLSCAN         PROJECTION_DEFAULT > FETCH > IXSCAN          714247         349504        0              349504        5130.9       3361.5
+M07      PROJECTION_DEFAULT > COLLSCAN         PROJECTION_DEFAULT > FETCH > IXSCAN          241675         10018         0              10018         427.6        57.5
+M08      COLLSCAN                              PROJECTION_SIMPLE > FETCH > IXSCAN           714247         350778        0              350778        2525.2       1943.9
+M09      PROJECTION_SIMPLE > COLLSCAN          PROJECTION_SIMPLE > FETCH > IXSCAN           714597         29914         350            29914         1246.7       182.7
+N01      IDHACK                                IDHACK                                       1              1             1              1             2.4          2.7
+N02      PROJECTION_SIMPLE > COLLSCAN          PROJECTION_SIMPLE > FETCH > IXSCAN           714247         4149          0              4149          1929.1       17.0
+
+check                                                result    detail
+---------------------------------------------------  --------  ---------
+M01 returns the same rows as PostgreSQL              PASS      1 rows
+M02 returns the same rows as PostgreSQL              PASS      20 rows
+M05 returns the same rows as PostgreSQL              PASS      2277 rows
+M07 returns the same rows as PostgreSQL              PASS      8 rows
+M08 returns the same rows as PostgreSQL              PASS      8583 rows
+M09 returns the same rows as PostgreSQL              PASS      350 rows
+N01 returns the same rows as PostgreSQL              PASS      1 rows
+N02 returns the same rows as PostgreSQL              PASS      12 rows
+M01 returns the same rows before and after indexing  PASS
+M02 returns the same rows before and after indexing  PASS
+M05 returns the same rows before and after indexing  PASS
+M07 returns the same rows before and after indexing  PASS
+M08 returns the same rows before and after indexing  PASS
+M09 returns the same rows before and after indexing  PASS
+N01 returns the same rows before and after indexing  PASS
+N02 returns the same rows before and after indexing  PASS
+
+checks: 16 | passed: 16 | failed: 0

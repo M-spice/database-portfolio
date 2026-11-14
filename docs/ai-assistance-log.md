@@ -87,3 +87,24 @@ Each entry below separates what I decided from recommendations the assistant mad
   - The logged SQL showed parameter placeholders instead of values; it now shows the bound values.
   - The free-slot queries were rewritten before their first run so they could use the GiST indexes.
 - Timings varied between runs: the 8-session counter-row throughput was 130 tickets/s in a trial and 218 in the evidence run. The lock-wait share reproduced closely (75.7% and 75.3%), so the conclusion rests on the lock-wait share.
+
+## Phase 9: Portfolio 4, NoSQL and advanced data models (2026-11-14)
+
+**My decisions:** I approved the Portfolio 4 plan and chose to load the full data, all 714,247 encounters, rather than a subset, so that every comparison with PostgreSQL is like for like.
+
+**Design decisions (approved at review):** Deriving the collections from access patterns, embedding what a visit writes together and referencing a patient's unbounded visits. Comparing every MongoDB query's rows with PostgreSQL's. Adding a time-series collection for home monitoring and a referral graph traversed with `$graphLookup`.
+
+**AI assistance used:** The assistant generated the collection model and validators, the loader, the validation, workload, time-series, graph and transaction scripts and the pipeline, and drafted `document-model.md`, `suitability.md` and the README. It chose the remote-monitoring and referral scenarios, which have no counterpart in the Portfolio 1 schema and are generated deterministically from the same patients and clinicians. It checked the MongoDB 7.0 limits it relies on (time-series restrictions and the `$graphLookup` memory limit) against the official manual before writing about them.
+
+**How it was verified:**
+
+- The pipeline ran all seven steps in 7.4 minutes.
+- The load matched PostgreSQL on 13 counts and totals.
+- Validation passed 16 of 16 checks, including ten kinds of bad document or update rejected with `errInfo`.
+- Every workload query returned the same rows as PostgreSQL before and after indexing (8 and 16 checks).
+- Time series 7 of 7, graph 3 of 3 (with `$graphLookup` matching an independent breadth-first search), transactions 8 of 8.
+- Problems found and fixed:
+  - A module first named `collections.py` would have shadowed Python's standard library; it was renamed before the first run.
+  - Per-encounter subqueries in the loader would have scanned unindexed child tables; the loader was written with set-based aggregation instead.
+  - The graph's starting clinician could have been an internal-medicine doctor rather than a GP; the selection was corrected.
+  - The suitability analysis was trimmed from 825 to 798 words to stay within its limit.

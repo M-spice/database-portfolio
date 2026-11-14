@@ -84,6 +84,10 @@ I chose an outpatient network because it gives every topic in the course a real 
 │   ├── concurrency.md, replay-guide.md    what the results mean; two-terminal scripts
 │   └── outputs/                           evidence
 ├── portfolio-4-nosql/
+│   ├── mongo/                             model and validators, load from PostgreSQL, workload, time series, graph, transactions
+│   ├── document-model.md, suitability.md  the document design; where MongoDB fits and where it does not
+│   ├── run_p4.py                          loads MongoDB and runs every demonstration
+│   └── explain/, results/, outputs/       explain() output, comparisons, evidence
 ├── portfolio-5-distributed-cloud/
 └── docs/
     ├── ai-assistance-log.md
@@ -97,7 +101,7 @@ I chose an outpatient network because it gives every topic in the course a real 
 | [Portfolio 1: Database Design and Modelling](portfolio-1-database-design/README.md) | Requirements, Chen ER model, relational schema, normalisation to BCNF, a PostgreSQL build with its rules tested | Complete |
 | [Portfolio 2: Query Processing and Optimisation](portfolio-2-query-optimisation/README.md) | Volume data, a workload of key queries, execution plans before and after indexing and tuning | Complete |
 | [Portfolio 3: Transactions and Concurrency](portfolio-3-transactions-concurrency/README.md) | Commit, rollback, isolation anomalies, locking, deadlock and crash recovery with live concurrent sessions | Complete |
-| [Portfolio 4: NoSQL and Advanced Data Models](portfolio-4-nosql/README.md) | MongoDB document model with validation, time-series and graph examples, and transactions | Not started |
+| [Portfolio 4: NoSQL and Advanced Data Models](portfolio-4-nosql/README.md) | MongoDB document model with validation, time-series and graph examples, and transactions | Complete |
 | [Portfolio 5: Distributed and Cloud Database Exercise](portfolio-5-distributed-cloud/README.md) | Distribution design, PostgreSQL streaming replication with failover, a MongoDB sharded cluster | Not started |
 | Final documentation | LMS summary, technical reflection, AI-use declaration, references | Not started |
 
@@ -142,6 +146,7 @@ Each portfolio has one pipeline that rebuilds its state from scratch, runs every
 .venv\Scripts\python portfolio-1-database-design\run_p1.py
 .venv\Scripts\python portfolio-2-query-optimisation\run_p2.py
 .venv\Scripts\python portfolio-3-transactions-concurrency\run_p3.py
+.venv\Scripts\python portfolio-4-nosql\run_p4.py
 ```
 
 ## Evidence index
@@ -164,6 +169,10 @@ Each portfolio has one pipeline that rebuilds its state from scratch, runs every
 | Portfolio 3: isolation | [Isolation levels](portfolio-3-transactions-concurrency/outputs/p3-03-isolation.txt) |
 | Portfolio 3: concurrency issue and control mechanism | [Locking, deadlock and hot row](portfolio-3-transactions-concurrency/outputs/p3-04-locking.txt), [scenario table](portfolio-3-transactions-concurrency/concurrency.md) |
 | Portfolio 3: screenshots and output evidence | [Outputs](portfolio-3-transactions-concurrency/outputs/), [replay guide](portfolio-3-transactions-concurrency/replay-guide.md) |
+| Portfolio 4: NoSQL model on the same case study | [Document model](portfolio-4-nosql/document-model.md), [load and comparison with PostgreSQL](portfolio-4-nosql/outputs/p4-01-load.txt) |
+| Portfolio 4: document, column, key-value or graph example | [Documents and indexes](portfolio-4-nosql/outputs/p4-04-workload-after.txt), [time series](portfolio-4-nosql/outputs/p4-05-timeseries.txt), [graph](portfolio-4-nosql/outputs/p4-06-graph.txt) |
+| Portfolio 4: implementation evidence | [Validation](portfolio-4-nosql/outputs/p4-02-validation.txt), [transactions](portfolio-4-nosql/outputs/p4-07-transactions.txt), [explain output](portfolio-4-nosql/explain/) |
+| Portfolio 4: explanation of suitability | [Suitability](portfolio-4-nosql/suitability.md) |
 
 ## Academic integrity and AI use
 

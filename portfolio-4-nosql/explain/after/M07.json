@@ -1,0 +1,326 @@
+{
+ "explainVersion": "1",
+ "stages": [
+  {
+   "$cursor": {
+    "queryPlanner": {
+     "namespace": "itoju.lab_results",
+     "indexFilterSet": false,
+     "parsedQuery": {
+      "$and": [
+       {
+        "supersedes": {
+         "$eq": null
+        }
+       },
+       {
+        "ordered_at": {
+         "$lt": "2026-11-13 23:00:00"
+        }
+       },
+       {
+        "ordered_at": {
+         "$gte": "2026-10-14 23:00:00"
+        }
+       }
+      ]
+     },
+     "queryHash": "3D322808",
+     "planCacheKey": "AD363926",
+     "optimizationTimeMillis": 0,
+     "maxIndexedOrSolutionsReached": false,
+     "maxIndexedAndSolutionsReached": false,
+     "maxScansToExplodeReached": false,
+     "winningPlan": {
+      "stage": "PROJECTION_DEFAULT",
+      "transformBy": {
+       "_id": true,
+       "code": "$test.code",
+       "elapsed": {
+        "$subtract": [
+         "$recorded_at",
+         "$ordered_at"
+        ]
+       },
+       "target": {
+        "$multiply": [
+         "$test.target_hours",
+         {
+          "$const": 3600000
+         }
+        ]
+       }
+      },
+      "inputStage": {
+       "stage": "FETCH",
+       "filter": {
+        "supersedes": {
+         "$eq": null
+        }
+       },
+       "inputStage": {
+        "stage": "IXSCAN",
+        "keyPattern": {
+         "ordered_at": 1
+        },
+        "indexName": "lab_results_ordered_ix",
+        "isMultiKey": false,
+        "multiKeyPaths": {
+         "ordered_at": []
+        },
+        "isUnique": false,
+        "isSparse": false,
+        "isPartial": false,
+        "indexVersion": 2,
+        "direction": "forward",
+        "indexBounds": {
+         "ordered_at": [
+          "[new Date(1792018800000), new Date(1794610800000))"
+         ]
+        }
+       }
+      }
+     }
+    },
+    "executionStats": {
+     "executionSuccess": true,
+     "nReturned": 9981,
+     "executionTimeMillis": 55,
+     "totalKeysExamined": 10018,
+     "totalDocsExamined": 10018,
+     "executionStages": {
+      "stage": "PROJECTION_DEFAULT",
+      "nReturned": 9981,
+      "executionTimeMillisEstimate": 12,
+      "works": 10019,
+      "advanced": 9981,
+      "needTime": 37,
+      "needYield": 0,
+      "saveState": 11,
+      "restoreState": 11,
+      "isEOF": 1,
+      "transformBy": {
+       "_id": true,
+       "code": "$test.code",
+       "elapsed": {
+        "$subtract": [
+         "$recorded_at",
+         "$ordered_at"
+        ]
+       },
+       "target": {
+        "$multiply": [
+         "$test.target_hours",
+         {
+          "$const": 3600000
+         }
+        ]
+       }
+      },
+      "inputStage": {
+       "stage": "FETCH",
+       "filter": {
+        "supersedes": {
+         "$eq": null
+        }
+       },
+       "nReturned": 9981,
+       "executionTimeMillisEstimate": 6,
+       "works": 10019,
+       "advanced": 9981,
+       "needTime": 37,
+       "needYield": 0,
+       "saveState": 11,
+       "restoreState": 11,
+       "isEOF": 1,
+       "docsExamined": 10018,
+       "alreadyHasObj": 0,
+       "inputStage": {
+        "stage": "IXSCAN",
+        "nReturned": 10018,
+        "executionTimeMillisEstimate": 5,
+        "works": 10019,
+        "advanced": 10018,
+        "needTime": 0,
+        "needYield": 0,
+        "saveState": 11,
+        "restoreState": 11,
+        "isEOF": 1,
+        "keyPattern": {
+         "ordered_at": 1
+        },
+        "indexName": "lab_results_ordered_ix",
+        "isMultiKey": false,
+        "multiKeyPaths": {
+         "ordered_at": []
+        },
+        "isUnique": false,
+        "isSparse": false,
+        "isPartial": false,
+        "indexVersion": 2,
+        "direction": "forward",
+        "indexBounds": {
+         "ordered_at": [
+          "[new Date(1792018800000), new Date(1794610800000))"
+         ]
+        },
+        "keysExamined": 10018,
+        "seeks": 1,
+        "dupsTested": 0,
+        "dupsDropped": 0
+       }
+      }
+     }
+    }
+   },
+   "nReturned": 9981,
+   "executionTimeMillisEstimate": 49
+  },
+  {
+   "$group": {
+    "_id": "$code",
+    "results": {
+     "$sum": {
+      "$const": 1
+     }
+    },
+    "avg_ms": {
+     "$avg": "$elapsed"
+    },
+    "late": {
+     "$sum": {
+      "$cond": [
+       {
+        "$gt": [
+         "$elapsed",
+         "$target"
+        ]
+       },
+       {
+        "$const": 1
+       },
+       {
+        "$const": 0
+       }
+      ]
+     }
+    }
+   },
+   "maxAccumulatorMemoryUsageBytes": {
+    "results": 768,
+    "avg_ms": 832,
+    "late": 768
+   },
+   "totalOutputDataSizeBytes": 2472,
+   "usedDisk": false,
+   "spills": 0,
+   "spilledDataStorageSize": 0,
+   "numBytesSpilledEstimate": 0,
+   "spilledRecords": 0,
+   "nReturned": 8,
+   "executionTimeMillisEstimate": 49
+  },
+  {
+   "$sort": {
+    "sortKey": {
+     "_id": 1
+    }
+   },
+   "totalDataSizeSortedBytesEstimate": 2536,
+   "usedDisk": false,
+   "spills": 0,
+   "spilledDataStorageSize": 0,
+   "nReturned": 8,
+   "executionTimeMillisEstimate": 49
+  }
+ ],
+ "serverInfo": {
+  "host": "0ef5a8f553a2",
+  "port": 37017,
+  "version": "7.0.45",
+  "gitVersion": "a52313e13ab55c9bddf7c3ff91dab286fa381796"
+ },
+ "serverParameters": {
+  "internalQueryFacetBufferSizeBytes": 104857600,
+  "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+  "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+  "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+  "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+  "internalQueryProhibitBlockingMergeOnMongoS": 0,
+  "internalQueryMaxAddToSetBytes": 104857600,
+  "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+  "internalQueryFrameworkControl": "forceClassicEngine"
+ },
+ "command": {
+  "aggregate": "lab_results",
+  "pipeline": [
+   {
+    "$match": {
+     "ordered_at": {
+      "$gte": "2026-10-14 23:00:00",
+      "$lt": "2026-11-13 23:00:00"
+     },
+     "supersedes": null
+    }
+   },
+   {
+    "$project": {
+     "code": "$test.code",
+     "elapsed": {
+      "$subtract": [
+       "$recorded_at",
+       "$ordered_at"
+      ]
+     },
+     "target": {
+      "$multiply": [
+       "$test.target_hours",
+       3600000
+      ]
+     }
+    }
+   },
+   {
+    "$group": {
+     "_id": "$code",
+     "results": {
+      "$sum": 1
+     },
+     "avg_ms": {
+      "$avg": "$elapsed"
+     },
+     "late": {
+      "$sum": {
+       "$cond": [
+        {
+         "$gt": [
+          "$elapsed",
+          "$target"
+         ]
+        },
+        1,
+        0
+       ]
+      }
+     }
+    }
+   },
+   {
+    "$sort": {
+     "_id": 1
+    }
+   }
+  ],
+  "cursor": {},
+  "$db": "itoju"
+ },
+ "ok": 1.0,
+ "$clusterTime": {
+  "clusterTime": "Timestamp(1794669981, 3)",
+  "signature": {
+   "hash": "b'v\\xcf\\x88\\x81\\xa6\\xe6\\x0b\\xaa\\x12=,o\\xa5\\xda\\x13\\xb9\\xd3\\xbe\\x8f\\x98'",
+   "keyId": 7707983703674191878
+  }
+ },
+ "operationTime": "Timestamp(1794669981, 3)"
+}

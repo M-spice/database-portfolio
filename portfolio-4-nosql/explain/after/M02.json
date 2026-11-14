@@ -1,0 +1,194 @@
+{
+ "explainVersion": "1",
+ "queryPlanner": {
+  "namespace": "itoju.encounters",
+  "indexFilterSet": false,
+  "parsedQuery": {
+   "patient_id": {
+    "$eq": 58
+   }
+  },
+  "queryHash": "ABA0B5FB",
+  "planCacheKey": "FF4F6E94",
+  "optimizationTimeMillis": 0,
+  "maxIndexedOrSolutionsReached": false,
+  "maxIndexedAndSolutionsReached": false,
+  "maxScansToExplodeReached": false,
+  "winningPlan": {
+   "stage": "LIMIT",
+   "limitAmount": 20,
+   "inputStage": {
+    "stage": "PROJECTION_DEFAULT",
+    "transformBy": {
+     "started_at": 1,
+     "facility": 1,
+     "type": 1,
+     "diagnoses.code": 1
+    },
+    "inputStage": {
+     "stage": "FETCH",
+     "inputStage": {
+      "stage": "IXSCAN",
+      "keyPattern": {
+       "patient_id": 1,
+       "started_at": -1
+      },
+      "indexName": "encounters_patient_started_ix",
+      "isMultiKey": false,
+      "multiKeyPaths": {
+       "patient_id": [],
+       "started_at": []
+      },
+      "isUnique": false,
+      "isSparse": false,
+      "isPartial": false,
+      "indexVersion": 2,
+      "direction": "forward",
+      "indexBounds": {
+       "patient_id": [
+        "[58, 58]"
+       ],
+       "started_at": [
+        "[MaxKey, MinKey]"
+       ]
+      }
+     }
+    }
+   }
+  }
+ },
+ "executionStats": {
+  "executionSuccess": true,
+  "nReturned": 20,
+  "executionTimeMillis": 0,
+  "totalKeysExamined": 20,
+  "totalDocsExamined": 20,
+  "executionStages": {
+   "stage": "LIMIT",
+   "nReturned": 20,
+   "executionTimeMillisEstimate": 0,
+   "works": 21,
+   "advanced": 20,
+   "needTime": 0,
+   "needYield": 0,
+   "saveState": 0,
+   "restoreState": 0,
+   "isEOF": 1,
+   "limitAmount": 20,
+   "inputStage": {
+    "stage": "PROJECTION_DEFAULT",
+    "nReturned": 20,
+    "executionTimeMillisEstimate": 0,
+    "works": 20,
+    "advanced": 20,
+    "needTime": 0,
+    "needYield": 0,
+    "saveState": 0,
+    "restoreState": 0,
+    "isEOF": 0,
+    "transformBy": {
+     "started_at": 1,
+     "facility": 1,
+     "type": 1,
+     "diagnoses.code": 1
+    },
+    "inputStage": {
+     "stage": "FETCH",
+     "nReturned": 20,
+     "executionTimeMillisEstimate": 0,
+     "works": 20,
+     "advanced": 20,
+     "needTime": 0,
+     "needYield": 0,
+     "saveState": 0,
+     "restoreState": 0,
+     "isEOF": 0,
+     "docsExamined": 20,
+     "alreadyHasObj": 0,
+     "inputStage": {
+      "stage": "IXSCAN",
+      "nReturned": 20,
+      "executionTimeMillisEstimate": 0,
+      "works": 20,
+      "advanced": 20,
+      "needTime": 0,
+      "needYield": 0,
+      "saveState": 0,
+      "restoreState": 0,
+      "isEOF": 0,
+      "keyPattern": {
+       "patient_id": 1,
+       "started_at": -1
+      },
+      "indexName": "encounters_patient_started_ix",
+      "isMultiKey": false,
+      "multiKeyPaths": {
+       "patient_id": [],
+       "started_at": []
+      },
+      "isUnique": false,
+      "isSparse": false,
+      "isPartial": false,
+      "indexVersion": 2,
+      "direction": "forward",
+      "indexBounds": {
+       "patient_id": [
+        "[58, 58]"
+       ],
+       "started_at": [
+        "[MaxKey, MinKey]"
+       ]
+      },
+      "keysExamined": 20,
+      "seeks": 1,
+      "dupsTested": 0,
+      "dupsDropped": 0
+     }
+    }
+   }
+  }
+ },
+ "command": {
+  "find": "encounters",
+  "filter": {
+   "patient_id": 58
+  },
+  "sort": {
+   "started_at": -1
+  },
+  "limit": 20,
+  "projection": {
+   "started_at": 1,
+   "facility": 1,
+   "type": 1,
+   "diagnoses.code": 1
+  },
+  "$db": "itoju"
+ },
+ "serverInfo": {
+  "host": "0ef5a8f553a2",
+  "port": 37017,
+  "version": "7.0.45",
+  "gitVersion": "a52313e13ab55c9bddf7c3ff91dab286fa381796"
+ },
+ "serverParameters": {
+  "internalQueryFacetBufferSizeBytes": 104857600,
+  "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+  "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+  "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+  "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+  "internalQueryProhibitBlockingMergeOnMongoS": 0,
+  "internalQueryMaxAddToSetBytes": 104857600,
+  "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+  "internalQueryFrameworkControl": "forceClassicEngine"
+ },
+ "ok": 1.0,
+ "$clusterTime": {
+  "clusterTime": "Timestamp(1794669981, 3)",
+  "signature": {
+   "hash": "b'v\\xcf\\x88\\x81\\xa6\\xe6\\x0b\\xaa\\x12=,o\\xa5\\xda\\x13\\xb9\\xd3\\xbe\\x8f\\x98'",
+   "keyId": 7707983703674191878
+  }
+ },
+ "operationTime": "Timestamp(1794669981, 3)"
+}

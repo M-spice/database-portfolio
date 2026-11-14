@@ -1,0 +1,262 @@
+{
+ "explainVersion": "1",
+ "stages": [
+  {
+   "$cursor": {
+    "queryPlanner": {
+     "namespace": "itoju.encounters",
+     "indexFilterSet": false,
+     "parsedQuery": {
+      "$and": [
+       {
+        "started_at": {
+         "$lt": "2026-11-13 23:00:00"
+        }
+       },
+       {
+        "started_at": {
+         "$gte": "2026-10-14 23:00:00"
+        }
+       }
+      ]
+     },
+     "queryHash": "707F8A30",
+     "planCacheKey": "707F8A30",
+     "optimizationTimeMillis": 0,
+     "maxIndexedOrSolutionsReached": false,
+     "maxIndexedAndSolutionsReached": false,
+     "maxScansToExplodeReached": false,
+     "winningPlan": {
+      "stage": "PROJECTION_SIMPLE",
+      "transformBy": {
+       "patient_id": 1,
+       "_id": 0
+      },
+      "inputStage": {
+       "stage": "COLLSCAN",
+       "filter": {
+        "$and": [
+         {
+          "started_at": {
+           "$lt": "2026-11-13 23:00:00"
+          }
+         },
+         {
+          "started_at": {
+           "$gte": "2026-10-14 23:00:00"
+          }
+         }
+        ]
+       },
+       "direction": "forward"
+      }
+     }
+    },
+    "executionStats": {
+     "executionSuccess": true,
+     "nReturned": 29564,
+     "executionTimeMillis": 1616,
+     "totalKeysExamined": 0,
+     "totalDocsExamined": 714247,
+     "executionStages": {
+      "stage": "PROJECTION_SIMPLE",
+      "nReturned": 29564,
+      "executionTimeMillisEstimate": 284,
+      "works": 714248,
+      "advanced": 29564,
+      "needTime": 684683,
+      "needYield": 0,
+      "saveState": 715,
+      "restoreState": 715,
+      "isEOF": 1,
+      "transformBy": {
+       "patient_id": 1,
+       "_id": 0
+      },
+      "inputStage": {
+       "stage": "COLLSCAN",
+       "filter": {
+        "$and": [
+         {
+          "started_at": {
+           "$lt": "2026-11-13 23:00:00"
+          }
+         },
+         {
+          "started_at": {
+           "$gte": "2026-10-14 23:00:00"
+          }
+         }
+        ]
+       },
+       "nReturned": 29564,
+       "executionTimeMillisEstimate": 282,
+       "works": 714248,
+       "advanced": 29564,
+       "needTime": 684683,
+       "needYield": 0,
+       "saveState": 715,
+       "restoreState": 715,
+       "isEOF": 1,
+       "direction": "forward",
+       "docsExamined": 714247
+      }
+     }
+    }
+   },
+   "nReturned": 29564,
+   "executionTimeMillisEstimate": 1480
+  },
+  {
+   "$group": {
+    "_id": "$patient_id",
+    "visits": {
+     "$sum": {
+      "$const": 1
+     }
+    }
+   },
+   "maxAccumulatorMemoryUsageBytes": {
+    "visits": 1788960
+   },
+   "totalOutputDataSizeBytes": 4565575,
+   "usedDisk": false,
+   "spills": 0,
+   "spilledDataStorageSize": 0,
+   "numBytesSpilledEstimate": 0,
+   "spilledRecords": 0,
+   "nReturned": 18635,
+   "executionTimeMillisEstimate": 1507
+  },
+  {
+   "$match": {
+    "visits": {
+     "$gte": 5
+    }
+   },
+   "nReturned": 350,
+   "executionTimeMillisEstimate": 1507
+  },
+  {
+   "$lookup": {
+    "from": "patients",
+    "as": "p",
+    "localField": "_id",
+    "foreignField": "_id"
+   },
+   "totalDocsExamined": 350,
+   "totalKeysExamined": 350,
+   "collectionScans": 0,
+   "indexesUsed": [
+    "_id_"
+   ],
+   "nReturned": 350,
+   "executionTimeMillisEstimate": 1611
+  },
+  {
+   "$project": {
+    "_id": true,
+    "visits": true,
+    "hospital_no": {
+     "$first": [
+      "$p.hospital_no"
+     ]
+    }
+   },
+   "nReturned": 350,
+   "executionTimeMillisEstimate": 1611
+  },
+  {
+   "$sort": {
+    "sortKey": {
+     "visits": -1,
+     "hospital_no": 1
+    }
+   },
+   "totalDataSizeSortedBytesEstimate": 124950,
+   "usedDisk": false,
+   "spills": 0,
+   "spilledDataStorageSize": 0,
+   "nReturned": 350,
+   "executionTimeMillisEstimate": 1611
+  }
+ ],
+ "serverInfo": {
+  "host": "0ef5a8f553a2",
+  "port": 37017,
+  "version": "7.0.45",
+  "gitVersion": "a52313e13ab55c9bddf7c3ff91dab286fa381796"
+ },
+ "serverParameters": {
+  "internalQueryFacetBufferSizeBytes": 104857600,
+  "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+  "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+  "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+  "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+  "internalQueryProhibitBlockingMergeOnMongoS": 0,
+  "internalQueryMaxAddToSetBytes": 104857600,
+  "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+  "internalQueryFrameworkControl": "forceClassicEngine"
+ },
+ "command": {
+  "aggregate": "encounters",
+  "pipeline": [
+   {
+    "$match": {
+     "started_at": {
+      "$gte": "2026-10-14 23:00:00",
+      "$lt": "2026-11-13 23:00:00"
+     }
+    }
+   },
+   {
+    "$group": {
+     "_id": "$patient_id",
+     "visits": {
+      "$sum": 1
+     }
+    }
+   },
+   {
+    "$match": {
+     "visits": {
+      "$gte": 5
+     }
+    }
+   },
+   {
+    "$lookup": {
+     "from": "patients",
+     "localField": "_id",
+     "foreignField": "_id",
+     "as": "p"
+    }
+   },
+   {
+    "$project": {
+     "hospital_no": {
+      "$first": "$p.hospital_no"
+     },
+     "visits": 1
+    }
+   },
+   {
+    "$sort": {
+     "visits": -1,
+     "hospital_no": 1
+    }
+   }
+  ],
+  "cursor": {},
+  "$db": "itoju"
+ },
+ "ok": 1.0,
+ "$clusterTime": {
+  "clusterTime": "Timestamp(1794669946, 1)",
+  "signature": {
+   "hash": "b'\\x16+00L|V\\rL\\x1e\\xf1\\x8e\\x9b\\xe2\\xcf\\xbe\\xcf\\x80\\x0f\\xd9'",
+   "keyId": 7707983703674191878
+  }
+ },
+ "operationTime": "Timestamp(1794669946, 1)"
+}

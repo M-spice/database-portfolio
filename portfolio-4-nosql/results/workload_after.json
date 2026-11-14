@@ -1,0 +1,105 @@
+{
+  "M01": {
+    "rows": 1,
+    "hash": "a17938f539b26efc",
+    "median_ms": 3.3,
+    "stages": [
+      "PROJECTION_SIMPLE",
+      "FETCH",
+      "IXSCAN"
+    ],
+    "docs": 1,
+    "keys": 1,
+    "matches_postgres": true
+  },
+  "M02": {
+    "rows": 20,
+    "hash": "2e83ea4fc0b1227e",
+    "median_ms": 6.6,
+    "stages": [
+      "LIMIT",
+      "PROJECTION_DEFAULT",
+      "FETCH",
+      "IXSCAN"
+    ],
+    "docs": 20,
+    "keys": 20,
+    "matches_postgres": true
+  },
+  "M05": {
+    "rows": 2277,
+    "hash": "16d904a529509031",
+    "median_ms": 3361.5,
+    "stages": [
+      "PROJECTION_DEFAULT",
+      "FETCH",
+      "IXSCAN"
+    ],
+    "docs": 349504,
+    "keys": 349504,
+    "matches_postgres": true
+  },
+  "M07": {
+    "rows": 8,
+    "hash": "248c4441093505ba",
+    "median_ms": 57.5,
+    "stages": [
+      "PROJECTION_DEFAULT",
+      "FETCH",
+      "IXSCAN"
+    ],
+    "docs": 10018,
+    "keys": 10018,
+    "matches_postgres": true
+  },
+  "M08": {
+    "rows": 8583,
+    "hash": "63f87f4130497594",
+    "median_ms": 1943.9,
+    "stages": [
+      "PROJECTION_SIMPLE",
+      "FETCH",
+      "IXSCAN"
+    ],
+    "docs": 350778,
+    "keys": 350778,
+    "matches_postgres": true
+  },
+  "M09": {
+    "rows": 350,
+    "hash": "9418d8b3bebc7f09",
+    "median_ms": 182.7,
+    "stages": [
+      "PROJECTION_SIMPLE",
+      "FETCH",
+      "IXSCAN"
+    ],
+    "docs": 29914,
+    "keys": 29914,
+    "matches_postgres": true
+  },
+  "N01": {
+    "rows": 1,
+    "hash": "13d4ad905c45d91d",
+    "median_ms": 2.7,
+    "stages": [
+      "IDHACK"
+    ],
+    "docs": 1,
+    "keys": 1,
+    "matches_postgres": true
+  },
+  "N02": {
+    "rows": 12,
+    "hash": "1545675d4f92f6be",
+    "median_ms": 17.0,
+    "stages": [
+      "PROJECTION_SIMPLE",
+      "FETCH",
+      "IXSCAN"
+    ],
+    "docs": 4149,
+    "keys": 4149,
+    "matches_postgres": true
+  }
+}

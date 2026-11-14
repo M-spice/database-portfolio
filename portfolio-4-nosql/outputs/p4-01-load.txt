@@ -1,0 +1,69 @@
+==============================================================================
+Title:      Load PostgreSQL's data into MongoDB documents and compare counts and totals
+Captured:   2026-11-14 16:19:37 WAT (Africa/Lagos) | 2026-11-14 15:19:37 UTC
+Command:    <repository root>\.venv\Scripts\python.exe <repository root>\portfolio-4-nosql\mongo\load.py
+Directory:  <repository root>/portfolio-4-nosql/mongo
+Exit code:  0
+Duration:   324.38 s
+Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
+Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
+Server:     mongo: db version v7.0.45
+==============================================================================
+    489.5 ms  [ ld] collections created with validators; database itoju (MongoDB) is empty
+
+=== Loading from PostgreSQL
+  10167.1 ms  [ ld] patients: 60012 documents
+ 270105.2 ms  [ ld] encounters: 714247 documents
+ 290802.7 ms  [ ld] lab_results: 241675 documents
+ 306511.1 ms  [ ld] invoices: 87477 documents
+ 306557.4 ms  [ ld] clinicians: 302 documents
+ 306578.6 ms  [ ld] stock: 144 documents
+
+=== Counts and totals: PostgreSQL against MongoDB
+measure             PostgreSQL    MongoDB      result
+------------------  ------------  -----------  --------
+patients            60012         60012        match
+phone numbers       75061         75061        match
+encounters          714247        714247       match
+vital-sign records  714247        714247       match
+diagnoses           907089        907089       match
+clinical notes      716408        716408       match
+prescribed units    17963142      17963142     match
+lab results         241675        241675       match
+invoices            87477         87477        match
+invoiced kobo       62991493000   62991493000  match
+paid kobo           56259979000   56259979000  match
+clinicians          302           302          match
+units in stock      155244        155244       match
+ 322913.7 ms  [chk] PASS: patients: MongoDB matches PostgreSQL (60012)
+ 322913.7 ms  [chk] PASS: phone numbers: MongoDB matches PostgreSQL (75061)
+ 322913.8 ms  [chk] PASS: encounters: MongoDB matches PostgreSQL (714247)
+ 322913.8 ms  [chk] PASS: vital-sign records: MongoDB matches PostgreSQL (714247)
+ 322913.8 ms  [chk] PASS: diagnoses: MongoDB matches PostgreSQL (907089)
+ 322913.8 ms  [chk] PASS: clinical notes: MongoDB matches PostgreSQL (716408)
+ 322913.8 ms  [chk] PASS: prescribed units: MongoDB matches PostgreSQL (17963142)
+ 322913.8 ms  [chk] PASS: lab results: MongoDB matches PostgreSQL (241675)
+ 322913.8 ms  [chk] PASS: invoices: MongoDB matches PostgreSQL (87477)
+ 322913.8 ms  [chk] PASS: invoiced kobo: MongoDB matches PostgreSQL (62991493000)
+ 322913.9 ms  [chk] PASS: paid kobo: MongoDB matches PostgreSQL (56259979000)
+ 322913.9 ms  [chk] PASS: clinicians: MongoDB matches PostgreSQL (302)
+ 322913.9 ms  [chk] PASS: units in stock: MongoDB matches PostgreSQL (155244)
+ 322916.7 ms  [ ld] MongoDB database size: 779 MB of documents, 190 MB on disk, 39 MB of indexes
+
+check                                           result         detail
+----------------------------------------------  --------  -----------
+patients: MongoDB matches PostgreSQL            PASS            60012
+phone numbers: MongoDB matches PostgreSQL       PASS            75061
+encounters: MongoDB matches PostgreSQL          PASS           714247
+vital-sign records: MongoDB matches PostgreSQL  PASS           714247
+diagnoses: MongoDB matches PostgreSQL           PASS           907089
+clinical notes: MongoDB matches PostgreSQL      PASS           716408
+prescribed units: MongoDB matches PostgreSQL    PASS         17963142
+lab results: MongoDB matches PostgreSQL         PASS           241675
+invoices: MongoDB matches PostgreSQL            PASS            87477
+invoiced kobo: MongoDB matches PostgreSQL       PASS      62991493000
+paid kobo: MongoDB matches PostgreSQL           PASS      56259979000
+clinicians: MongoDB matches PostgreSQL          PASS              302
+units in stock: MongoDB matches PostgreSQL      PASS           155244
+
+checks: 13 | passed: 13 | failed: 0

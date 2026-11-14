@@ -1,0 +1,75 @@
+{
+ "explainVersion": "1",
+ "queryPlanner": {
+  "namespace": "itoju.encounters",
+  "indexFilterSet": false,
+  "parsedQuery": {
+   "_id": {
+    "$eq": 713923
+   }
+  },
+  "queryHash": "869CED4F",
+  "planCacheKey": "333C0A17",
+  "optimizationTimeMillis": 0,
+  "maxIndexedOrSolutionsReached": false,
+  "maxIndexedAndSolutionsReached": false,
+  "maxScansToExplodeReached": false,
+  "winningPlan": {
+   "stage": "IDHACK"
+  }
+ },
+ "executionStats": {
+  "executionSuccess": true,
+  "nReturned": 1,
+  "executionTimeMillis": 0,
+  "totalKeysExamined": 1,
+  "totalDocsExamined": 1,
+  "executionStages": {
+   "stage": "IDHACK",
+   "nReturned": 1,
+   "executionTimeMillisEstimate": 0,
+   "works": 2,
+   "advanced": 1,
+   "needTime": 0,
+   "needYield": 0,
+   "saveState": 0,
+   "restoreState": 0,
+   "isEOF": 1,
+   "keysExamined": 1,
+   "docsExamined": 1
+  }
+ },
+ "command": {
+  "find": "encounters",
+  "filter": {
+   "_id": 713923
+  },
+  "$db": "itoju"
+ },
+ "serverInfo": {
+  "host": "0ef5a8f553a2",
+  "port": 37017,
+  "version": "7.0.45",
+  "gitVersion": "a52313e13ab55c9bddf7c3ff91dab286fa381796"
+ },
+ "serverParameters": {
+  "internalQueryFacetBufferSizeBytes": 104857600,
+  "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+  "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+  "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+  "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+  "internalQueryProhibitBlockingMergeOnMongoS": 0,
+  "internalQueryMaxAddToSetBytes": 104857600,
+  "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+  "internalQueryFrameworkControl": "forceClassicEngine"
+ },
+ "ok": 1.0,
+ "$clusterTime": {
+  "clusterTime": "Timestamp(1794669946, 1)",
+  "signature": {
+   "hash": "b'\\x16+00L|V\\rL\\x1e\\xf1\\x8e\\x9b\\xe2\\xcf\\xbe\\xcf\\x80\\x0f\\xd9'",
+   "keyId": 7707983703674191878
+  }
+ },
+ "operationTime": "Timestamp(1794669946, 1)"
+}

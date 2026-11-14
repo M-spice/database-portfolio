@@ -1,0 +1,239 @@
+{
+ "explainVersion": "1",
+ "stages": [
+  {
+   "$cursor": {
+    "queryPlanner": {
+     "namespace": "itoju.encounters",
+     "indexFilterSet": false,
+     "parsedQuery": {
+      "$and": [
+       {
+        "diagnoses.code": {
+         "$eq": "J45.9"
+        }
+       },
+       {
+        "started_at": {
+         "$gte": "2026-08-15 23:00:00"
+        }
+       }
+      ]
+     },
+     "queryHash": "BEA95C7A",
+     "planCacheKey": "9F93C0EA",
+     "optimizationTimeMillis": 0,
+     "maxIndexedOrSolutionsReached": false,
+     "maxIndexedAndSolutionsReached": false,
+     "maxScansToExplodeReached": false,
+     "winningPlan": {
+      "stage": "PROJECTION_SIMPLE",
+      "transformBy": {
+       "facility": 1,
+       "_id": 0
+      },
+      "inputStage": {
+       "stage": "FETCH",
+       "inputStage": {
+        "stage": "IXSCAN",
+        "keyPattern": {
+         "diagnoses.code": 1,
+         "started_at": 1
+        },
+        "indexName": "encounters_diagnosis_started_ix",
+        "isMultiKey": true,
+        "multiKeyPaths": {
+         "diagnoses.code": [
+          "diagnoses"
+         ],
+         "started_at": []
+        },
+        "isUnique": false,
+        "isSparse": false,
+        "isPartial": false,
+        "indexVersion": 2,
+        "direction": "forward",
+        "indexBounds": {
+         "diagnoses.code": [
+          "[\"J45.9\", \"J45.9\"]"
+         ],
+         "started_at": [
+          "[new Date(1786834800000), new Date(9223372036854775807)]"
+         ]
+        }
+       }
+      }
+     }
+    },
+    "executionStats": {
+     "executionSuccess": true,
+     "nReturned": 4149,
+     "executionTimeMillis": 21,
+     "totalKeysExamined": 4149,
+     "totalDocsExamined": 4149,
+     "executionStages": {
+      "stage": "PROJECTION_SIMPLE",
+      "nReturned": 4149,
+      "executionTimeMillisEstimate": 1,
+      "works": 4150,
+      "advanced": 4149,
+      "needTime": 0,
+      "needYield": 0,
+      "saveState": 5,
+      "restoreState": 5,
+      "isEOF": 1,
+      "transformBy": {
+       "facility": 1,
+       "_id": 0
+      },
+      "inputStage": {
+       "stage": "FETCH",
+       "nReturned": 4149,
+       "executionTimeMillisEstimate": 1,
+       "works": 4150,
+       "advanced": 4149,
+       "needTime": 0,
+       "needYield": 0,
+       "saveState": 5,
+       "restoreState": 5,
+       "isEOF": 1,
+       "docsExamined": 4149,
+       "alreadyHasObj": 0,
+       "inputStage": {
+        "stage": "IXSCAN",
+        "nReturned": 4149,
+        "executionTimeMillisEstimate": 1,
+        "works": 4150,
+        "advanced": 4149,
+        "needTime": 0,
+        "needYield": 0,
+        "saveState": 5,
+        "restoreState": 5,
+        "isEOF": 1,
+        "keyPattern": {
+         "diagnoses.code": 1,
+         "started_at": 1
+        },
+        "indexName": "encounters_diagnosis_started_ix",
+        "isMultiKey": true,
+        "multiKeyPaths": {
+         "diagnoses.code": [
+          "diagnoses"
+         ],
+         "started_at": []
+        },
+        "isUnique": false,
+        "isSparse": false,
+        "isPartial": false,
+        "indexVersion": 2,
+        "direction": "forward",
+        "indexBounds": {
+         "diagnoses.code": [
+          "[\"J45.9\", \"J45.9\"]"
+         ],
+         "started_at": [
+          "[new Date(1786834800000), new Date(9223372036854775807)]"
+         ]
+        },
+        "keysExamined": 4149,
+        "seeks": 1,
+        "dupsTested": 4149,
+        "dupsDropped": 0
+       }
+      }
+     }
+    }
+   },
+   "nReturned": 4149,
+   "executionTimeMillisEstimate": 14
+  },
+  {
+   "$group": {
+    "_id": "$facility",
+    "visits": {
+     "$sum": {
+      "$const": 1
+     }
+    }
+   },
+   "maxAccumulatorMemoryUsageBytes": {
+    "visits": 1152
+   },
+   "totalOutputDataSizeBytes": 2940,
+   "usedDisk": false,
+   "spills": 0,
+   "spilledDataStorageSize": 0,
+   "numBytesSpilledEstimate": 0,
+   "spilledRecords": 0,
+   "nReturned": 12,
+   "executionTimeMillisEstimate": 18
+  },
+  {
+   "$sort": {
+    "sortKey": {
+     "_id": 1
+    }
+   },
+   "totalDataSizeSortedBytesEstimate": 3036,
+   "usedDisk": false,
+   "spills": 0,
+   "spilledDataStorageSize": 0,
+   "nReturned": 12,
+   "executionTimeMillisEstimate": 18
+  }
+ ],
+ "serverInfo": {
+  "host": "0ef5a8f553a2",
+  "port": 37017,
+  "version": "7.0.45",
+  "gitVersion": "a52313e13ab55c9bddf7c3ff91dab286fa381796"
+ },
+ "serverParameters": {
+  "internalQueryFacetBufferSizeBytes": 104857600,
+  "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+  "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+  "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+  "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+  "internalQueryProhibitBlockingMergeOnMongoS": 0,
+  "internalQueryMaxAddToSetBytes": 104857600,
+  "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+  "internalQueryFrameworkControl": "forceClassicEngine"
+ },
+ "command": {
+  "aggregate": "encounters",
+  "pipeline": [
+   {
+    "$match": {
+     "diagnoses.code": "J45.9",
+     "started_at": {
+      "$gte": "2026-08-15 23:00:00"
+     }
+    }
+   },
+   {
+    "$group": {
+     "_id": "$facility",
+     "visits": {
+      "$sum": 1
+     }
+    }
+   },
+   {
+    "$sort": {
+     "_id": 1
+    }
+   }
+  ],
+  "cursor": {},
+  "$db": "itoju"
+ },
+ "ok": 1.0,
+ "$clusterTime": {
+  "clusterTime": "Timestamp(1794669998, 1)",
+  "signature": {
+   "hash": "b'\\xc9v`x\\xbc\\xea\\xb9\\xf1SZL\\xa6\\xbe\\xdep\\xec\\x9a\\xfe\\xbd\\x07'",
+   "keyId": 7707983703674191878
+  }
+ },
+ "operationTime": "Timestamp(1794669998, 1)"
+}

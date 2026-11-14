@@ -1,0 +1,284 @@
+{
+ "explainVersion": "1",
+ "stages": [
+  {
+   "$cursor": {
+    "queryPlanner": {
+     "namespace": "itoju.encounters",
+     "indexFilterSet": false,
+     "parsedQuery": {
+      "$and": [
+       {
+        "started_at": {
+         "$lt": "2026-10-31 23:00:00"
+        }
+       },
+       {
+        "started_at": {
+         "$gte": "2025-10-31 23:00:00"
+        }
+       }
+      ]
+     },
+     "queryHash": "BF6762E8",
+     "planCacheKey": "BF6762E8",
+     "optimizationTimeMillis": 0,
+     "maxIndexedOrSolutionsReached": false,
+     "maxIndexedAndSolutionsReached": false,
+     "maxScansToExplodeReached": false,
+     "winningPlan": {
+      "stage": "PROJECTION_DEFAULT",
+      "transformBy": {
+       "facility": true,
+       "started_at": true,
+       "codes": "$diagnoses.code",
+       "_id": false
+      },
+      "inputStage": {
+       "stage": "COLLSCAN",
+       "filter": {
+        "$and": [
+         {
+          "started_at": {
+           "$lt": "2026-10-31 23:00:00"
+          }
+         },
+         {
+          "started_at": {
+           "$gte": "2025-10-31 23:00:00"
+          }
+         }
+        ]
+       },
+       "direction": "forward"
+      }
+     }
+    },
+    "executionStats": {
+     "executionSuccess": true,
+     "nReturned": 349504,
+     "executionTimeMillis": 4216,
+     "totalKeysExamined": 0,
+     "totalDocsExamined": 714247,
+     "executionStages": {
+      "stage": "PROJECTION_DEFAULT",
+      "nReturned": 349504,
+      "executionTimeMillisEstimate": 605,
+      "works": 714248,
+      "advanced": 349504,
+      "needTime": 364743,
+      "needYield": 0,
+      "saveState": 758,
+      "restoreState": 758,
+      "isEOF": 1,
+      "transformBy": {
+       "facility": true,
+       "started_at": true,
+       "codes": "$diagnoses.code",
+       "_id": false
+      },
+      "inputStage": {
+       "stage": "COLLSCAN",
+       "filter": {
+        "$and": [
+         {
+          "started_at": {
+           "$lt": "2026-10-31 23:00:00"
+          }
+         },
+         {
+          "started_at": {
+           "$gte": "2025-10-31 23:00:00"
+          }
+         }
+        ]
+       },
+       "nReturned": 349504,
+       "executionTimeMillisEstimate": 349,
+       "works": 714248,
+       "advanced": 349504,
+       "needTime": 364743,
+       "needYield": 0,
+       "saveState": 758,
+       "restoreState": 758,
+       "isEOF": 1,
+       "direction": "forward",
+       "docsExamined": 714247
+      }
+     }
+    }
+   },
+   "nReturned": 349504,
+   "executionTimeMillisEstimate": 2425
+  },
+  {
+   "$unwind": {
+    "path": "$codes"
+   },
+   "nReturned": 443979,
+   "executionTimeMillisEstimate": 2652
+  },
+  {
+   "$group": {
+    "_id": {
+     "f": "$facility",
+     "m": {
+      "$dateToString": {
+       "date": {
+        "$dateTrunc": {
+         "date": "$started_at",
+         "unit": {
+          "$const": "month"
+         },
+         "timezone": {
+          "$const": "Africa/Lagos"
+         }
+        }
+       },
+       "format": {
+        "$const": "%Y-%m-%d"
+       },
+       "timezone": {
+        "$const": "Africa/Lagos"
+       }
+      }
+     },
+     "c": "$codes"
+    },
+    "cases": {
+     "$sum": {
+      "$const": 1
+     }
+    }
+   },
+   "maxAccumulatorMemoryUsageBytes": {
+    "cases": 221184
+   },
+   "totalOutputDataSizeBytes": 1202688,
+   "usedDisk": false,
+   "spills": 0,
+   "spilledDataStorageSize": 0,
+   "numBytesSpilledEstimate": 0,
+   "spilledRecords": 0,
+   "nReturned": 2304,
+   "executionTimeMillisEstimate": 4202
+  },
+  {
+   "$match": {
+    "cases": {
+     "$gte": 20
+    }
+   },
+   "nReturned": 2277,
+   "executionTimeMillisEstimate": 4202
+  },
+  {
+   "$sort": {
+    "sortKey": {
+     "_id.f": 1,
+     "_id.m": 1,
+     "cases": -1,
+     "_id.c": 1
+    }
+   },
+   "totalDataSizeSortedBytesEstimate": 1443618,
+   "usedDisk": false,
+   "spills": 0,
+   "spilledDataStorageSize": 0,
+   "nReturned": 2277,
+   "executionTimeMillisEstimate": 4212
+  }
+ ],
+ "serverInfo": {
+  "host": "0ef5a8f553a2",
+  "port": 37017,
+  "version": "7.0.45",
+  "gitVersion": "a52313e13ab55c9bddf7c3ff91dab286fa381796"
+ },
+ "serverParameters": {
+  "internalQueryFacetBufferSizeBytes": 104857600,
+  "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+  "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+  "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+  "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+  "internalQueryProhibitBlockingMergeOnMongoS": 0,
+  "internalQueryMaxAddToSetBytes": 104857600,
+  "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+  "internalQueryFrameworkControl": "forceClassicEngine"
+ },
+ "command": {
+  "aggregate": "encounters",
+  "pipeline": [
+   {
+    "$match": {
+     "started_at": {
+      "$gte": "2025-10-31 23:00:00",
+      "$lt": "2026-10-31 23:00:00"
+     }
+    }
+   },
+   {
+    "$project": {
+     "_id": 0,
+     "facility": 1,
+     "started_at": 1,
+     "codes": "$diagnoses.code"
+    }
+   },
+   {
+    "$unwind": "$codes"
+   },
+   {
+    "$group": {
+     "_id": {
+      "f": "$facility",
+      "m": {
+       "$dateToString": {
+        "format": "%Y-%m-%d",
+        "timezone": "Africa/Lagos",
+        "date": {
+         "$dateTrunc": {
+          "date": "$started_at",
+          "unit": "month",
+          "timezone": "Africa/Lagos"
+         }
+        }
+       }
+      },
+      "c": "$codes"
+     },
+     "cases": {
+      "$sum": 1
+     }
+    }
+   },
+   {
+    "$match": {
+     "cases": {
+      "$gte": 20
+     }
+    }
+   },
+   {
+    "$sort": {
+     "_id.f": 1,
+     "_id.m": 1,
+     "cases": -1,
+     "_id.c": 1
+    }
+   }
+  ],
+  "cursor": {},
+  "allowDiskUse": true,
+  "$db": "itoju"
+ },
+ "ok": 1.0,
+ "$clusterTime": {
+  "clusterTime": "Timestamp(1794669936, 1)",
+  "signature": {
+   "hash": "b'\\x1f\\t\\xef$\\xf6\\xda\\xc8\\xc1\\xe6@f\\xd4mJ\\x03\\xe5v\\x81\\x94k'",
+   "keyId": 7707983703674191878
+  }
+ },
+ "operationTime": "Timestamp(1794669936, 1)"
+}

@@ -1,0 +1,53 @@
+==============================================================================
+Title:      Workload with only the _id and unique indexes, compared with PostgreSQL
+Captured:   2026-11-14 16:25:07 WAT (Africa/Lagos) | 2026-11-14 15:25:07 UTC
+Command:    <repository root>\.venv\Scripts\python.exe <repository root>\portfolio-4-nosql\mongo\workload.py before
+Directory:  <repository root>/portfolio-4-nosql/mongo
+Exit code:  0
+Duration:   57.61 s
+Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
+Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
+Server:     mongo: db version v7.0.45
+==============================================================================
+
+=== Workload (before indexes), each MongoDB result compared with PostgreSQL's
+   2568.0 ms  [ wl] M01: 1 rows, same as PostgreSQL, 109.9 ms, PROJECTION_SIMPLE > COLLSCAN, keys 0, docs 60012
+   2568.1 ms  [chk] PASS: M01 returns the same rows as PostgreSQL (1 rows)
+   7989.0 ms  [ wl] M02: 20 rows, same as PostgreSQL, 1428.7 ms, PROJECTION_DEFAULT > SORT > COLLSCAN, keys 0, docs 714247
+   7989.1 ms  [chk] PASS: M02 returns the same rows as PostgreSQL (20 rows)
+  28232.4 ms  [ wl] M05: 2277 rows, same as PostgreSQL, 5130.9 ms, PROJECTION_DEFAULT > COLLSCAN, keys 0, docs 714247
+  28232.5 ms  [chk] PASS: M05 returns the same rows as PostgreSQL (2277 rows)
+  30970.5 ms  [ wl] M07: 8 rows, same as PostgreSQL, 427.6 ms, PROJECTION_DEFAULT > COLLSCAN, keys 0, docs 241675
+  30970.6 ms  [chk] PASS: M07 returns the same rows as PostgreSQL (8 rows)
+  41018.4 ms  [ wl] M08: 8583 rows, same as PostgreSQL, 2525.2 ms, COLLSCAN, keys 0, docs 714247
+  41018.4 ms  [chk] PASS: M08 returns the same rows as PostgreSQL (8583 rows)
+  46588.6 ms  [ wl] M09: 350 rows, same as PostgreSQL, 1246.7 ms, PROJECTION_SIMPLE > COLLSCAN, keys 350, docs 714597
+  46588.6 ms  [chk] PASS: M09 returns the same rows as PostgreSQL (350 rows)
+  46808.4 ms  [ wl] N01: 1 rows, same as PostgreSQL, 2.4 ms, IDHACK, keys 1, docs 1
+  46808.4 ms  [chk] PASS: N01 returns the same rows as PostgreSQL (1 rows)
+  54889.2 ms  [ wl] N02: 12 rows, same as PostgreSQL, 1929.1 ms, PROJECTION_SIMPLE > COLLSCAN, keys 0, docs 714247
+  54889.2 ms  [chk] PASS: N02 returns the same rows as PostgreSQL (12 rows)
+
+query    question                                         MongoDB rows    PostgreSQL rows    same rows    median ms    winning plan stages                   keys examined    docs examined
+-------  -----------------------------------------------  --------------  -----------------  -----------  -----------  ------------------------------------  ---------------  ---------------
+M01      Find a patient by phone number                   1               1                  yes          109.9        PROJECTION_SIMPLE > COLLSCAN          0                60012
+M02      Patient timeline: latest 20 encounters           20              20                 yes          1428.7       PROJECTION_DEFAULT > SORT > COLLSCAN  0                714247
+M05      Monthly diagnosis counts per branch over a year  2277            2277               yes          5130.9       PROJECTION_DEFAULT > COLLSCAN         0                714247
+M07      Laboratory turnaround by test, 30 days           8               8                  yes          427.6        PROJECTION_DEFAULT > COLLSCAN         0                241675
+M08      Patients with no visit in 12 months              8583            8583               yes          2525.2       COLLSCAN                              0                714247
+M09      Frequent attenders, 30 days                      350             350                yes          1246.7       PROJECTION_SIMPLE > COLLSCAN          350              714597
+N01      A whole visit in one read (counts of its parts)  1               1                  yes          2.4          IDHACK                                1                1
+N02      Asthma visits by branch, 90 days (multikey)      12              12                 yes          1929.1       PROJECTION_SIMPLE > COLLSCAN          0                714247
+
+check                                    result    detail
+---------------------------------------  --------  ---------
+M01 returns the same rows as PostgreSQL  PASS      1 rows
+M02 returns the same rows as PostgreSQL  PASS      20 rows
+M05 returns the same rows as PostgreSQL  PASS      2277 rows
+M07 returns the same rows as PostgreSQL  PASS      8 rows
+M08 returns the same rows as PostgreSQL  PASS      8583 rows
+M09 returns the same rows as PostgreSQL  PASS      350 rows
+N01 returns the same rows as PostgreSQL  PASS      1 rows
+N02 returns the same rows as PostgreSQL  PASS      12 rows
+
+checks: 8 | passed: 8 | failed: 0
