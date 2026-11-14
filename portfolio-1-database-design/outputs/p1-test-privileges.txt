@@ -1,0 +1,63 @@
+==============================================================================
+Title:      Role and privilege tests
+Captured:   2026-11-14 13:21:57 WAT (Africa/Lagos) | 2026-11-14 12:21:57 UTC
+Command:    docker compose exec -T postgres psql -U postgres -d itoju -X -q -v ON_ERROR_STOP=1 -f /workspace/portfolio-1-database-design/tests/t_privileges.sql
+Directory:  <repository root>
+Exit code:  0
+Duration:   0.54 s
+Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
+Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
+Server:     postgres: postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg13+2)
+==============================================================================
+ #  |                            test                            |     run_as      |     expected      |      outcome      | result |                          message                          
+----+------------------------------------------------------------+-----------------+-------------------+-------------------+--------+-----------------------------------------------------------
+  1 | reception registers a patient                              | itoju_reception | ok                | ok                | PASS   | 
+  2 | reception reads the patient directory                      | itoju_reception | ok                | ok                | PASS   | 
+  3 | reception cannot read the patient table directly           | itoju_reception | permission_denied | permission_denied | PASS   | permission denied for table patient
+  4 | reception cannot read clinical notes                       | itoju_reception | permission_denied | permission_denied | PASS   | permission denied for table clinical_note
+  5 | reception books an appointment                             | itoju_reception | ok                | ok                | PASS   | 
+  6 | reception adds a next of kin                               | itoju_reception | ok                | ok                | PASS   | 
+  7 | reception cannot open a clinical record                    | itoju_reception | permission_denied | permission_denied | PASS   | permission denied for function patient_record
+  8 | reception cannot record an encounter                       | itoju_reception | permission_denied | permission_denied | PASS   | permission denied for table encounter
+  9 | a clinician opens a record through the audited function    | itoju_clinician | ok                | ok                | PASS   | 
+ 10 | a clinician cannot read the patient table directly         | itoju_clinician | permission_denied | permission_denied | PASS   | permission denied for table patient
+ 11 | a clinician cannot read notes outside the audited function | itoju_clinician | permission_denied | permission_denied | PASS   | permission denied for table clinical_note
+ 12 | a clinician records an encounter and a note                | itoju_clinician | ok                | ok                | PASS   | 
+ 13 | a clinician cannot edit a note                             | itoju_clinician | permission_denied | permission_denied | PASS   | permission denied for table clinical_note
+ 14 | a clinician cannot dispense                                | itoju_clinician | permission_denied | permission_denied | PASS   | permission denied for function dispense_prescription_item
+ 15 | a clinician reads the day's appointments                   | itoju_clinician | ok                | ok                | PASS   | 
+ 16 | a clinician signs off on call                              | itoju_clinician | ok                | ok                | PASS   | 
+ 17 | a pharmacist dispenses                                     | itoju_pharmacy  | ok                | ok                | PASS   | 
+ 18 | a pharmacist transfers stock                               | itoju_pharmacy  | ok                | ok                | PASS   | 
+ 19 | a pharmacist cannot set stock levels directly              | itoju_pharmacy  | permission_denied | permission_denied | PASS   | permission denied for table stock_on_hand
+ 20 | a pharmacist cannot write the ledger directly              | itoju_pharmacy  | permission_denied | permission_denied | PASS   | permission denied for table stock_movement
+ 21 | a pharmacist cannot read patient identities                | itoju_pharmacy  | permission_denied | permission_denied | PASS   | permission denied for view patient_directory
+ 22 | a lab scientist records a corrected result                 | itoju_lab       | ok                | ok                | PASS   | 
+ 23 | a lab scientist cannot read clinical notes                 | itoju_lab       | permission_denied | permission_denied | PASS   | permission denied for table clinical_note
+ 24 | a lab scientist cannot read patient identities             | itoju_lab       | permission_denied | permission_denied | PASS   | permission denied for view patient_directory
+ 25 | billing raises a balanced invoice                          | itoju_billing   | ok                | ok                | PASS   | 
+ 26 | billing takes a payment                                    | itoju_billing   | ok                | ok                | PASS   | 
+ 27 | billing cannot alter a payment                             | itoju_billing   | permission_denied | permission_denied | PASS   | permission denied for table payment
+ 28 | billing cannot read clinical notes                         | itoju_billing   | permission_denied | permission_denied | PASS   | permission denied for table clinical_note
+ 29 | billing reads patient names for invoices                   | itoju_billing   | ok                | ok                | PASS   | 
+ 30 | an analyst reads de-identified encounters                  | itoju_analyst   | ok                | ok                | PASS   | 
+ 31 | an analyst reads de-identified patients                    | itoju_analyst   | ok                | ok                | PASS   | 
+ 32 | an analyst cannot read the patient table                   | itoju_analyst   | permission_denied | permission_denied | PASS   | permission denied for table patient
+ 33 | an analyst cannot read the patient directory               | itoju_analyst   | permission_denied | permission_denied | PASS   | permission denied for view patient_directory
+ 34 | an analyst cannot read the pseudonym key                   | itoju_analyst   | permission_denied | permission_denied | PASS   | permission denied for table pseudonym_key
+ 35 | an analyst cannot book appointments                        | itoju_analyst   | permission_denied | permission_denied | PASS   | permission denied for function book_appointment
+ 36 | an auditor reads the access log                            | itoju_auditor   | ok                | ok                | PASS   | 
+ 37 | an auditor reads patient identities                        | itoju_auditor   | ok                | ok                | PASS   | 
+ 38 | an auditor cannot change data                              | itoju_auditor   | permission_denied | permission_denied | PASS   | permission denied for table record_access_log
+ 39 | an auditor cannot read the pseudonym key                   | itoju_auditor   | permission_denied | permission_denied | PASS   | permission denied for table pseudonym_key
+ 40 | the clinic application books an appointment                | itoju_app       | ok                | ok                | PASS   | 
+ 41 | the clinic application cannot read clinical notes          | itoju_app       | permission_denied | permission_denied | PASS   | permission denied for table clinical_note
+ 42 | no function in the schema is executable by PUBLIC          | itoju_owner     | ok                | ok                | PASS   | 
+ 43 | every SECURITY DEFINER function pins its search_path       | itoju_owner     | ok                | ok                | PASS   | 
+ 44 | every itoju group role is NOLOGIN                          | itoju_owner     | ok                | ok                | PASS   | 
+ 45 | de-identified views expose no direct identifier            | itoju_owner     | ok                | ok                | PASS   | 
+
+   suite    | tests | passed | failed 
+------------+-------+--------+--------
+ privileges |    45 |     45 |      0
+

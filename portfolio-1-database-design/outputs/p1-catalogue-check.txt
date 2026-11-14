@@ -1,0 +1,55 @@
+==============================================================================
+Title:      Live catalogue compared with the relational schema document
+Captured:   2026-11-14 13:22:05 WAT (Africa/Lagos) | 2026-11-14 12:22:05 UTC
+Command:    <repository root>\.venv\Scripts\python.exe <repository root>\portfolio-1-database-design\tests\catalogue_check.py
+Directory:  <repository root>
+Exit code:  0
+Duration:   0.70 s
+Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
+Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
+Server:     postgres: postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg13+2)
+==============================================================================
+relation                      doc cols    db cols  column names    documented constraints              live constraints                    result
+--------------------------  ----------  ---------  --------------  ----------------------------------  ----------------------------------  --------
+appointment                         11         11  same            PK=1 FK=5 UK=2 CK=1 EX=2 UI=0 TG=1  PK=1 FK=5 UK=2 CK=1 EX=2 UI=0 TG=1  PASS
+appointment_status                   2          2  same            PK=1 FK=0 UK=0 CK=1 EX=0 UI=0 TG=0  PK=1 FK=0 UK=0 CK=1 EX=0 UI=0 TG=0  PASS
+appointment_status_history           5          5  same            PK=1 FK=3 UK=0 CK=0 EX=0 UI=0 TG=1  PK=1 FK=3 UK=0 CK=0 EX=0 UI=0 TG=1  PASS
+clinical_note                        7          7  same            PK=1 FK=3 UK=1 CK=2 EX=0 UI=0 TG=1  PK=1 FK=3 UK=1 CK=2 EX=0 UI=0 TG=1  PASS
+clinician                            2          2  same            PK=1 FK=1 UK=1 CK=1 EX=0 UI=0 TG=1  PK=1 FK=1 UK=1 CK=1 EX=0 UI=0 TG=1  PASS
+clinician_department                 3          3  same            PK=1 FK=2 UK=0 CK=0 EX=0 UI=0 TG=0  PK=1 FK=2 UK=0 CK=0 EX=0 UI=0 TG=0  PASS
+consent                              6          6  same            PK=1 FK=3 UK=0 CK=1 EX=0 UI=1 TG=0  PK=1 FK=3 UK=0 CK=1 EX=0 UI=1 TG=0  PASS
+consent_purpose                      2          2  same            PK=1 FK=0 UK=0 CK=1 EX=0 UI=0 TG=0  PK=1 FK=0 UK=0 CK=1 EX=0 UI=0 TG=0  PASS
+department                           3          3  same            PK=1 FK=0 UK=2 CK=1 EX=0 UI=0 TG=0  PK=1 FK=0 UK=2 CK=1 EX=0 UI=0 TG=0  PASS
+diagnosis_code                       3          3  same            PK=1 FK=0 UK=0 CK=1 EX=0 UI=0 TG=0  PK=1 FK=0 UK=0 CK=1 EX=0 UI=0 TG=0  PASS
+drug                                 7          7  same            PK=1 FK=0 UK=2 CK=3 EX=0 UI=0 TG=0  PK=1 FK=0 UK=2 CK=3 EX=0 UI=0 TG=0  PASS
+encounter                            8          8  same            PK=1 FK=5 UK=2 CK=1 EX=0 UI=0 TG=0  PK=1 FK=5 UK=2 CK=1 EX=0 UI=0 TG=0  PASS
+encounter_diagnosis                  3          3  same            PK=1 FK=2 UK=0 CK=0 EX=0 UI=1 TG=0  PK=1 FK=2 UK=0 CK=0 EX=0 UI=1 TG=0  PASS
+encounter_type                       2          2  same            PK=1 FK=0 UK=0 CK=1 EX=0 UI=0 TG=0  PK=1 FK=0 UK=0 CK=1 EX=0 UI=0 TG=0  PASS
+facility                             7          7  same            PK=1 FK=0 UK=1 CK=1 EX=0 UI=0 TG=0  PK=1 FK=0 UK=1 CK=1 EX=0 UI=0 TG=0  PASS
+invoice                              8          8  same            PK=1 FK=4 UK=2 CK=2 EX=0 UI=0 TG=1  PK=1 FK=4 UK=2 CK=2 EX=0 UI=0 TG=1  PASS
+invoice_line                         8          8  same            PK=1 FK=3 UK=0 CK=4 EX=0 UI=0 TG=1  PK=1 FK=3 UK=0 CK=4 EX=0 UI=0 TG=1  PASS
+lab_order                            6          6  same            PK=1 FK=4 UK=1 CK=0 EX=0 UI=0 TG=1  PK=1 FK=4 UK=1 CK=0 EX=0 UI=0 TG=1  PASS
+lab_result                           8          8  same            PK=1 FK=3 UK=2 CK=2 EX=0 UI=1 TG=2  PK=1 FK=3 UK=2 CK=2 EX=0 UI=1 TG=2  PASS
+lab_test                             9          9  same            PK=1 FK=0 UK=1 CK=5 EX=0 UI=0 TG=0  PK=1 FK=0 UK=1 CK=5 EX=0 UI=0 TG=0  PASS
+movement_type                        5          5  same            PK=1 FK=0 UK=0 CK=2 EX=0 UI=0 TG=0  PK=1 FK=0 UK=0 CK=2 EX=0 UI=0 TG=0  PASS
+next_of_kin                          5          5  same            PK=1 FK=1 UK=0 CK=2 EX=0 UI=0 TG=0  PK=1 FK=1 UK=0 CK=2 EX=0 UI=0 TG=0  PASS
+on_call_shift                        5          5  same            PK=1 FK=2 UK=1 CK=0 EX=0 UI=0 TG=0  PK=1 FK=2 UK=1 CK=0 EX=0 UI=0 TG=0  PASS
+patient                             12         12  same            PK=1 FK=1 UK=2 CK=3 EX=0 UI=0 TG=0  PK=1 FK=1 UK=2 CK=3 EX=0 UI=0 TG=0  PASS
+patient_allergy                      4          4  same            PK=1 FK=1 UK=0 CK=1 EX=0 UI=0 TG=0  PK=1 FK=1 UK=0 CK=1 EX=0 UI=0 TG=0  PASS
+patient_phone                        3          3  same            PK=1 FK=1 UK=0 CK=1 EX=0 UI=1 TG=0  PK=1 FK=1 UK=0 CK=1 EX=0 UI=1 TG=0  PASS
+payment                              7          7  same            PK=1 FK=3 UK=0 CK=1 EX=0 UI=0 TG=2  PK=1 FK=3 UK=0 CK=1 EX=0 UI=0 TG=2  PASS
+payment_method                       3          3  same            PK=1 FK=0 UK=0 CK=1 EX=0 UI=0 TG=0  PK=1 FK=0 UK=0 CK=1 EX=0 UI=0 TG=0  PASS
+prescription                         4          4  same            PK=1 FK=2 UK=0 CK=0 EX=0 UI=0 TG=0  PK=1 FK=2 UK=0 CK=0 EX=0 UI=0 TG=0  PASS
+prescription_item                    4          4  same            PK=1 FK=2 UK=0 CK=1 EX=0 UI=0 TG=0  PK=1 FK=2 UK=0 CK=1 EX=0 UI=0 TG=0  PASS
+pseudonym_key                        2          2  same            PK=1 FK=0 UK=0 CK=1 EX=0 UI=0 TG=0  PK=1 FK=0 UK=0 CK=1 EX=0 UI=0 TG=0  PASS
+record_access_log                    6          6  same            PK=1 FK=2 UK=0 CK=1 EX=0 UI=0 TG=1  PK=1 FK=2 UK=0 CK=1 EX=0 UI=0 TG=1  PASS
+staff                                8          8  same            PK=1 FK=2 UK=1 CK=2 EX=0 UI=0 TG=0  PK=1 FK=2 UK=1 CK=2 EX=0 UI=0 TG=0  PASS
+staff_role                           3          3  same            PK=1 FK=0 UK=0 CK=1 EX=0 UI=0 TG=0  PK=1 FK=0 UK=0 CK=1 EX=0 UI=0 TG=0  PASS
+stock_movement                      10         10  same            PK=1 FK=5 UK=2 CK=1 EX=0 UI=0 TG=3  PK=1 FK=5 UK=2 CK=1 EX=0 UI=0 TG=3  PASS
+stock_on_hand                        4          4  same            PK=1 FK=2 UK=0 CK=1 EX=0 UI=0 TG=1  PK=1 FK=2 UK=0 CK=1 EX=0 UI=0 TG=1  PASS
+vital_sign                          11         11  same            PK=1 FK=2 UK=0 CK=7 EX=0 UI=0 TG=0  PK=1 FK=2 UK=0 CK=7 EX=0 UI=0 TG=0  PASS
+
+group roles: documented 9, live 9, PASS
+views: documented 3, live 3, PASS
+
+relations compared: 37 | mismatches: 0

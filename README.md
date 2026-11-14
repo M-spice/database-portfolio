@@ -66,6 +66,11 @@ I chose an outpatient network because it gives every topic in the course a real 
 │   ├── evidence.py                        runs a command and saves its output under a standard header
 │   └── environment/                       server environment checks
 ├── portfolio-1-database-design/
+│   ├── design/                            requirements, Chen ER model, relational schema, normalisation
+│   ├── db/                                PostgreSQL build scripts
+│   ├── tests/                             constraint, routine, privilege, consistency and normalisation tests
+│   ├── run_p1.py                          rebuilds, tests and captures the evidence
+│   └── outputs/                           evidence
 ├── portfolio-2-query-optimisation/
 ├── portfolio-3-transactions-concurrency/
 ├── portfolio-4-nosql/
@@ -79,7 +84,7 @@ I chose an outpatient network because it gives every topic in the course a real 
 
 | Part | Scope | Status |
 |---|---|---|
-| [Portfolio 1: Database Design and Modelling](portfolio-1-database-design/README.md) | Requirements, Chen ER model, relational schema, normalisation to BCNF, a PostgreSQL build with its rules tested | Environment ready |
+| [Portfolio 1: Database Design and Modelling](portfolio-1-database-design/README.md) | Requirements, Chen ER model, relational schema, normalisation to BCNF, a PostgreSQL build with its rules tested | Complete |
 | [Portfolio 2: Query Processing and Optimisation](portfolio-2-query-optimisation/README.md) | Volume data, a workload of key queries, execution plans before and after indexing and tuning | Not started |
 | [Portfolio 3: Transactions and Concurrency](portfolio-3-transactions-concurrency/README.md) | Commit, rollback, isolation anomalies, locking, deadlock and crash recovery with live concurrent sessions | Not started |
 | [Portfolio 4: NoSQL and Advanced Data Models](portfolio-4-nosql/README.md) | MongoDB document model with validation, time-series and graph examples, and transactions | Not started |
@@ -94,6 +99,7 @@ I chose an outpatient network because it gives every topic in the course a real 
 | MongoDB | 7.0.45 (`mongo:7.0`, pinned by image digest) | Document model |
 | Docker and Compose | 28.4.0 and 2.39.2 | Runs both servers, bound to 127.0.0.1 only |
 | Python | 3.13.5 with psycopg 3.3.6, pymongo 4.19.0, tabulate 0.10.0, tzdata 2026.6 | Pipelines, demonstrations and evidence capture |
+| Graphviz | 16.1.1 | Draws the ER diagrams from their DOT sources |
 
 PostgreSQL is initialised with UTF-8 encoding, the `C.UTF-8` collation and data checksums. The collation sorts by code point, so it cannot drift when the operating system's locale library is updated, and plain B-tree indexes can serve prefix searches. Data checksums let the server detect a corrupted page when it reads it.
 
@@ -120,12 +126,23 @@ Every output used as evidence is captured through one helper, which saves the ra
 
 The helper exits with the command's own exit code, so a failed step stops any pipeline that calls it.
 
+Each portfolio has one pipeline that rebuilds its state from scratch, runs every test and demonstration, and rewrites its evidence:
+
+```powershell
+.venv\Scripts\python portfolio-1-database-design\run_p1.py
+```
+
 ## Evidence index
 
 | Requirement | Evidence |
 |---|---|
 | Selected organisation: name, nature, users, data and operations | [The organisation](#the-organisation) |
 | Configuration and environment | [compose.yaml](compose.yaml), [PostgreSQL environment](portfolio-1-database-design/outputs/p1-environment-postgres.txt), [MongoDB environment](portfolio-1-database-design/outputs/p1-environment-mongo.txt) |
+| Portfolio 1: case study description | [Requirements](portfolio-1-database-design/design/requirements.md) |
+| Portfolio 1: ER diagram | [Overview](portfolio-1-database-design/design/er-overview.svg) and three [area diagrams](portfolio-1-database-design/README.md#required-evidence) |
+| Portfolio 1: relational schema, keys and constraints | [Relational schema](portfolio-1-database-design/design/relational-schema.md), [build scripts](portfolio-1-database-design/db/) |
+| Portfolio 1: normalisation explanation | [Normalisation](portfolio-1-database-design/design/normalisation.md), [lossless-join proof](portfolio-1-database-design/outputs/p1-normalisation.txt) |
+| Portfolio 1: tests | [Constraints](portfolio-1-database-design/outputs/p1-test-constraints.txt), [routines](portfolio-1-database-design/outputs/p1-test-routines.txt), [privileges](portfolio-1-database-design/outputs/p1-test-privileges.txt), [consistency](portfolio-1-database-design/outputs/p1-test-consistency.txt), [catalogue](portfolio-1-database-design/outputs/p1-catalogue-check.txt) |
 
 ## Academic integrity and AI use
 

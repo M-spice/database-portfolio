@@ -1,0 +1,104 @@
+==============================================================================
+Title:      Normalisation: functional dependencies, keys and lossless join
+Captured:   2026-11-14 13:22:01 WAT (Africa/Lagos) | 2026-11-14 12:22:01 UTC
+Command:    docker compose exec -T postgres psql -U postgres -d itoju -X -q -v ON_ERROR_STOP=1 -f /workspace/portfolio-1-database-design/tests/t_normalisation.sql
+Directory:  <repository root>
+Exit code:  0
+Duration:   3.08 s
+Host:       Windows-11-10.0.26200-SP0 | Python 3.13.5
+Docker:     Docker version 28.4.0, build d8eb465 | Docker Compose version v2.39.2-desktop.1
+Server:     postgres: postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg13+2)
+==============================================================================
+== The unnormalised clinic visit report (one row per visit, repeating groups as lists)
+-[ RECORD 1 ]--+------------------------------------------------------------------------------
+visit_no       | 1
+visit_date     | 2026-10-05
+hospital_no    | HN-0000001
+patient_name   | Oluwaseun Bankole
+date_of_birth  | 1978-04-12
+phones         | +2340001000001, +2340001000101
+facility_code  | LAG-IKJ
+facility_name  | Itoju Clinics Ikeja
+facility_city  | Lagos
+clinician_no   | ST-00001
+clinician_name | Adaeze Okafor
+diagnoses      | B54 Malaria, uncomplicated
+drugs          | DRG-0001 Artemether-lumefantrine x24 @ 15000; DRG-0002 Paracetamol x18 @ 2000
+-[ RECORD 2 ]--+------------------------------------------------------------------------------
+visit_no       | 2
+visit_date     | 2026-10-12
+hospital_no    | HN-0000004
+patient_name   | Tolulope Adeniran
+date_of_birth  | 2019-06-01
+phones         | +2340001000004
+facility_code  | LAG-LEK
+facility_name  | Itoju Clinics Lekki
+facility_city  | Lagos
+clinician_no   | ST-00003
+clinician_name | Chiamaka Eze
+diagnoses      | J06.9 Acute upper respiratory infection
+drugs          | DRG-0002 Paracetamol x10 @ 2000
+-[ RECORD 3 ]--+------------------------------------------------------------------------------
+visit_no       | 3
+visit_date     | 2026-10-20
+hospital_no    | HN-0000003
+patient_name   | Amina Garba
+date_of_birth  | 1985-02-14
+phones         | +2340001000003
+facility_code  | KAN-NAS
+facility_name  | Itoju Clinics Nassarawa
+facility_city  | Kano
+clinician_no   | ST-00004
+clinician_name | Ibrahim Musa
+diagnoses      | E11.9 Type 2 diabetes mellitus; I10 Essential hypertension
+drugs          | DRG-0004 Amlodipine x30 @ 5000; DRG-0005 Metformin x60 @ 4000
+
+== 1NF: repeating groups split out of the report itself
+      relation       | rows 
+---------------------+------
+ visit_1nf           |    7
+ patient_phone_1nf   |    8
+ visit_diagnosis_1nf |    8
+ visit_drug_1nf      |    9
+
+== Functional dependencies tested against the data (violations must be 0)
+                            dependency                            | violations | result 
+------------------------------------------------------------------+------------+--------
+ visit_no -> visit_date, hospital_no, facility_code, clinician_no |          0 | holds
+ hospital_no -> patient_name, date_of_birth                       |          0 | holds
+ facility_code -> facility_name, facility_city                    |          0 | holds
+ clinician_no -> clinician_name                                   |          0 | holds
+ diagnosis_code -> diagnosis_description                          |          0 | holds
+ drug_code -> drug_name, unit_price_kobo                          |          0 | holds
+ visit_no, drug_code -> quantity                                  |          0 | holds
+
+== Redundancy that the decomposition removes (copies of each fact in the 1NF relations)
+              fact              | stored_copies | distinct_facts 
+--------------------------------+---------------+----------------
+ facility name and city         |             7 |              5
+ patient name and date of birth |             7 |              6
+ clinician name                 |             7 |              5
+ drug name and price            |             9 |              6
+ diagnosis description          |             8 |              7
+
+== BCNF relations projected from the 1NF relations
+           relation_and_key            | duplicate_keys |  result   
+---------------------------------------+----------------+-----------
+ patient (hospital_no)                 |              0 | key holds
+ facility (facility_code)              |              0 | key holds
+ clinician (clinician_no)              |              0 | key holds
+ visit (visit_no)                      |              0 | key holds
+ diagnosis (diagnosis_code)            |              0 | key holds
+ visit_diagnosis (visit_no, code)      |              0 | key holds
+ drug (drug_code)                      |              0 | key holds
+ visit_drug (visit_no, drug_code)      |              0 | key holds
+ patient_phone (hospital_no, phone_no) |              0 | key holds
+
+== Lossless join: rejoin the BCNF relations and compare with what was decomposed
+                    join_tested                     | rows_before | rows_after | differing_rows |  result  
+----------------------------------------------------+-------------+------------+----------------+----------
+ visit ⋈ patient ⋈ facility ⋈ clinician = visit_1nf |           7 |          7 |              0 | lossless
+ visit_diagnosis ⋈ diagnosis = visit_diagnosis_1nf  |           8 |          8 |              0 | lossless
+ visit_drug ⋈ drug = visit_drug_1nf                 |           9 |          9 |              0 | lossless
+ all BCNF relations rebuild the original report     |           7 |          7 |              0 | lossless
+
