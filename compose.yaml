@@ -1,0 +1,65 @@
+name: itoju
+
+services:
+  postgres:
+    image: postgres:16@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: itoju
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_INITDB_ARGS: --encoding=UTF8 --locale=C.UTF-8 --data-checksums
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - .:/workspace:ro
+    shm_size: 256mb
+    mem_limit: 2g
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d itoju"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+      start_interval: 1s
+
+  mongo:
+    image: mongo:7.0@sha256:8bb4442761a63a8dda452744082cdac9644b429807eb977b42324a63cef59ca4
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?set MONGO_ROOT_PASSWORD in .env}
+    entrypoint:
+      - bash
+      - -c
+      - |
+        set -e
+        if [ ! -s /data/configdb/keyfile ]; then
+          head -c 756 /dev/urandom | base64 -w 0 > /data/configdb/keyfile
+        fi
+        chown mongodb:mongodb /data/configdb/keyfile
+        chmod 400 /data/configdb/keyfile
+        exec docker-entrypoint.sh mongod --replSet rs0 --keyFile /data/configdb/keyfile --port 37017 --bind_ip_all --wiredTigerCacheSizeGB 0.5
+    ports:
+      - "127.0.0.1:37017:37017"
+    volumes:
+      - mongodata:/data/db
+      - mongoconfig:/data/configdb
+      - .:/workspace:ro
+    mem_limit: 1536m
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          mongosh --quiet --port 37017 -u root -p "$$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin --eval
+          'try { rs.status() } catch (e) { rs.initiate({ _id: "rs0", members: [{ _id: 0, host: "localhost:37017" }] }) }
+          quit(db.hello().isWritablePrimary ? 0 : 1)'
+      interval: 60s
+      timeout: 20s
+      retries: 5
+      start_period: 90s
+      start_interval: 2s
+
+volumes:
+  pgdata:
+  mongodata:
+  mongoconfig:
