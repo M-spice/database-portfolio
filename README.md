@@ -97,7 +97,7 @@ I chose an outpatient network because it gives every topic in the course a real 
 │   ├── run_p5.py                          rebuilds both clusters and runs every demonstration
 │   └── outputs/                           evidence
 └── docs/
-    ├── lms/                               the LMS summary: its source, build script and PDF
+    ├── lms/                               the LMS summary (PDF)
     ├── reflection.md                      individual technical reflection
     ├── ai-use-declaration.md              how I used an AI assistant and how its output was checked
     ├── ai-assistance-log.md               what the assistant did at each step
@@ -200,7 +200,7 @@ To rebuild and rerun everything in order (29.9 minutes in the [fresh-run check](
 | Portfolio 5: availability | [Failover](portfolio-5-distributed-cloud/outputs/p5-01-pg-replication.txt), [one shard down](portfolio-5-distributed-cloud/outputs/p5-02-mongo-sharding.txt) |
 | Portfolio 5: sharding | [Distribution, routing and hot spot](portfolio-5-distributed-cloud/outputs/p5-02-mongo-sharding.txt) |
 | Portfolio 5: deployment | [Cloud deployment and the NDPA 2023](portfolio-5-distributed-cloud/architecture.md#cloud-deployment-and-the-law) |
-| LMS summary | [PDF](docs/lms/Itoju-portfolio-summary.pdf), built from [summary.html](docs/lms/summary.html) by [build_pdf.py](docs/lms/build_pdf.py) |
+| LMS summary | [PDF](docs/lms/Itoju-portfolio-summary.pdf) |
 | Individual technical reflection | [Reflection](docs/reflection.md) |
 | AI use declaration | [Declaration](docs/ai-use-declaration.md), [AI assistance log](docs/ai-assistance-log.md) |
 | Reproducibility | [Fresh-run check](docs/fresh-run-check.md), [runall.py](scripts/runall.py) |

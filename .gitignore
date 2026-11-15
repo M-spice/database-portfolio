@@ -16,3 +16,7 @@ Thumbs.db
 desktop.ini
 .vscode/
 .idea/
+
+# Local tooling for the LMS summary (only the PDF is published)
+docs/lms/summary.html
+docs/lms/build_pdf.py
