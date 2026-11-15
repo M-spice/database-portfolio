@@ -129,3 +129,24 @@ Each entry below separates what I decided from recommendations the assistant mad
   - The first failover run hung for over ten minutes. `pg_basebackup` had copied the primary's `synchronous_standby_names`, so the promoted standby waited for a synchronous partner of its own. The run was stopped, the start-up script now clears the setting after cloning, and the writer has a statement timeout, TCP timeouts and a bounded wait, with a check that it finished.
   - A log line labelled the asynchronous standby "sync", because the label was cut from the end of its name. The labels are now an explicit mapping, and the evidence was regenerated.
   - `architecture.md` was trimmed from 1,571 to 1,377 words to stay within its limit.
+
+## Phase 11: Final documentation and submission pack (2026-11-14)
+
+**My decisions:** I approved the plan for the final documentation, including the fresh-run check, which needed my own containers stopped while it ran.
+
+**Design decisions (approved at review):** Building two PDFs from one source, with the student ID only in the copy for upload, which is never committed. Inserting the figures at build time, with a dashed placeholder for any screenshot not yet taken. Running the fresh-run check from a clean clone under a separate Compose project, so it could not touch my own data.
+
+**AI assistance used:** The assistant generated `scripts/runall.py`, the LMS summary page and its build script. It drafted the reflection from the events recorded in my development log, and drafted this declaration, the references and the fresh-run record. It ran the fresh-run check and compared its output with the committed evidence. During implementation it made these choices beyond the approved plan:
+
+- The Portfolio 5 helpers now name their cluster projects after the main project, so the fresh run got clusters of its own.
+- It chose six figures for the PDF: the ER overview and one screenshot per portfolio.
+- It installed `pypdfium2` 5.14.0 into the virtual environment only, not as a project requirement, to render the PDF's pages as images for a layout check.
+
+**How it was verified:**
+
+- The fresh run passed all five pipelines in 29.9 minutes with every check count unchanged. Every result hash, every Portfolio 1 output, Portfolio 4's documents examined and Portfolio 5's shard distribution were identical.
+- Figures that moved are recorded in the [fresh-run check](fresh-run-check.md). Five documents that relied on them were corrected, including the reflection, which had cited a slowdown in Q07 that did not reproduce.
+- The PDF was rendered to images and inspected: three pages, with placeholders sized close to the real screenshots, and no local file paths in its metadata.
+- Every number in the reflection and the summary was checked against an evidence file.
+- A link checker found no broken links. A scan of every committed and new file, and of the whole git history, found no `.env` value, course PDF, private note or assistant configuration.
+- A Python edit turned a backslash in the README into a carriage return. It was spotted when the edited section was read back, and fixed.

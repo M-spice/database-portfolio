@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Itoju Clinics: Advanced Database Systems Portfolio</title>
+<style>
+  @page { size: A4; margin: 13mm 14mm 13mm 14mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, Helvetica, sans-serif; font-size: 8.9pt; line-height: 1.38; color: #1b1f24; margin: 0; }
+  h1 { font-size: 15pt; margin: 0 0 1mm; color: #0b4f6c; }
+  h2 { font-size: 10.5pt; margin: 4mm 0 1.5mm; padding-bottom: 0.6mm; border-bottom: 0.4mm solid #0b4f6c; color: #0b4f6c; break-after: avoid; }
+  p { margin: 0 0 1.6mm; }
+  a { color: #0b4f6c; }
+  .meta { margin: 0 0 1mm; color: #333; }
+  .meta span + span::before { content: " · "; color: #888; }
+  .note { font-size: 8pt; color: #555; }
+  table { width: 100%; border-collapse: collapse; margin: 0 0 2mm; }
+  th, td { text-align: left; vertical-align: top; padding: 1mm 1.6mm; border-bottom: 0.2mm solid #d6dbe0; }
+  th { background: #eef3f6; font-weight: 600; }
+  tr { break-inside: avoid; }
+  .org th { width: 27mm; background: none; color: #0b4f6c; }
+  .acts td:first-child { width: 25mm; font-weight: 600; }
+  .acts td:nth-child(2) { width: 62mm; }
+  ul, ol { margin: 0 0 1.6mm; padding-left: 5mm; }
+  li { margin: 0 0 0.6mm; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm 4mm; }
+  figure { margin: 0; break-inside: avoid; }
+  figure.wide { grid-column: span 2; }
+  figure img { display: block; width: 100%; max-height: 55mm; object-fit: contain; border: 0.2mm solid #d6dbe0; }
+  figure.tall img { max-height: 100mm; }
+  figure.wide img { max-height: 60mm; }
+  .placeholder { height: 50mm; border: 0.5mm dashed #9aa5b1; display: flex; align-items: center; justify-content: center; text-align: center; padding: 3mm; color: #5c6b7a; font-size: 8pt; }
+  figure.tall .placeholder { height: 90mm; }
+  figure.wide .placeholder { height: 55mm; }
+  figcaption { font-size: 8pt; color: #444; margin-top: 1mm; }
+  .refs p { padding-left: 5mm; text-indent: -5mm; font-size: 8.2pt; margin-bottom: 1mm; }
+</style>
+</head>
+<body>
+
+<h1>Itoju Clinics: Advanced Database Systems Portfolio</h1>
+<p class="meta"><span>Mariam Folashade Arogundade</span><span>MIT 8103 Advanced Database Systems</span><span>Master of Information Technology, Miva Open University</span><!--student-id--></p>
+<p class="meta">Repository: <!--repo--></p>
+<p class="note">Itoju Clinics is a fictional organisation and every record in the portfolio is synthetic.</p>
+
+<h2>1. Selected organisation</h2>
+<table class="org">
+  <tr><th>Organisation</th><td>Itoju Clinics (<i>ìtọ́jú</i> is Yoruba for care): a simulated network of twelve outpatient clinics and diagnostic laboratories in Lagos, Abuja, Ibadan, Enugu and Kano, each with its own pharmacy and laboratory.</td></tr>
+  <tr><th>Business and system</th><td>The database is the network's clinical and operational system of record: patients, appointments against clinicians' time slots, consultations, prescribing and dispensing, laboratory orders and results, stock, billing, and an audit trail of who opened which record.</td></tr>
+  <tr><th>Users</th><td>Patients (through the booking app or front desk), receptionists, clinicians, pharmacists, laboratory scientists, billing officers, medical-records and data-protection officers, analysts (de-identified data only), internal auditors, the clinic application's service account and the database administrator.</td></tr>
+  <tr><th>Major data</th><td>Patients with phones, allergies, next of kin and consents; facilities, departments, clinicians and slots; appointments and their history; encounters with vital signs, diagnoses and append-only notes; drugs, prescriptions and a stock ledger; lab tests, orders and results; invoices and payments in kobo; a record-access log.</td></tr>
+  <tr><th>Key operations</th><td>Register a patient; book without ever double-booking a clinician; record an encounter; prescribe and dispense without negative stock; order and result a lab test; transfer stock; invoice and take payment; show a patient's timeline; produce the daily schedule and the diagnosis, reorder and turnaround reports.</td></tr>
+</table>
+
+<h2>2. The five portfolio activities</h2>
+<table class="acts">
+  <tr><th>Portfolio</th><th>What I built</th><th>Main results</th></tr>
+  <tr><td>1. Database design and modelling</td><td>Requirements, a Chen ER model, a relational schema normalised to BCNF, and a PostgreSQL 16 build with named constraints, triggers, routines, roles and de-identified views</td><td>21 entities and 33 relationships mapped to 37 relations; 69 of 69 constraint tests, 28 of 28 routine tests and 45 of 45 privilege tests passed; the live catalogue matches the schema document</td></tr>
+  <tr><td>2. Query processing and optimisation</td><td>Deterministic volume data, a workload tied to the key operations, and execution plans measured before and after indexing and tuning</td><td>60,012 patients and 714,247 encounters; all 15 queries returned identical results in every phase; a multi-column index cut the patient timeline from 37.4 to 0.24 ms (8,921 to 108 buffers); a <code>NOT IN</code> query that timed out ran in 204 ms as <code>NOT EXISTS</code></td></tr>
+  <tr><td>3. Transactions and concurrency</td><td>Live concurrent sessions showing commit, rollback, isolation anomalies, locking, deadlock and crash recovery</td><td>45 of 45 checks; a committed booking survived a SIGKILL of the server; write skew under REPEATABLE READ was refused under SERIALIZABLE; 100 deadlocks with naive lock order and 0 with ordered locking</td></tr>
+  <tr><td>4. NoSQL and advanced data models</td><td>A MongoDB 7.0 document model with validators, a time-series collection, a referral graph and multi-document transactions</td><td>All 714,247 encounters loaded, with 13 of 13 counts and totals equal to PostgreSQL's; 71 of 71 checks; a patient's latest visits went from 714,247 documents examined to 20 with an index</td></tr>
+  <tr><td>5. Distributed and cloud database</td><td>A regional distribution design for in-country hosting, a PostgreSQL primary with synchronous and asynchronous standbys, and a sharded MongoDB cluster</td><td>26 of 26 checks; failover in 2.61 s with 1,008 acknowledged writes and none lost; synchronous commit 4.033 ms against 1.734 ms without waiting; a hashed key split 50,576 to 51,459, while a time key sent all 5,000 new writes to one shard</td></tr>
+</table>
+
+<h2>3. Evidence</h2>
+<div class="grid">
+  <!--fig:portfolio-1-database-design/design/er-overview.png|ER overview of Itoju Clinics in Chen notation|tall-->
+  <!--fig:portfolio-1-database-design/outputs/screenshots/p1-03-constraint-tests.png|Constraint tests: every bad row refused by its named rule-->
+  <!--fig:portfolio-2-query-optimisation/outputs/screenshots/p2-06-q06-before-after.png|Execution plan before and after indexing (Q06)|wide-->
+  <!--fig:portfolio-3-transactions-concurrency/outputs/screenshots/p3-09-for-update-wait.png|A session waiting on a row lock taken with FOR UPDATE|wide-->
+  <!--fig:portfolio-4-nosql/outputs/screenshots/p4-13-encounter-document.png|One visit as a MongoDB document with its embedded data-->
+  <!--fig:portfolio-5-distributed-cloud/outputs/screenshots/p5-16-replication.png|Streaming replication to a synchronous and an asynchronous standby-->
+</div>
+
+<h2>4. Individual technical reflection</h2>
+<p>An outpatient network gave every topic real work: integrity for clinical records, concurrency for clinicians' time, a ledger for stock and in-country distribution for health data. I would keep the named rule behind every constraint, the stock ledger with its guarded cache, and deterministic data with result hashes, which made every before-and-after comparison like for like. The hardest problems were found by checks rather than by reading code: data that differed between loads because sequences are never rolled back, consistency checks that were fine on sample data and quadratic at volume, and a promoted standby that waited for itself because it had inherited the primary's settings.</p>
+<ol>
+  <li>A test is only as good as the volume it runs at.</li>
+  <li>Buffers are a more stable measure than milliseconds, and an index helps only a selective query.</li>
+  <li>Deadlocks come from lock order: the same 400 transfers caused 100 deadlocks in an arbitrary order and none in a fixed one.</li>
+  <li>Measure an outage from the client's acknowledged writes, and test failover end to end.</li>
+</ol>
+<p>Next, I would add automatic failover with Patroni, real network delay between the clusters, and continuous change data capture from PostgreSQL to the MongoDB read model.</p>
+
+<h2>5. AI use declaration</h2>
+<p>I used Claude Code (Anthropic), running the Claude Opus 5.5 model, as a coding and writing assistant. I chose the case study and specified the architecture, technology stack, data conventions and order of work; I made the design decisions, approved a plan before each part and committed every change myself. The assistant generated the scripts and drafted the documents to my specification. Every output was run and captured unedited, and every figure in the portfolio comes from an evidence file. 339 automated checks and comparisons pass, MongoDB was cross-checked against PostgreSQL, and the real errors those checks found were corrected. The full declaration and a log of each step are in the repository.</p>
+
+<h2>6. References</h2>
+<div class="refs">
+  <p>Abadi, D. (2012). Consistency tradeoffs in modern distributed database system design: CAP is only part of the story. <i>Computer, 45</i>(2), 37–42. https://doi.org/10.1109/MC.2012.33</p>
+  <p>Chen, P. P.-S. (1976). The entity-relationship model: Toward a unified view of data. <i>ACM Transactions on Database Systems, 1</i>(1), 9–36. https://doi.org/10.1145/320434.320440</p>
+  <p>Elmasri, R., &amp; Navathe, S. B. (2016). <i>Fundamentals of database systems</i> (7th ed.). Pearson.</p>
+  <p>Federal Republic of Nigeria. (2023). <i>Nigeria Data Protection Act, 2023</i>.</p>
+  <p>Miva Open University. (2025). <i>MIT 8103: Advanced database systems</i> [Course material]. Miva Open University.</p>
+  <p>MongoDB, Inc. (n.d.). <i>MongoDB manual</i> (Version 7.0). Retrieved November 14, 2026, from https://www.mongodb.com/docs/v7.0/</p>
+  <p>PostgreSQL Global Development Group. (n.d.). <i>PostgreSQL 16 documentation</i>. Retrieved November 14, 2026, from https://www.postgresql.org/docs/16/</p>
+  <p>Silberschatz, A., Korth, H. F., &amp; Sudarshan, S. (2020). <i>Database system concepts</i> (7th ed.). McGraw-Hill Education.</p>
+</div>
+
+</body>
+</html>

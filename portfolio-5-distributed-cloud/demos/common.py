@@ -1,5 +1,6 @@
 """Shared helpers for the Portfolio 5 demonstrations: connections, compose commands, timed logging and checks."""
 
+import os
 import subprocess
 import sys
 import time
@@ -14,6 +15,7 @@ ROOT = P5.parent
 T0 = time.perf_counter()
 CHECKS = []
 PORTS = {"primary": 55441, "standby_sync": 55442, "standby_async": 55443}
+PROJECTS = {"pg-replication": "p5-pg", "mongo-sharding": "p5-mongo"}
 
 
 def env(key):
@@ -41,7 +43,10 @@ def pg(node, autocommit=True, timeout=3, statement_timeout_ms=None):
 
 
 def compose(project_dir, *args, check=True):
-    command = ["docker", "compose", "-f", str(P5 / project_dir / "compose.yaml"), "--env-file", str(ROOT / ".env"), *args]
+    # Named after the main stack's project, so a second copy of the repository gets clusters of its own.
+    project = f"{os.environ.get('COMPOSE_PROJECT_NAME', 'itoju')}-{PROJECTS[project_dir]}"
+    command = ["docker", "compose", "-p", project, "-f", str(P5 / project_dir / "compose.yaml"), "--env-file",
+               str(ROOT / ".env"), *args]
     return subprocess.run(command, cwd=ROOT, check=check, capture_output=True, text=True)
 
 

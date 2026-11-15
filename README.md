@@ -64,6 +64,7 @@ I chose an outpatient network because it gives every topic in the course a real 
 ├── .env.example                           variables to copy into .env
 ├── scripts/
 │   ├── evidence.py                        runs a command and saves its output under a standard header
+│   ├── runall.py                          runs all five portfolio pipelines in order
 │   └── environment/                       server environment checks
 ├── portfolio-1-database-design/
 │   ├── design/                            requirements, Chen ER model, relational schema, normalisation
@@ -96,7 +97,11 @@ I chose an outpatient network because it gives every topic in the course a real 
 │   ├── run_p5.py                          rebuilds both clusters and runs every demonstration
 │   └── outputs/                           evidence
 └── docs/
-    ├── ai-assistance-log.md
+    ├── lms/                               the LMS summary: its source, build script and PDF
+    ├── reflection.md                      individual technical reflection
+    ├── ai-use-declaration.md              how I used an AI assistant and how its output was checked
+    ├── ai-assistance-log.md               what the assistant did at each step
+    ├── fresh-run-check.md                 the whole portfolio rebuilt from a clean clone
     └── references.md
 ```
 
@@ -109,7 +114,7 @@ I chose an outpatient network because it gives every topic in the course a real 
 | [Portfolio 3: Transactions and Concurrency](portfolio-3-transactions-concurrency/README.md) | Commit, rollback, isolation anomalies, locking, deadlock and crash recovery with live concurrent sessions | Complete |
 | [Portfolio 4: NoSQL and Advanced Data Models](portfolio-4-nosql/README.md) | MongoDB document model with validation, time-series and graph examples, and transactions | Complete |
 | [Portfolio 5: Distributed and Cloud Database Exercise](portfolio-5-distributed-cloud/README.md) | Distribution design, PostgreSQL streaming replication with failover, a MongoDB sharded cluster | Complete |
-| Final documentation | LMS summary, technical reflection, AI-use declaration, references | Not started |
+| Final documentation | [LMS summary](docs/lms/Itoju-portfolio-summary.pdf), [technical reflection](docs/reflection.md), [AI use declaration](docs/ai-use-declaration.md), [fresh-run check](docs/fresh-run-check.md), [references](docs/references.md) | Complete |
 
 ## Technology
 
@@ -120,6 +125,7 @@ I chose an outpatient network because it gives every topic in the course a real 
 | Docker and Compose | 28.4.0 and 2.39.2 | Runs both servers, bound to 127.0.0.1 only |
 | Python | 3.13.5 with psycopg 3.3.6, pymongo 4.19.0, tabulate 0.10.0, tzdata 2026.6 | Pipelines, demonstrations and evidence capture |
 | Graphviz | 16.1.1 | Draws the ER diagrams from their DOT sources |
+| Microsoft Edge (headless) | 157.0.4341.46 | Prints the LMS summary to PDF |
 
 PostgreSQL is initialised with UTF-8 encoding, the `C.UTF-8` collation and data checksums. The collation sorts by code point, so it cannot drift when the operating system's locale library is updated, and plain B-tree indexes can serve prefix searches. Data checksums let the server detect a corrupted page when it reads it.
 
@@ -158,6 +164,12 @@ Each portfolio has one pipeline that rebuilds its state from scratch, runs every
 
 Portfolio 5 builds two more clusters beside the main stack, each from its own Compose file, as described in [its set-up notes](portfolio-5-distributed-cloud/setup.md).
 
+To rebuild and rerun everything in order (29.9 minutes in the [fresh-run check](docs/fresh-run-check.md), most of it Portfolio 2's load and measurements):
+
+```powershell
+.venv\Scripts\python scripts\runall.py
+```
+
 ## Evidence index
 
 | Requirement | Evidence |
@@ -188,10 +200,15 @@ Portfolio 5 builds two more clusters beside the main stack, each from its own Co
 | Portfolio 5: availability | [Failover](portfolio-5-distributed-cloud/outputs/p5-01-pg-replication.txt), [one shard down](portfolio-5-distributed-cloud/outputs/p5-02-mongo-sharding.txt) |
 | Portfolio 5: sharding | [Distribution, routing and hot spot](portfolio-5-distributed-cloud/outputs/p5-02-mongo-sharding.txt) |
 | Portfolio 5: deployment | [Cloud deployment and the NDPA 2023](portfolio-5-distributed-cloud/architecture.md#cloud-deployment-and-the-law) |
+| LMS summary | [PDF](docs/lms/Itoju-portfolio-summary.pdf), built from [summary.html](docs/lms/summary.html) by [build_pdf.py](docs/lms/build_pdf.py) |
+| Individual technical reflection | [Reflection](docs/reflection.md) |
+| AI use declaration | [Declaration](docs/ai-use-declaration.md), [AI assistance log](docs/ai-assistance-log.md) |
+| Reproducibility | [Fresh-run check](docs/fresh-run-check.md), [runall.py](scripts/runall.py) |
+| References | [References](docs/references.md) |
 
 ## Academic integrity and AI use
 
-I used Claude Code (Anthropic), running the Claude Opus 5.5 model, as a coding and writing assistant. I chose the case study and specified the architecture, technology stack, data conventions and order of work. I made the design decisions, specified each piece of work, and reviewed, ran and tested what the assistant produced, changing it where needed before committing it. The assistant generated scripts and drafted documentation to my specification, which saved time on repetitive work. The [AI assistance log](docs/ai-assistance-log.md) records what it did at each step and how I checked it.
+I used Claude Code (Anthropic), running the Claude Opus 5.5 model, as a coding and writing assistant. I chose the case study and specified the architecture, technology stack, data conventions and order of work. I made the design decisions, specified each piece of work, and reviewed, ran and tested what the assistant produced, changing it where needed before committing it. The assistant generated scripts and drafted documentation to my specification, which saved time on repetitive work. The [AI use declaration](docs/ai-use-declaration.md) sets out how I used it and how its output was verified, and the [AI assistance log](docs/ai-assistance-log.md) records what it did at each step.
 
 ## References
 

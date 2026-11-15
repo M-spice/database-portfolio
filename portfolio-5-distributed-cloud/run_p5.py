@@ -8,11 +8,9 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 OUT = HERE / "outputs"
+sys.path.insert(0, str(HERE / "demos"))
 
-
-def compose(directory, *args):
-    return subprocess.run(["docker", "compose", "-f", str(HERE / directory / "compose.yaml"), "--env-file",
-                           str(ROOT / ".env"), *args], cwd=ROOT, capture_output=True, text=True)
+from common import compose  # noqa: E402
 
 
 def evidence(out, title, script):
@@ -38,13 +36,13 @@ def main():
     try:
         for directory, out, title, script, up in STEPS:
             t0 = time.perf_counter()
-            compose(directory, "down", "-v")
-            created = compose(directory, *up)
+            compose(directory, "down", "-v", check=False)
+            created = compose(directory, *up, check=False)
             if created.returncode != 0:
                 print(created.stdout, created.stderr)
                 sys.exit(created.returncode)
             code = evidence(out, title, script)
-            compose(directory, "stop")
+            compose(directory, "stop", check=False)
             print(f"{'ok  ' if code == 0 else 'FAIL'} {out:28} {time.perf_counter() - t0:6.1f} s", flush=True)
             if code != 0:
                 sys.exit(code)

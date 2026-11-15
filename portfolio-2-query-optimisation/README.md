@@ -61,7 +61,7 @@ Every value is derived from a hash of its row number and a seed (`hashint8extend
 
 The results are summarised in [analysis.md](analysis.md). The largest gains were the reorder report, from 1.8 s to about 1 ms with a partial covering index; the patients-without-a-visit report, from a 120-second timeout to about 200 ms once `NOT IN` was rewritten; and the monthly report, from about a second to 7 ms with a materialised view. The analysis also shows where an index was ignored, where one made a query slower, and what the indexes cost on writes.
 
-To reproduce (about 18 minutes, including the second load for the determinism check):
+To reproduce (about 20 minutes, including the second load for the determinism check):
 
 ```powershell
 docker compose up -d --wait

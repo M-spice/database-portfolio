@@ -51,7 +51,7 @@ What the indexes changed, from [p4-04](outputs/p4-04-workload-after.txt):
 
 Selective queries now read only the documents they return. M05 and M08 still read half the collection, because their date ranges cover half of it. MongoDB's planner nevertheless took the index, which is part of the comparison in [suitability.md](suitability.md).
 
-To reproduce (about seven and a half minutes; it rebuilds the MongoDB database from the current PostgreSQL data):
+To reproduce (five to eight minutes; it rebuilds the MongoDB database from the current PostgreSQL data):
 
 ```powershell
 docker compose up -d --wait
