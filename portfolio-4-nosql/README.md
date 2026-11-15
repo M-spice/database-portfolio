@@ -8,6 +8,7 @@ The same clinical data modelled as MongoDB documents, shaped around how clinicia
 - [x] Document, key-value, column or graph example: a document model ([p4-01](outputs/p4-01-load.txt), [p4-04](outputs/p4-04-workload-after.txt)), a time-series collection ([p4-05](outputs/p4-05-timeseries.txt)) and a graph traversal ([p4-06](outputs/p4-06-graph.txt)); key-value and wide-column stores are discussed in [suitability.md](suitability.md)
 - [x] Implementation evidence: [outputs/](outputs/), the `explain()` output in [explain/](explain/), and the scripts in [mongo/](mongo/)
 - [x] Explanation of suitability: [suitability.md](suitability.md)
+- [x] Screenshots: [one visit as a document](outputs/screenshots/p4-13-encounter-document.png), [a multikey index at work](outputs/screenshots/p4-14-explain-multikey.png) and [a document refused by its validator](outputs/screenshots/p4-15-validation-error.png)
 
 ## How I implemented it
 

@@ -17,7 +17,7 @@ I chose the case study and specified the architecture, technology stack, data co
 | Portfolio 3: transactions | Approved the plan | Generated the concurrent-session demonstrations and the sandbox schema; drafted the scenario analysis and replay guide |
 | Portfolio 4: NoSQL | Chose to load the full data rather than a sample | Generated the document model, loader and demonstrations; drafted the model and suitability documents |
 | Portfolio 5: distributed | Chose to build both working setups as well as the design | Generated both clusters and their demonstrations; drafted the architecture and set-up documents |
-| Final documents | Approved the plan | Drafted the [reflection](reflection.md) from the events in my development log, this declaration, the references and the LMS summary; ran the fresh-run check |
+| Final documents | Approved the plan; reviewed the reflection against my own experience and confirmed that it says what I think; took the screenshots | Drafted the [reflection](reflection.md) from the events in my development log, this declaration, the references and the LMS summary; ran the fresh-run check |
 
 Design recommendations from the assistant that I accepted at review include:
 

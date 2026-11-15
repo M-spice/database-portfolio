@@ -8,7 +8,7 @@ What keeps Itoju Clinics' bookings, stock and payments correct when many staff w
 - [x] Rollback: error rollback, explicit business rollback, savepoint and statement atomicity ([p3-02-atomicity.txt](outputs/p3-02-atomicity.txt), sections 2–5)
 - [x] Isolation: non-repeatable read, phantom, READ UNCOMMITTED and write skew under three isolation levels ([p3-03-isolation.txt](outputs/p3-03-isolation.txt))
 - [x] A concurrency issue and a control mechanism: lost update against `FOR UPDATE` and REPEATABLE READ, a double-booking race against an exclusion constraint, deadlock against ordered locking, and a hot row against a sequence ([p3-04-locking.txt](outputs/p3-04-locking.txt))
-- [x] Screenshots and output evidence: the output files above, and the hand-run scenarios in the [replay guide](replay-guide.md)
+- [x] Screenshots and output evidence: the output files above; screenshots of the hand-run scenarios from the [replay guide](replay-guide.md): [a session waiting on `FOR UPDATE`](outputs/screenshots/p3-09-for-update-wait.png), [a deadlock](outputs/screenshots/p3-10-deadlock.png) and [a serialization failure](outputs/screenshots/p3-11-serialization-failure.png); and [crash recovery](outputs/screenshots/p3-12-crash-recovery.png)
 
 The meaning of each result is set out in [concurrency.md](concurrency.md), with a table of every scenario against the isolation level or mechanism, what was expected and what was observed, and the ACID property it shows.
 

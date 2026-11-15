@@ -11,6 +11,7 @@ How Itoju Clinics would spread its database across regions and keep it in Nigeri
 - [x] Availability evidence: a failover with no acknowledged write lost ([p5-01](outputs/p5-01-pg-replication.txt), section 6) and a cluster with one shard down ([p5-02](outputs/p5-02-mongo-sharding.txt), section 5)
 - [x] Sharding evidence: hashed distribution, targeted and scatter-gather routing, and a hot spot from a ranged time key ([p5-02](outputs/p5-02-mongo-sharding.txt), sections 2 to 4)
 - [x] Deployment evidence: the Compose files and start-up scripts, and the cloud deployment model in [architecture.md](architecture.md#cloud-deployment-and-the-law)
+- [x] Screenshots: [synchronous and asynchronous standbys streaming](outputs/screenshots/p5-16-replication.png), [the failover](outputs/screenshots/p5-17-failover.png), [the shard distribution](outputs/screenshots/p5-18-shard-distribution.png) and [targeted against scatter-gather routing](outputs/screenshots/p5-19-routing.png)
 
 ## How I implemented it
 

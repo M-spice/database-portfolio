@@ -9,6 +9,7 @@ How Itoju Clinics' most important questions are answered at realistic volume: th
 - [x] Execution plans: [plans/baseline/](plans/baseline/), [plans/indexed/](plans/indexed/), [plans/tuned/](plans/tuned/), one `EXPLAIN (ANALYZE, BUFFERS)` per query per phase
 - [x] Indexing and optimisation evidence: [sql/indexing.sql](sql/indexing.sql), [sql/tuning.sql](sql/tuning.sql), [results/comparison.md](results/comparison.md), index sizes and write cost in [outputs/](outputs/)
 - [x] Brief performance analysis: [analysis.md](analysis.md)
+- [x] Screenshots: [Q06 before and after its index](outputs/screenshots/p2-06-q06-before-after.png), [a low-selectivity index declined](outputs/screenshots/p2-07-low-selectivity.png) and [the comparison table](outputs/screenshots/p2-08-comparison.png)
 
 ## The data
 

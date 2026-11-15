@@ -136,7 +136,7 @@ Each entry below separates what I decided from recommendations the assistant mad
 
 **Design decisions (approved at review):** Building two PDFs from one source, with the student ID only in the copy for upload, which is never committed. Inserting the figures at build time, with a dashed placeholder for any screenshot not yet taken. Running the fresh-run check from a clean clone under a separate Compose project, so it could not touch my own data.
 
-**AI assistance used:** The assistant generated `scripts/runall.py`, the LMS summary page and its build script. It drafted the reflection from the events recorded in my development log, and drafted this declaration, the references and the fresh-run record. It ran the fresh-run check and compared its output with the committed evidence. During implementation it made these choices beyond the approved plan:
+**AI assistance used:** The assistant generated `scripts/runall.py`, the LMS summary page and its build script. It drafted the reflection from the events recorded in my development log; I reviewed it against my own experience and confirmed that it says what I think. It also drafted this declaration, the references and the fresh-run record. It ran the fresh-run check and compared its output with the committed evidence. During implementation it made these choices beyond the approved plan:
 
 - The Portfolio 5 helpers now name their cluster projects after the main project, so the fresh run got clusters of its own.
 - It chose six figures for the PDF: the ER overview and one screenshot per portfolio.
@@ -150,3 +150,6 @@ Each entry below separates what I decided from recommendations the assistant mad
 - Every number in the reflection and the summary was checked against an evidence file.
 - A link checker found no broken links. A scan of every committed and new file, and of the whole git history, found no `.env` value, course PDF, private note or assistant configuration.
 - A Python edit turned a backslash in the README into a carriage return. It was spotted when the edited section was read back, and fixed.
+- I took the 18 screenshots myself. The assistant tested every screenshot command first and checked each image against what it was meant to show. It asked me to retake one, where a pasted command had swallowed the query it was meant to explain, and found two commands that would not have shown what they claimed:
+  - The constraint tests expect the sample data, so against the volume data one of them failed. The screenshot was taken from a scratch copy of the Portfolio 1 build instead.
+  - The query chosen to show a declined index could be answered from that index. Q10 was used instead.

@@ -12,6 +12,7 @@ The relational database at the centre of Itoju Clinics, taken from the organisat
 - [x] Keys: [keys and constraints](design/relational-schema.md#keys-and-constraints)
 - [x] Constraints: [keys and constraints](design/relational-schema.md#keys-and-constraints), tested in [p1-test-constraints.txt](outputs/p1-test-constraints.txt)
 - [x] Normalisation explanation: [normalisation.md](design/normalisation.md), proved in [p1-normalisation.txt](outputs/p1-normalisation.txt)
+- [x] Screenshots: [the stack running](outputs/screenshots/p1-01-stack-healthy.png), [69 of 69 constraint tests passing](outputs/screenshots/p1-03-constraint-tests.png), [a double booking refused](outputs/screenshots/p1-04-double-booking-refused.png) and [the catalogue check](outputs/screenshots/p1-05-catalogue-check.png)
 
 ## How I designed it
 
